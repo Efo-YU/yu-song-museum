@@ -1,0 +1,23 @@
+# Claude Code: personal overrides and local state.
+#
+# The project-level .claude/settings.json is checked in and shared with
+# the team. Anything personal belongs in the files below and must not
+# be committed.
+.claude/settings.local.json
+.claude/*.local.json
+.claude/sessions/
+.claude/history/
+.claude/cache/
+
+# Environment variables and secrets.
+.env
+.env.local
+.env.*.local
+
+# OS and editor cruft.
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/settings.json

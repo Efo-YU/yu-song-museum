@@ -1,0 +1,121 @@
+// Dev Container configuration for a project that uses Claude Code.
+//
+// This template gives you a disposable, project-scoped Linux container
+// with Claude Code (CLI + VS Code extension) preinstalled, plus a few
+// quality-of-life defaults for day-to-day agentic development.
+//
+// The container is isolated from the host: only the project folder is
+// bind-mounted in, the container runs as an unprivileged user, no host
+// credentials are visible, and rebuilding restores a known-good state.
+// That is sufficient to contain routine accidents — a bad `rm`, a
+// misbehaving install script, an overenthusiastic agent — and to keep
+// your host's SSH keys, cloud tokens, and browser state out of reach.
+//
+// For higher-assurance isolation (running untrusted third-party code,
+// running multiple agents in parallel, etc.) pair this with a narrower
+// sandbox: a disposable cloud VM, a microVM, or a purpose-built
+// network policy.
+//
+// Host requirements:
+//   - Docker (Docker Desktop, OrbStack, or Docker Engine on Linux/WSL2)
+//   - VS Code with the "Dev Containers" extension
+//     (ms-vscode-remote.remote-containers)
+//
+// First-time usage:
+//   1. Open the repository in VS Code.
+//   2. Run "Dev Containers: Reopen in Container" from the command palette.
+//   3. Wait for the initial image build to finish.
+//   4. Open a terminal and run `claude` to authenticate. Credentials
+//      are persisted in a named volume, so this is a one-time step.
+//
+// See README.md for customization and troubleshooting notes.
+{
+    "name": "claude-code-sandbox",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "args": {
+            // Override at build time by exporting TZ in your shell before
+            // opening the project, e.g. `export TZ=America/New_York`.
+            "TZ": "${localEnv:TZ:UTC}"
+        }
+    },
+    // Mount paths.
+    //
+    // Making these explicit avoids subtle mismatches between the image's
+    // WORKDIR and the actual bind mount target, which is a common source
+    // of "my files disappeared after rebuild" reports.
+    //
+    // ${localWorkspaceFolderBasename} expands to the name of the folder
+    // you opened in VS Code, so this template works unchanged in any
+    // repository without editing.
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
+    // Use public DNS resolvers inside the container.
+    //
+    // On some host setups (corporate LAN, WSL2 behind a home router,
+    // mesh VPNs such as Tailscale) the resolver inherited from the host
+    // is not reachable from the container's network namespace, and DNS
+    // lookups inside the container silently hang. Pinning to public
+    // resolvers avoids this. Replace with your internal resolver if you
+    // need to resolve private hostnames.
+    "runArgs": [
+        "--dns=1.1.1.1",
+        "--dns=8.8.8.8"
+    ],
+    // Persistent state across container rebuilds.
+    //
+    //   commandhistory: shell history.
+    //   claude-config:  Claude Code authentication and local state.
+    //                   Persisting this means you do not re-authenticate
+    //                   on every rebuild.
+    //   gh-config:      GitHub CLI (`gh`) authentication and
+    //                   preferences. Same rationale as above: without
+    //                   this, `gh auth login` would have to run on
+    //                   every rebuild, breaking the PR-opening
+    //                   workflow in CLAUDE.md §3.
+    //
+    // All volumes are scoped to the project name, so different
+    // repositories do not share state.
+    //
+    // Coupling invariant: the runtime user name and the two config
+    // paths appear in several places and must stay in sync. If you
+    // change the runtime user from `vscode` or either config path,
+    // update all of:
+    //   1. `mounts` below (target=...)
+    //   2. `remoteUser` below
+    //   3. `containerEnv.CLAUDE_CONFIG_DIR` below
+    //   4. `ARG USERNAME=vscode` in Dockerfile
+    //   5. the `mkdir -p` lines in Dockerfile (both .claude and .config/gh)
+    // JSON has no variable substitution, so this discipline is
+    // manual. Keep the list above up to date if you add further uses.
+    "mounts": [
+        "source=${localWorkspaceFolderBasename}-commandhistory,target=/commandhistory,type=volume",
+        "source=${localWorkspaceFolderBasename}-claude-config,target=/home/vscode/.claude,type=volume",
+        "source=${localWorkspaceFolderBasename}-gh-config,target=/home/vscode/.config/gh,type=volume"
+    ],
+    "remoteUser": "vscode",
+    "containerEnv": {
+        // Raise Node's heap limit. Claude Code itself is a Node process
+        // and can be memory-hungry on large repositories; this setting
+        // benefits it regardless of whether the project under
+        // development uses Node. The variable is a no-op for
+        // non-Node processes, so leaving it set is harmless for Python,
+        // Go, or Rust projects.
+        "NODE_OPTIONS": "--max-old-space-size=4096",
+        "CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "anthropic.claude-code",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "eamodio.gitlens"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "editor.formatOnSave": true
+            }
+        }
+    }
+}

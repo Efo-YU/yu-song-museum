@@ -1,0 +1,23 @@
+# Run documentation invariant checks on every pull request and push
+# to the main branch. This is the automated half of the Definition of
+# Done item 6 in CLAUDE.md; contributors should also run the script
+# locally before pushing.
+#
+# The workflow is deliberately minimal. It runs on GitHub's default
+# ubuntu-latest runner, which has bash, GNU coreutils, and GNU find
+# — the same environment the script targets inside the Dev Container.
+# It does not build the image or install any dependencies.
+name: docs
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run documentation invariant checks
+        run: bash scripts/check-docs.sh
