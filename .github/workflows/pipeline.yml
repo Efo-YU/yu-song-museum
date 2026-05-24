@@ -172,16 +172,19 @@ jobs:
       - name: Merge songs.json and copy public assets
         run: python3 scripts/06_merge_songs.py
 
+      - name: Configure GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v4
+
       - name: Install frontend dependencies
         working-directory: frontend
         run: pnpm install --frozen-lockfile
 
       - name: Build frontend
         working-directory: frontend
+        env:
+          VITE_BASE_URL: ${{ steps.pages.outputs.base_path }}/
         run: pnpm build
-
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v4
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
