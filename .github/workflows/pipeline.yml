@@ -132,7 +132,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: meta-${{ matrix.song }}
-          path: projects/${{ matrix.song }}/output/meta.json
+          path: |
+            projects/${{ matrix.song }}/output/meta.json
+            projects/${{ matrix.song }}/output/audio.mp3
           retention-days: 30
 
   # ── Job 2: Web deploy ─────────────────────────────────────────────────────
