@@ -39,6 +39,7 @@ def build_filter_graph(
     height: int,
     title: str,
     subtitle: str,
+    duration: float,
     waveform_color: str = "0x00aaff",
 ) -> str:
     title_esc = _escape_drawtext(title)
@@ -57,7 +58,7 @@ def build_filter_graph(
         )
     else:
         base = (
-            f"color=c=black:s={width}x{height}:r=30[bg];"
+            f"color=c=black:s={width}x{height}:r=30:duration={duration}[bg];"
             f"[0:a]showwaves=s={width}x{wave_h}:mode=cline:colors={waveform_color}[wave];"
             f"[bg][wave]overlay=0:{wave_y}[comp]"
         )
@@ -113,12 +114,21 @@ def main() -> None:
     bg_file = song_dir / bg_path if bg_path else None
     has_bg = bool(bg_file and bg_file.exists())
 
+    # Measure audio duration so the infinite color source is bounded.
+    probe = subprocess.run(
+        ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+         "-of", "default=noprint_wrappers=1:nokey=1", str(audio_wav)],
+        capture_output=True, text=True, check=True,
+    )
+    audio_duration = float(probe.stdout.strip())
+
     filter_graph = build_filter_graph(
         has_bg=has_bg,
         width=width,
         height=height,
         title=title,
         subtitle=subtitle,
+        duration=audio_duration,
     )
 
     cmd = ["ffmpeg", "-y", "-i", str(audio_wav)]
