@@ -131,8 +131,8 @@ def main() -> None:
         **meta,
         "youtube_id": video_id,
         "youtube_url": youtube_url,
-        "audio_url": f"/audio/{song_id}/audio.mp3",
-        "score_url": f"/scores/{song_id}/vocal.musicxml",
+        "audio_url": f"audio/{song_id}/audio.mp3",
+        "score_url": f"scores/{song_id}/vocal.musicxml",
     }
     meta_json.write_text(json.dumps(output_meta, ensure_ascii=False, indent=2))
     print(f"[gas] meta.json written: {meta_json}")
