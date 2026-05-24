@@ -15,7 +15,7 @@ HEAD_REF="${HEAD_REF:-HEAD}"
 
 changed=$(
   git diff --name-only "$BASE_REF" "$HEAD_REF" \
-    | grep '^projects/' \
+    | { grep '^projects/' || true; } \
     | awk -F/ '{print $2}' \
     | sort -u \
     | jq -R . \
