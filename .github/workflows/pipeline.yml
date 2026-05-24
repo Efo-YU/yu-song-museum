@@ -74,7 +74,8 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
-            ffmpeg fluidsynth awscli
+            ffmpeg fluidsynth
+          # aws CLI v2 is pre-installed on ubuntu-latest; no apt install needed
 
       - name: Install Python dependencies
         run: pip install --quiet boto3 requests
