@@ -42,34 +42,35 @@ def load_existing_songs() -> dict[str, dict]:
     return {}
 
 
-def collect_new_metas() -> list[dict]:
+def collect_new_metas() -> list[tuple[dict, Path]]:
     metas = []
     if not ARTIFACTS_DIR.exists():
         return metas
     for meta_file in ARTIFACTS_DIR.rglob("meta.json"):
         try:
-            metas.append(json.loads(meta_file.read_text()))
+            metas.append((json.loads(meta_file.read_text()), meta_file.parent))
         except (json.JSONDecodeError, OSError) as exc:
             print(f"WARNING: skipping {meta_file}: {exc}")
     return metas
 
 
-def copy_assets(song_id: str) -> None:
+def copy_assets(song_id: str, artifact_dir: Path) -> None:
     song_dir = PROJECTS_DIR / song_id
-    out_dir = song_dir / "output"
 
-    # MusicXML scores
+    # MusicXML scores — committed source files, always present in the checkout
     score_dest = PUBLIC_SCORES / song_id
     score_dest.mkdir(parents=True, exist_ok=True)
     for xml in song_dir.glob("*.musicxml"):
         shutil.copy2(xml, score_dest / xml.name)
 
-    # MP3 audio
+    # MP3 audio — generated output bundled in the meta artifact
     audio_dest = PUBLIC_AUDIO / song_id
     audio_dest.mkdir(parents=True, exist_ok=True)
-    mp3 = out_dir / "audio.mp3"
+    mp3 = artifact_dir / "audio.mp3"
     if mp3.exists():
         shutil.copy2(mp3, audio_dest / "audio.mp3")
+    else:
+        print(f"WARNING: {mp3} not found — audio download will be unavailable for {song_id}")
 
 
 def merge_page_config(song_meta: dict) -> dict:
@@ -89,11 +90,11 @@ def main() -> None:
     else:
         print(f"[merge] Merging {len(new_metas)} song(s)")
 
-    for meta in new_metas:
+    for meta, artifact_dir in new_metas:
         song_id = meta["id"]
         meta = merge_page_config(meta)
         existing[song_id] = meta
-        copy_assets(song_id)
+        copy_assets(song_id, artifact_dir)
         print(f"[merge] {song_id}: merged and assets copied")
 
     songs_list = sorted(existing.values(), key=lambda s: s["id"])
