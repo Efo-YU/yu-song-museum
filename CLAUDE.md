@@ -16,10 +16,13 @@ When adapting the template to a real project, fill in §1–§4 and leave
 
 ## 1. Project overview
 
-<!-- One paragraph: what this project does, who it is for, what it
-     explicitly is not. -->
-
-TODO: Describe the project in 3–5 sentences.
+A CI/CD-for-music-production platform that automates vocal synthesis
+(NEUTRINO), accompaniment mixing (FluidSynth + FFmpeg), video
+generation, YouTube upload (via a GAS relay), and website deployment
+whenever MusicXML or configuration files change.  The system processes
+only the songs that differ in each push.  A React + OSMD single-page
+app renders interactive scores client-side; generated videos are never
+persisted as CI artifacts.
 
 ## 2. Tech stack and runtime
 
@@ -33,11 +36,11 @@ TODO: Describe the project in 3–5 sentences.
        - Runtime target: current Node LTS inside the Dev Container
 -->
 
-- Language(s): TODO
-- Framework(s): TODO
-- Package manager: TODO (do not use anything else)
-- Database / storage: TODO
-- Runtime target: TODO
+- Language(s): TypeScript (frontend + GAS), Python 3.11 (pipeline scripts), Bash (CI scripts)
+- Framework(s): React 19 + Vite 8 (frontend); Google Apps Script + Clasp (GAS relay)
+- Package manager: **pnpm 9.15.9** for `frontend/`; **npm** for `gas/` (clasp needs npm); do not use yarn or bare npm in `frontend/`
+- Storage: Cloudflare R2 (ephemeral model fetch + temp video); GitHub Pages (static site)
+- Runtime target: Node 20 in the Dev Container and GHA ubuntu-latest runners
 
 All commands in §3 assume you are inside the Dev Container at
 `/workspaces/<project-name>`.
@@ -47,13 +50,15 @@ All commands in §3 assume you are inside the Dev Container at
 <!-- The commands contributors actually run. If a command seems to be
      missing, add it here rather than inventing an ad-hoc invocation. -->
 
-- Install dependencies: `TODO`
-- Run in development: `TODO`
-- Run tests: `TODO` (must pass before a change is considered done)
-- Lint: `TODO`
-- Format: `TODO`
-- Type-check: `TODO`
-- Build for production: `TODO`
+- Install frontend deps: `cd frontend && pnpm install`
+- Install GAS deps: `cd gas && npm install`
+- Run frontend dev server: `cd frontend && pnpm dev`
+- Run tests: _(no test suite yet — add under `tests/` when first test is written)_
+- Lint frontend: `cd frontend && pnpm lint`
+- Type-check frontend: `cd frontend && pnpm type-check`
+- Type-check GAS: `cd gas && npx tsc --noEmit`
+- Build frontend: `cd frontend && pnpm build`
+- Run pipeline locally (one song): `make SONG=song_001 all`
 - Check documentation invariants: `bash scripts/check-docs.sh`
   (verifies `docs/*/index.md` ↔ filesystem consistency and
   `Last reviewed:` freshness for operator docs; see
@@ -92,9 +97,22 @@ The agent does not merge PRs — merging is a human decision.
 │   ├── operator/     # For people running the system
 │   ├── user/         # For end users
 │   └── upstream/     # PRDs, design docs, ADRs (the "why" and "what")
-├── scripts/          # Human-run scripts; shebang + one-line comment required
-├── src/              # TODO: source (create on first commit, or remove)
-└── tests/            # TODO: tests (create on first commit, or remove)
+├── frontend/         # React + Vite SPA (pnpm)
+│   ├── public/       # Static assets deployed to GitHub Pages
+│   │   ├── scores/   # MusicXML files (copied by 06_merge_songs.py)
+│   │   └── audio/    # MP3 files (copied by 06_merge_songs.py)
+│   └── src/
+│       ├── components/ # ScoreViewer (OSMD), SongCard
+│       ├── data/       # songs.json — generated; do not hand-edit
+│       ├── pages/      # HomePage, SongPage
+│       └── types/      # Song TypeScript interfaces
+├── gas/              # GAS relay (Clasp + TypeScript, npm)
+│   ├── src/          # youtube_relay.ts — clasp pushes this directory
+│   └── appsscript.json
+├── projects/         # Per-song source files
+│   └── song_001/     # Example: vocal.musicxml, inst.musicxml, *.json configs
+├── scripts/          # Pipeline scripts (Bash + Python); shebang required
+└── Makefile          # Local task runner (`make SONG=song_001 all`)
 ```
 
 ## 5. Language policy

@@ -12,4 +12,6 @@ for the full lifecycle.
 | 0001 | [Event pipeline](0001-event-pipeline.md) | accepted |
 -->
 
-_No design documents yet._
+| # | Title | Status |
+| - | ----- | ------ |
+| 0001 | [Music Automation Pipeline](0001-music-automation-pipeline.md) | accepted |

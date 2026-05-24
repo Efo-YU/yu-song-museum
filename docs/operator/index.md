@@ -16,4 +16,12 @@ See [`../agent/documentation-policy.md`](../agent/documentation-policy.md) §3.
 | on-call.md               | First-responder runbook                  |
 -->
 
-_No documents yet._
+**Start here:** [pipeline-checklist.md](pipeline-checklist.md) —
+end-to-end bring-up checklist with links to each detail guide.
+
+| Document | Purpose |
+| -------- | ------- |
+| [pipeline-checklist.md](pipeline-checklist.md) | Ordered bring-up checklist (start here) |
+| [gas-setup.md](gas-setup.md) | GAS relay: clasp auth, push, Web App deploy, troubleshooting |
+| [r2-setup.md](r2-setup.md) | Cloudflare R2: bucket, API token, model upload layout |
+| [pipeline-secrets.md](pipeline-secrets.md) | All GitHub Actions secrets: what they are and how to obtain them |

@@ -1,0 +1,192 @@
+name: Music Production Pipeline
+
+# Triggers:
+#   - Push to main that touches projects/ (normal production flow)
+#   - Manual dispatch with an optional song_id override
+on:
+  push:
+    branches: [main]
+    paths: ['projects/**']
+  workflow_dispatch:
+    inputs:
+      song_id:
+        description: 'Force-process a single song (leave blank to use git diff)'
+        required: false
+        default: ''
+
+# Prevent concurrent deploys from colliding on songs.json
+concurrency:
+  group: pipeline-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # ── Job 0: Detect changed songs ──────────────────────────────────────────
+  detect-diff:
+    name: Detect changed songs
+    runs-on: ubuntu-latest
+    outputs:
+      songs: ${{ steps.diff.outputs.songs }}
+      has_changes: ${{ steps.diff.outputs.has_changes }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect changed songs
+        id: diff
+        env:
+          FORCE_SONG: ${{ github.event.inputs.song_id }}
+        run: |
+          if [[ -n "$FORCE_SONG" ]]; then
+            songs='["'"$FORCE_SONG"'"]'
+          else
+            songs=$(bash scripts/00_detect_diff.sh)
+          fi
+          echo "songs=$songs" >> "$GITHUB_OUTPUT"
+          if [[ "$songs" == "[]" ]]; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "No changed songs detected — skipping pipeline."
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+            echo "Changed songs: $songs"
+          fi
+
+  # ── Job 1: Per-song pipeline (matrix) ────────────────────────────────────
+  pipeline:
+    name: 'Pipeline: ${{ matrix.song }}'
+    needs: detect-diff
+    if: needs.detect-diff.outputs.has_changes == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        song: ${{ fromJson(needs.detect-diff.outputs.songs) }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install system tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            ffmpeg fluidsynth awscli
+
+      - name: Install Python dependencies
+        run: pip install --quiet boto3 requests
+
+      # ── Step 1: Fetch models from R2 (no GHA cache — licensing constraint) ──
+      - name: Fetch NEUTRINO models and SoundFont from R2
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          SINGER: ${{ secrets.NEUTRINO_SINGER }}
+        run: bash scripts/01_fetch_models.sh
+
+      # ── Step 2: Synthesis ──────────────────────────────────────────────────
+      - name: Synthesize vocal and accompaniment
+        env:
+          SONG_DIR: projects/${{ matrix.song }}
+          SINGER: ${{ secrets.NEUTRINO_SINGER }}
+          NEUTRINO_DIR: /tmp/neutrino
+          SF2_PATH: /tmp/default.sf2
+        run: bash scripts/02_synthesize.sh
+
+      # ── Step 3: Mix ────────────────────────────────────────────────────────
+      - name: Mix vocal + accompaniment
+        run: python3 scripts/03_mixdown.py projects/${{ matrix.song }}
+
+      # ── Persist audio (7-day retention) ────────────────────────────────────
+      - name: Upload audio artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: audio-${{ matrix.song }}
+          path: |
+            projects/${{ matrix.song }}/output/audio.wav
+            projects/${{ matrix.song }}/output/audio.mp3
+          retention-days: 7
+
+      # ── Step 4: Generate video (not persisted) ─────────────────────────────
+      - name: Generate video
+        run: python3 scripts/04_generate_video.py projects/${{ matrix.song }}
+
+      # ── Step 5: YouTube upload via GAS relay ───────────────────────────────
+      - name: Upload to YouTube via GAS relay
+        env:
+          GAS_RELAY_URL: ${{ secrets.GAS_RELAY_URL }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: python3 scripts/05_trigger_gas.py projects/${{ matrix.song }}
+
+      # ── Persist meta.json (contains YouTube video ID) ─────────────────────
+      - name: Upload meta artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: meta-${{ matrix.song }}
+          path: projects/${{ matrix.song }}/output/meta.json
+          retention-days: 30
+
+  # ── Job 2: Web deploy ─────────────────────────────────────────────────────
+  deploy-web:
+    name: Deploy website
+    needs: pipeline
+    runs-on: ubuntu-latest
+    # Serialise concurrent deploys; never cancel an in-flight deploy
+    concurrency:
+      group: deploy-web
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Enable pnpm via corepack
+        run: corepack enable && corepack prepare pnpm@9.15.9 --activate
+
+      - name: Download all meta artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: meta-*
+          path: artifacts/meta
+          merge-multiple: false
+
+      - name: Merge songs.json and copy public assets
+        run: python3 scripts/06_merge_songs.py
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend
+        working-directory: frontend
+        run: pnpm build
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
