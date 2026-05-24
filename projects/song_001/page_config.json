@@ -1,0 +1,14 @@
+{
+  "theme": {
+    "primary_color": "#4a90d9"
+  },
+  "description_markdown": "A sample song to verify the end-to-end pipeline.",
+  "score_viewer_settings": {
+    "default_zoom": 1.0,
+    "default_visible_parts": ["vocal"]
+  },
+  "downloads": {
+    "allow_xml": true,
+    "allow_mp3": true
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "id": "song_001",
+  "title": "Sample Song",
+  "bpm": 120,
+  "key": "C major",
+  "credits": {
+    "vocalist": "MERROW (NEUTRINO)",
+    "composer": "Your Name",
+    "lyricist": "Your Name"
+  }
+}

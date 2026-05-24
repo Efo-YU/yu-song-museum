@@ -21,3 +21,25 @@ Thumbs.db
 *.swo
 .idea/
 .vscode/settings.json
+
+# Node / pnpm
+node_modules/
+.pnpm-store/
+
+# Frontend build output
+frontend/dist/
+frontend/.vite/
+
+# GAS compiled output (clasp pushes src/ directly as TypeScript)
+gas/dist/
+gas/.clasp.json.local
+
+# Pipeline generated artifacts (never committed)
+projects/*/output/
+artifacts/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/

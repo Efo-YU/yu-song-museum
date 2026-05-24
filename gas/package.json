@@ -1,0 +1,22 @@
+{
+  "name": "yu-song-museum-gas",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Google Apps Script relay for YouTube uploads — yu-song-museum pipeline",
+  "scripts": {
+    "build": "tsc",
+    "push": "clasp push",
+    "push:watch": "clasp push --watch",
+    "pull": "clasp pull",
+    "open": "clasp open",
+    "logs": "clasp logs",
+    "login": "clasp login",
+    "create": "clasp create --type webapp --title \"yu-song-museum relay\"",
+    "deploy": "clasp deploy --description \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
+  },
+  "devDependencies": {
+    "@google/clasp": "^2.4.2",
+    "@types/google-apps-script": "^1.0.83",
+    "typescript": "^5.4.5"
+  }
+}

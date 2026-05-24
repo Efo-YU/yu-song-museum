@@ -18,4 +18,10 @@ exists today actually work?" (see
   directory (except index.md) appears above.
 -->
 
-_No documents yet._
+For the architecture rationale see
+[`../upstream/design/0001-music-automation-pipeline.md`](../upstream/design/0001-music-automation-pipeline.md).
+
+| Document | Purpose |
+| -------- | ------- |
+
+_No component-level documents yet — add one per module as the codebase grows._
