@@ -4,6 +4,7 @@
   "http://www.musicxml.org/dtds/partwise.dtd">
 <!--
   Placeholder MusicXML for pipeline testing.
+  Lyrics are hiragana so NEUTRINO can process this score as-is.
   Replace with actual vocal notation before production use.
 -->
 <score-partwise version="3.1">
@@ -41,25 +42,25 @@
         <pitch><step>C</step><octave>4</octave></pitch>
         <duration>1</duration>
         <type>quarter</type>
-        <lyric number="1"><syllabic>single</syllabic><text>la</text></lyric>
+        <lyric number="1"><syllabic>single</syllabic><text>ら</text></lyric>
       </note>
       <note>
         <pitch><step>E</step><octave>4</octave></pitch>
         <duration>1</duration>
         <type>quarter</type>
-        <lyric number="1"><syllabic>single</syllabic><text>la</text></lyric>
+        <lyric number="1"><syllabic>single</syllabic><text>ら</text></lyric>
       </note>
       <note>
         <pitch><step>G</step><octave>4</octave></pitch>
         <duration>1</duration>
         <type>quarter</type>
-        <lyric number="1"><syllabic>single</syllabic><text>la</text></lyric>
+        <lyric number="1"><syllabic>single</syllabic><text>ら</text></lyric>
       </note>
       <note>
         <pitch><step>C</step><octave>5</octave></pitch>
         <duration>1</duration>
         <type>quarter</type>
-        <lyric number="1"><syllabic>single</syllabic><text>la</text></lyric>
+        <lyric number="1"><syllabic>single</syllabic><text>ら</text></lyric>
       </note>
     </measure>
     <measure number="2">
@@ -67,13 +68,13 @@
         <pitch><step>G</step><octave>4</octave></pitch>
         <duration>2</duration>
         <type>half</type>
-        <lyric number="1"><syllabic>single</syllabic><text>la</text></lyric>
+        <lyric number="1"><syllabic>single</syllabic><text>ら</text></lyric>
       </note>
       <note>
         <pitch><step>E</step><octave>4</octave></pitch>
         <duration>2</duration>
         <type>half</type>
-        <lyric number="1"><syllabic>single</syllabic><text>la</text></lyric>
+        <lyric number="1"><syllabic>single</syllabic><text>ら</text></lyric>
       </note>
       <barline location="right">
         <bar-style>light-heavy</bar-style>
