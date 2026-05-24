@@ -7,7 +7,7 @@
 #                                  + shared libraries (*.so incl. CUDA/ONNX Runtime)
 #   neutrino/model/<SINGER>/    — singer model files (p.bin s.bin t.bin v.bin info.toml)
 #   neutrino/settings/dic/      — Japanese phoneme dictionary files
-#   soundfonts/default.sf2      — General MIDI SoundFont for FluidSynth
+#   soundfonts/default.sf3      — General MIDI SoundFont for FluidSynth
 #
 # Required env vars:
 #   R2_ACCESS_KEY_ID
@@ -18,13 +18,13 @@
 # Optional env vars:
 #   SINGER         — singer model folder name in R2 (default: MERROW)
 #   NEUTRINO_DIR   — local extraction target (default: /tmp/neutrino)
-#   SF2_PATH       — SoundFont destination (default: /tmp/default.sf2)
+#   sf3_PATH       — SoundFont destination (default: /tmp/default.sf3)
 
 set -euo pipefail
 
 SINGER="${SINGER:-MERROW}"
 NEUTRINO_DIR="${NEUTRINO_DIR:-/tmp/neutrino}"
-SF2_PATH="${SF2_PATH:-/tmp/default.sf2}"
+sf3_PATH="${sf3_PATH:-/tmp/default.sf3}"
 
 export AWS_ACCESS_KEY_ID="${R2_ACCESS_KEY_ID:?R2_ACCESS_KEY_ID not set}"
 export AWS_SECRET_ACCESS_KEY="${R2_SECRET_ACCESS_KEY:?R2_SECRET_ACCESS_KEY not set}"
@@ -58,7 +58,7 @@ aws s3 sync \
 echo "[fetch] SoundFont..."
 aws s3 cp \
   --endpoint-url "$R2_ENDPOINT" \
-  "s3://$R2_BUCKET/soundfonts/default.sf2" \
-  "$SF2_PATH"
+  "s3://$R2_BUCKET/soundfonts/default.sf3" \
+  "$sf3_PATH"
 
 echo "[fetch] All components fetched to $NEUTRINO_DIR"

@@ -87,7 +87,7 @@ derived from the NEUTRINO-online-v3.1.4 package layout.
 │           ├── japanese.utf_8.table
 │           └── ...               ← all files from NEUTRINO/settings/dic/
 └── soundfonts/
-    └── default.sf2
+    └── default.sf3
 ```
 
 **Notes on `bin/*.so`:** All `.so` files must be uploaded — the
@@ -189,10 +189,10 @@ aws s3 sync --profile r2 --endpoint-url "$ENDPOINT" \
   path/to/NEUTRINO/settings/dic/ \
   "s3://$BUCKET/neutrino/settings/dic/"
 
-# Upload SoundFont (e.g. FluidR3_GM.sf2 or MuseScore General.sf2)
+# Upload SoundFont (e.g. FluidR3_GM.sf3 or MuseScore General.sf3)
 aws s3 cp --profile r2 --endpoint-url "$ENDPOINT" \
-  path/to/default.sf2 \
-  "s3://$BUCKET/soundfonts/default.sf2"
+  path/to/default.sf3 \
+  "s3://$BUCKET/soundfonts/default.sf3"
 ```
 
 ### Using rclone
@@ -203,8 +203,8 @@ rclone config  # create remote "r2" (type: s3, provider: Cloudflare)
 rclone copy path/to/NEUTRINO/settings/dic/ \
   r2:yu-song-museum/neutrino/settings/dic/ --progress
 
-rclone copy path/to/default.sf2 \
-  r2:yu-song-museum/soundfonts/default.sf2 --progress
+rclone copy path/to/default.sf3 \
+  r2:yu-song-museum/soundfonts/default.sf3 --progress
 ```
 
 ---
@@ -219,6 +219,7 @@ aws s3 ls --profile r2 --endpoint-url "$ENDPOINT" \
 ```
 
 Confirm you see entries under each of:
+
 - `neutrino/bin/musicXMLtoLabel`
 - `neutrino/bin/neutrino`
 - `neutrino/bin/libonnxruntime.so` (and other `.so` files)
@@ -226,16 +227,19 @@ Confirm you see entries under each of:
 - `neutrino/settings/dic/japanese.utf_8.conf` (and other `.conf`/`.table` files)
 
 And separately:
-- `soundfonts/default.sf2`
+
+- `soundfonts/default.sf3`
 
 ---
 
 ## 8. Temporary video prefix
 
 `scripts/05_trigger_gas.py` writes temporary videos to:
+
 ```
 tmp/video/<song_id>/<uuid>.mp4
 ```
+
 These are created and deleted within the same pipeline run. No manual
 configuration is needed.
 

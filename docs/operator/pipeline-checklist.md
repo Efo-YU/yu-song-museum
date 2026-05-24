@@ -23,7 +23,7 @@ Estimated total time: 2–4 hours, depending on model upload speed.
       → [r2-setup.md §5](r2-setup.md#5-obtaining-the-linux-binaries) (Colab upload cell)
 - [ ] **Upload `settings/dic/`** (platform-independent, upload locally).
       → [r2-setup.md §6](r2-setup.md#6-uploading-settingsdic-and-soundfont-locally)
-- [ ] **Upload SoundFont** to `soundfonts/default.sf2`.
+- [ ] **Upload SoundFont** to `soundfonts/default.sf3`.
       → [r2-setup.md §6](r2-setup.md#6-uploading-settingsdic-and-soundfont-locally)
 - [ ] Verify bucket layout. → [r2-setup.md §7](r2-setup.md#7-verify-the-bucket-layout)
 
@@ -32,7 +32,7 @@ Estimated total time: 2–4 hours, depending on model upload speed.
 - [ ] `cd gas && npm install`
 - [ ] `npm run login` — authenticate clasp with the YouTube channel owner's account.
       → [gas-setup.md §2](gas-setup.md#2-authenticate-clasp-with-your-google-account)
-- [ ] *(Already done)* GAS project is linked via `gas/.clasp.json`.
+- [ ] _(Already done)_ GAS project is linked via `gas/.clasp.json`.
       Confirm `scriptId` is not the placeholder value.
 - [ ] `npm run push` — upload `youtube_relay.ts` to GAS.
       → [gas-setup.md §5](gas-setup.md#5-push-the-typescript-source)
@@ -101,11 +101,11 @@ Replace it with real content before running the pipeline in production:
 
 Review and edit:
 
-| File | Key fields to check |
-|------|---------------------|
-| `project_metadata.json` | `title`, `bpm`, `key`, `credits` |
-| `build_config.json` | `vocal_volume`, `inst_volume`, `resolution` |
-| `page_config.json` | `primary_color`, `description_markdown`, `allow_mp3` |
+| File                    | Key fields to check                                  |
+| ----------------------- | ---------------------------------------------------- |
+| `project_metadata.json` | `title`, `bpm`, `key`, `credits`                     |
+| `build_config.json`     | `vocal_volume`, `inst_volume`, `resolution`          |
+| `page_config.json`      | `primary_color`, `description_markdown`, `allow_mp3` |
 
 ---
 
@@ -119,6 +119,7 @@ Review and edit:
 4. Click **Run workflow**.
 
 Watch each job:
+
 - **Job 0 (detect-diff):** should output `has_changes=true`
 - **Job 1 (pipeline: song_001):** watch for errors in each step
 - **Job 2 (deploy-web):** deploys to GitHub Pages
@@ -140,12 +141,12 @@ Once the manual run succeeds, all future changes to `projects/**` on
 
 ## Ongoing operations
 
-| Task | Command / Location |
-|------|--------------------|
-| Add a new song | Create `projects/song_NNN/` with the three JSON files and `vocal.musicxml`, commit and push to `main` |
-| Update GAS relay code | `cd gas && npm run push && npm run deploy` |
-| Rotate R2 credentials | Create new token in Cloudflare, update GitHub secret, revoke old token |
-| Re-process an existing song without changing its files | Trigger workflow manually with `song_id=song_NNN` |
-| Check pipeline logs | GitHub → Actions → select the run → expand each step |
+| Task                                                   | Command / Location                                                                                    |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| Add a new song                                         | Create `projects/song_NNN/` with the three JSON files and `vocal.musicxml`, commit and push to `main` |
+| Update GAS relay code                                  | `cd gas && npm run push && npm run deploy`                                                            |
+| Rotate R2 credentials                                  | Create new token in Cloudflare, update GitHub secret, revoke old token                                |
+| Re-process an existing song without changing its files | Trigger workflow manually with `song_id=song_NNN`                                                     |
+| Check pipeline logs                                    | GitHub → Actions → select the run → expand each step                                                  |
 
 Last reviewed: 2026-05-23

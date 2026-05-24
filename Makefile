@@ -15,7 +15,7 @@
 SONG        ?= song_001
 SINGER      ?= MERROW
 NEUTRINO_DIR ?= /tmp/neutrino
-SF2_PATH    ?= /tmp/default.sf2
+sf3_PATH    ?= /tmp/default.sf3
 SONG_DIR     = projects/$(SONG)
 
 .PHONY: all fetch-models synth mix video upload-gas merge-songs \
@@ -31,7 +31,7 @@ fetch-models:
 ## Synthesize vocal and render accompaniment
 synth:
 	SONG_DIR=$(SONG_DIR) SINGER=$(SINGER) \
-	NEUTRINO_DIR=$(NEUTRINO_DIR) SF2_PATH=$(SF2_PATH) \
+	NEUTRINO_DIR=$(NEUTRINO_DIR) sf3_PATH=$(sf3_PATH) \
 	bash scripts/02_synthesize.sh
 
 ## Mix vocal + accompaniment

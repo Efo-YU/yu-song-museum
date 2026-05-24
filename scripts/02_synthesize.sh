@@ -19,7 +19,7 @@
 # Optional env vars:
 #   SINGER        — NEUTRINO singer model name (default: MERROW)
 #   NEUTRINO_DIR  — path to the fetched NEUTRINO package (default: /tmp/neutrino)
-#   SF2_PATH      — SoundFont file path (default: /tmp/default.sf2)
+#   sf3_PATH      — SoundFont file path (default: /tmp/default.sf3)
 #   NUM_THREADS   — synthesis parallelism (default: 4)
 #   TRANSPOSE     — semitone shift, 0 = no change (default: 0)
 #
@@ -32,7 +32,7 @@ set -euo pipefail
 SONG_DIR="${SONG_DIR:?SONG_DIR not set}"
 SINGER="${SINGER:-MERROW}"
 NEUTRINO_DIR="${NEUTRINO_DIR:-/tmp/neutrino}"
-SF2_PATH="${SF2_PATH:-/tmp/default.sf2}"
+sf3_PATH="${sf3_PATH:-/tmp/default.sf3}"
 NUM_THREADS="${NUM_THREADS:-4}"
 TRANSPOSE="${TRANSPOSE:-0}"
 
@@ -94,7 +94,7 @@ INST_TMP_MID="$OUT_DIR/inst_tmp.mid"
 
 if [[ -f "$INST_MID" ]]; then
   echo "[synth] Rendering accompaniment from inst.mid"
-  fluidsynth -ni "$SF2_PATH" "$INST_MID" \
+  fluidsynth -ni "$sf3_PATH" "$INST_MID" \
     -F "$OUT_DIR/inst_raw.wav" -r 44100
 
 elif [[ -f "$INST_XML" ]]; then
@@ -110,7 +110,7 @@ elif [[ -f "$INST_XML" ]]; then
     echo "  Provide inst.mid directly, or install MuseScore."
     exit 1
   fi
-  fluidsynth -ni "$SF2_PATH" "$INST_TMP_MID" \
+  fluidsynth -ni "$sf3_PATH" "$INST_TMP_MID" \
     -F "$OUT_DIR/inst_raw.wav" -r 44100
 
 else
