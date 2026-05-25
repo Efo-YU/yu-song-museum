@@ -14,26 +14,23 @@ export default function SongPage() {
   if (!song) {
     return (
       <main className="song-page">
-        <p className="song-page__not-found">Song not found.</p>
-        <Link to="/" className="back-link">← Back to list</Link>
+        <Link to="/" className="back-link">← Collection</Link>
+        <p className="song-page__not-found">This work could not be found.</p>
       </main>
     );
   }
 
   const pc = song.page_config;
-  const primaryColor = pc?.theme?.primary_color ?? '#4a90d9';
   const allowXml = pc?.downloads?.allow_xml ?? true;
   const allowMp3 = pc?.downloads?.allow_mp3 ?? true;
 
   return (
-    <main
-      className="song-page"
-      style={{ '--accent': primaryColor } as React.CSSProperties}
-    >
-      <Link to="/" className="back-link">← Back</Link>
+    <main className="song-page">
+      <Link to="/" className="back-link">← Collection</Link>
 
       <header className="song-page__header">
         <h1 className="song-page__title">{song.title}</h1>
+        <div className="song-page__divider" />
 
         {song.credits && (
           <dl className="song-page__credits">
@@ -50,9 +47,9 @@ export default function SongPage() {
 
         {(song.bpm || song.key) && (
           <p className="song-page__meta">
-            {[song.key, song.bpm ? `${song.bpm} BPM` : '']
+            {[song.key, song.bpm ? `${song.bpm} bpm` : '']
               .filter(Boolean)
-              .join(' · ')}
+              .join('  ·  ')}
           </p>
         )}
       </header>
@@ -61,7 +58,7 @@ export default function SongPage() {
         <section className="song-page__video">
           <iframe
             width="100%"
-            style={{ aspectRatio: '16/9', border: 'none' }}
+            style={{ aspectRatio: '16/9', border: 'none', display: 'block' }}
             src={`https://www.youtube.com/embed/${song.youtube_id}`}
             title={song.title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -72,13 +69,14 @@ export default function SongPage() {
 
       {pc?.description_markdown && (
         <section className="song-page__description">
+          <h2 className="section-heading">About this work</h2>
           <p>{pc.description_markdown}</p>
         </section>
       )}
 
       {song.score_url && (
         <section className="song-page__score">
-          <h2>Score</h2>
+          <h2 className="section-heading">Score</h2>
           <Suspense fallback={<p className="score-status">Loading score…</p>}>
             <ScoreViewer
               url={song.score_url}
@@ -89,7 +87,7 @@ export default function SongPage() {
       )}
 
       <section className="song-page__downloads">
-        <h2>Downloads</h2>
+        <h2 className="section-heading">Downloads &amp; Links</h2>
         <ul className="download-list">
           {allowMp3 && song.audio_url && (
             <li>

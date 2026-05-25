@@ -7,19 +7,25 @@ const songs = songsData as Song[];
 export default function HomePage() {
   return (
     <main className="home">
-      <header className="home__header">
-        <h1 className="home__title">Yu Song Museum</h1>
-        <p className="home__subtitle">AI-synthesized music, scored and streamed.</p>
+      <header className="site-header">
+        <h1 className="site-header__wordmark">Yu Song Museum</h1>
+        <div className="site-header__rule">
+          <span>&#9670;</span>
+        </div>
+        <p className="site-header__subtitle">A collection of AI-synthesized vocal works</p>
       </header>
 
       {songs.length === 0 ? (
-        <p className="home__empty">No songs published yet.</p>
+        <p className="home__empty">The collection has not yet opened.</p>
       ) : (
-        <div className="song-grid">
-          {songs.map((song) => (
-            <SongCard key={song.id} song={song} />
-          ))}
-        </div>
+        <>
+          <p className="home__gallery-label">Collection — {songs.length} work{songs.length !== 1 ? 's' : ''}</p>
+          <div className="song-grid">
+            {songs.map((song, i) => (
+              <SongCard key={song.id} song={song} index={i + 1} />
+            ))}
+          </div>
+        </>
       )}
     </main>
   );

@@ -3,33 +3,28 @@ import type { Song } from '../types/song';
 
 interface Props {
   song: Song;
+  index?: number;
 }
 
-export default function SongCard({ song }: Props) {
-  const primaryColor = song.page_config?.theme?.primary_color ?? '#4a90d9';
+export default function SongCard({ song, index }: Props) {
+  const num = index !== undefined ? String(index).padStart(2, '0') : '';
 
   return (
-    <Link
-      to={`/songs/${song.id}`}
-      className="song-card"
-      style={{ '--accent': primaryColor } as React.CSSProperties}
-    >
-      <div className="song-card__accent" />
-      <div className="song-card__body">
-        <h2 className="song-card__title">{song.title}</h2>
-        {song.credits && (
-          <p className="song-card__credits">
-            {[song.credits.composer, song.credits.vocalist]
-              .filter(Boolean)
-              .join(' · ')}
-          </p>
-        )}
-        {song.bpm && (
-          <p className="song-card__meta">
-            {song.key ?? ''} · {song.bpm} BPM
-          </p>
-        )}
-      </div>
+    <Link to={`/songs/${song.id}`} className="song-card">
+      {num && <p className="song-card__number">No. {num}</p>}
+      <h2 className="song-card__title">{song.title}</h2>
+      {song.credits && (
+        <p className="song-card__credits">
+          {[song.credits.composer, song.credits.vocalist]
+            .filter(Boolean)
+            .join(' · ')}
+        </p>
+      )}
+      {(song.key || song.bpm) && (
+        <p className="song-card__meta">
+          {[song.key, song.bpm ? `${song.bpm} bpm` : ''].filter(Boolean).join('  ·  ')}
+        </p>
+      )}
     </Link>
   );
 }
