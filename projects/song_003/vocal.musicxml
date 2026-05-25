@@ -124,7 +124,7 @@
           <line>2</line>
           </clef>
         </attributes>
-      <note default-x="80.23" default-y="-40">
+      <direction placement="above"><direction-type><metronome parentheses="no"><beat-unit>quarter</beat-unit><per-minute>80</per-minute></metronome></direction-type><sound tempo="80" /></direction><note default-x="80.23" default-y="-40">
         <pitch>
           <step>E</step>
           <octave>4</octave>
@@ -202,7 +202,7 @@
           <text>の</text>
           </lyric>
         </note>
-      <direction placement="above"><sound tempo="80" /></direction></measure>
+      </measure>
     <measure number="2" width="199.09">
       <note default-x="13" default-y="-50">
         <pitch>

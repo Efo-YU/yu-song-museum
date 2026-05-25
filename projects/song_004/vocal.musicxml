@@ -127,7 +127,7 @@
           <multiple-rest>10</multiple-rest>
           </measure-style>
         </attributes>
-      <direction placement="above"><sound tempo="88" /></direction><note default-x="0" default-y="0">
+      <direction placement="above"><direction-type><metronome parentheses="no"><beat-unit>quarter</beat-unit><per-minute>88</per-minute></metronome></direction-type><sound tempo="88" /></direction><note default-x="0" default-y="0">
         <rest measure="yes" />
         <duration>16</duration>
         <voice>1</voice>

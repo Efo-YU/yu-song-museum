@@ -21,7 +21,6 @@ Writes:
 from __future__ import annotations
 
 import json
-import shlex
 import subprocess
 import sys
 from pathlib import Path
@@ -29,7 +28,26 @@ from pathlib import Path
 
 def _escape_drawtext(s: str) -> str:
     """Escape characters that are special inside FFmpeg drawtext expressions."""
-    return s.replace("'", "\\'").replace(":", "\\:").replace("\\", "\\\\")
+    return s.replace("\\", "\\\\").replace("'", "\\'").replace(":", "\\:")
+
+
+def _find_cjk_font() -> str | None:
+    """Return a path to a CJK-capable font file, or None if unavailable.
+
+    fc-match with lang=ja returns the best match fontconfig can find.
+    DejaVu (the GHA default) has no CJK glyphs, so we skip it.
+    """
+    try:
+        result = subprocess.run(
+            ["fc-match", ":lang=ja", "-f", "%{file}"],
+            capture_output=True, text=True, check=True,
+        )
+        font_path = result.stdout.strip()
+        if font_path and "DejaVu" not in font_path:
+            return font_path
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        pass
+    return None
 
 
 def build_filter_graph(
@@ -41,6 +59,7 @@ def build_filter_graph(
     subtitle: str,
     duration: float,
     waveform_color: str = "0x00aaff",
+    cjk_font: str | None = None,
 ) -> str:
     title_esc = _escape_drawtext(title)
     sub_esc = _escape_drawtext(subtitle)
@@ -68,12 +87,14 @@ def build_filter_graph(
     title_y = height // 4
     sub_y = title_y + title_size + 16
 
+    font_opt = f"fontfile={cjk_font}:" if cjk_font else ""
+
     text_overlay = (
         f"[comp]drawtext="
-        f"fontsize={title_size}:fontcolor=white:x=(w-text_w)/2:y={title_y}"
+        f"{font_opt}fontsize={title_size}:fontcolor=white:x=(w-text_w)/2:y={title_y}"
         f":text='{title_esc}':shadowcolor=black:shadowx=2:shadowy=2,"
         f"drawtext="
-        f"fontsize={sub_size}:fontcolor=0xcccccc:x=(w-text_w)/2:y={sub_y}"
+        f"{font_opt}fontsize={sub_size}:fontcolor=0xcccccc:x=(w-text_w)/2:y={sub_y}"
         f":text='{sub_esc}':shadowcolor=black:shadowx=1:shadowy=1"
         f"[out]"
     )
@@ -122,6 +143,12 @@ def main() -> None:
     )
     audio_duration = float(probe.stdout.strip())
 
+    cjk_font = _find_cjk_font()
+    if cjk_font:
+        print(f"[video] Using CJK font: {cjk_font}")
+    else:
+        print("[video] WARNING: no CJK font found — Japanese text may render as boxes")
+
     filter_graph = build_filter_graph(
         has_bg=has_bg,
         width=width,
@@ -129,6 +156,7 @@ def main() -> None:
         title=title,
         subtitle=subtitle,
         duration=audio_duration,
+        cjk_font=cjk_font,
     )
 
     cmd = ["ffmpeg", "-y", "-i", str(audio_wav)]

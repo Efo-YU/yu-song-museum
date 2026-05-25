@@ -115,15 +115,7 @@
           <line>2</line>
           </clef>
         </attributes>
-      <direction placement="above">
-        <direction-type>
-          <dynamics default-x="-1.18" relative-x="-32.65" relative-y="21.34">
-            <mf />
-            </dynamics>
-          </direction-type>
-        <sound dynamics="88.89" />
-        <sound tempo="80" /></direction>
-      <note default-x="123.81" default-y="-55">
+      <direction placement="above"><direction-type><metronome parentheses="no"><beat-unit>quarter</beat-unit><per-minute>80</per-minute></metronome></direction-type><sound tempo="80" /></direction><note default-x="123.81" default-y="-55">
         <pitch>
           <step>B</step>
           <octave>3</octave>
