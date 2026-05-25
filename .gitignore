@@ -1,3 +1,7 @@
+# R2 Data mirror.
+neutrino/
+soundfonts/
+
 # Claude Code: personal overrides and local state.
 #
 # The project-level .claude/settings.json is checked in and shared with
