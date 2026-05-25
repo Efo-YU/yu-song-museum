@@ -72,6 +72,11 @@ def copy_assets(song_id: str, artifact_dir: Path) -> None:
     else:
         print(f"WARNING: {mp3} not found — audio download will be unavailable for {song_id}")
 
+    # project_metadata.json — copy back so deploy-web can commit youtube_id
+    updated_meta = artifact_dir / "project_metadata.json"
+    if updated_meta.exists():
+        shutil.copy2(updated_meta, song_dir / "project_metadata.json")
+
 
 def merge_page_config(song_meta: dict) -> dict:
     song_id = song_meta["id"]
