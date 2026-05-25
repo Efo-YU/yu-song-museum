@@ -105,9 +105,17 @@ elif [[ -f "$INST_XML" ]]; then
     musescore3 -o "$INST_TMP_MID" "$INST_XML"
   elif command -v mscore &>/dev/null; then
     mscore -o "$INST_TMP_MID" "$INST_XML"
+  elif python3 -c "import music21" 2>/dev/null; then
+    echo "[synth]   MuseScore not found; falling back to music21"
+    python3 - "$INST_XML" "$INST_TMP_MID" <<'PYEOF'
+import sys
+from music21 import converter
+score = converter.parse(sys.argv[1])
+score.write("midi", fp=sys.argv[2])
+PYEOF
   else
-    echo "ERROR: inst.musicxml present but no MuseScore binary found."
-    echo "  Provide inst.mid directly, or install MuseScore."
+    echo "ERROR: inst.musicxml present but neither MuseScore nor music21 is available."
+    echo "  Install MuseScore, run: pip install music21, or provide inst.mid."
     exit 1
   fi
   fluidsynth -ni "$sf3_PATH" "$INST_TMP_MID" \

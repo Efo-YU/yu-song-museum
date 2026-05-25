@@ -78,7 +78,7 @@ jobs:
           # aws CLI v2 is pre-installed on ubuntu-latest; no apt install needed
 
       - name: Install Python dependencies
-        run: pip install --quiet boto3 requests
+        run: pip install --quiet boto3 requests music21
 
       # ── Step 1: Fetch models from R2 (no GHA cache — licensing constraint) ──
       - name: Fetch NEUTRINO models and SoundFont from R2
