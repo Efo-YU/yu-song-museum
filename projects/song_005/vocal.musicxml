@@ -353,13 +353,9 @@
           <octave>4</octave>
           </pitch>
         <duration>8</duration>
-        <tie type="start" />
         <voice>1</voice>
         <type>half</type>
         <stem>up</stem>
-        <notations>
-          <tied type="start" />
-          </notations>
         <lyric number="1">
           <syllabic>single</syllabic>
           <text>お</text>
@@ -373,14 +369,10 @@
           <octave>4</octave>
           </pitch>
         <duration>4</duration>
-        <tie type="stop" />
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <notations>
-          <tied type="stop" />
-          </notations>
-        </note>
+        <lyric number="1"><syllabic>single</syllabic><text>ー</text></lyric></note>
       <note default-x="52.65" default-y="-30">
         <pitch>
           <step>G</step>
@@ -1210,7 +1202,7 @@
         <notations>
           <slur type="stop" number="1" bezier-x="-15.564111" bezier-y="12.500651" />
           </notations>
-        </note>
+        <lyric number="1"><syllabic>single</syllabic><text>ー</text></lyric></note>
       <note default-x="113.35" default-y="-30">
         <pitch>
           <step>G</step>
@@ -1631,13 +1623,9 @@
           <octave>4</octave>
           </pitch>
         <duration>8</duration>
-        <tie type="start" />
         <voice>1</voice>
         <type>half</type>
         <stem>up</stem>
-        <notations>
-          <tied type="start" />
-          </notations>
         <lyric number="1">
           <syllabic>single</syllabic>
           <text>を</text>
@@ -1651,14 +1639,10 @@
           <octave>4</octave>
           </pitch>
         <duration>4</duration>
-        <tie type="stop" />
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <notations>
-          <tied type="stop" />
-          </notations>
-        </note>
+        <lyric number="1"><syllabic>single</syllabic><text>ー</text></lyric></note>
       <note default-x="52.65" default-y="-30">
         <pitch>
           <step>G</step>
@@ -2488,7 +2472,7 @@
         <notations>
           <slur type="stop" number="1" bezier-x="-15.564111" bezier-y="12.500651" />
           </notations>
-        </note>
+        <lyric number="1"><syllabic>single</syllabic><text>ー</text></lyric></note>
       <note default-x="113.35" default-y="-30">
         <pitch>
           <step>G</step>
@@ -2909,13 +2893,9 @@
           <octave>4</octave>
           </pitch>
         <duration>8</duration>
-        <tie type="start" />
         <voice>1</voice>
         <type>half</type>
         <stem>up</stem>
-        <notations>
-          <tied type="start" />
-          </notations>
         <lyric number="1">
           <syllabic>single</syllabic>
           <text>し</text>
@@ -2929,14 +2909,10 @@
           <octave>4</octave>
           </pitch>
         <duration>4</duration>
-        <tie type="stop" />
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <notations>
-          <tied type="stop" />
-          </notations>
-        </note>
+        <lyric number="1"><syllabic>single</syllabic><text>ー</text></lyric></note>
       <note default-x="52.65" default-y="-30">
         <pitch>
           <step>G</step>
@@ -3766,7 +3742,7 @@
         <notations>
           <slur type="stop" number="1" bezier-x="-15.564111" bezier-y="12.500651" />
           </notations>
-        </note>
+        <lyric number="1"><syllabic>single</syllabic><text>ー</text></lyric></note>
       <note default-x="113.35" default-y="-30">
         <pitch>
           <step>G</step>
@@ -4187,13 +4163,9 @@
           <octave>4</octave>
           </pitch>
         <duration>8</duration>
-        <tie type="start" />
         <voice>1</voice>
         <type>half</type>
         <stem>up</stem>
-        <notations>
-          <tied type="start" />
-          </notations>
         <lyric number="1">
           <syllabic>single</syllabic>
           <text>と</text>
@@ -4207,14 +4179,10 @@
           <octave>4</octave>
           </pitch>
         <duration>4</duration>
-        <tie type="stop" />
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <notations>
-          <tied type="stop" />
-          </notations>
-        </note>
+        <lyric number="1"><syllabic>single</syllabic><text>ー</text></lyric></note>
       <note default-x="52.65" default-y="-30">
         <pitch>
           <step>G</step>
@@ -5044,7 +5012,7 @@
         <notations>
           <slur type="stop" number="1" bezier-x="-15.564111" bezier-y="12.500651" />
           </notations>
-        </note>
+        <lyric number="1"><syllabic>single</syllabic><text>ー</text></lyric></note>
       <note default-x="113.35" default-y="-30">
         <pitch>
           <step>G</step>

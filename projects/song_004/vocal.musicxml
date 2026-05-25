@@ -894,14 +894,10 @@
           <octave>4</octave>
           </pitch>
         <duration>8</duration>
-        <tie type="start" />
         <voice>1</voice>
         <type>half</type>
         <accidental>flat</accidental>
         <stem>up</stem>
-        <notations>
-          <tied type="start" />
-          </notations>
         <lyric number="1" default-y="-55.2" relative-y="-30">
           <syllabic>single</syllabic>
           <text>し</text>
@@ -916,14 +912,10 @@
           <octave>4</octave>
           </pitch>
         <duration>4</duration>
-        <tie type="stop" />
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <notations>
-          <tied type="stop" />
-          </notations>
-        </note>
+        <lyric number="1"><syllabic>single</syllabic><text>ー</text></lyric></note>
       <note default-x="52.23" default-y="-5">
         <pitch>
           <step>E</step>
@@ -1213,14 +1205,10 @@
           <octave>4</octave>
           </pitch>
         <duration>8</duration>
-        <tie type="start" />
         <voice>1</voice>
         <type>half</type>
         <accidental>flat</accidental>
         <stem>up</stem>
-        <notations>
-          <tied type="start" />
-          </notations>
         <lyric number="1" default-y="-55.2" relative-y="-30">
           <syllabic>single</syllabic>
           <text>う</text>
@@ -1250,14 +1238,10 @@
           <octave>4</octave>
           </pitch>
         <duration>4</duration>
-        <tie type="stop" />
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <notations>
-          <tied type="stop" />
-          </notations>
-        </note>
+        <lyric number="1"><syllabic>single</syllabic><text>ー</text></lyric></note>
       <note default-x="122.09" default-y="-20">
         <rest />
         <duration>4</duration>
@@ -1960,14 +1944,10 @@
           <octave>4</octave>
           </pitch>
         <duration>8</duration>
-        <tie type="start" />
         <voice>1</voice>
         <type>half</type>
         <accidental>flat</accidental>
         <stem>up</stem>
-        <notations>
-          <tied type="start" />
-          </notations>
         <lyric number="1" default-y="-49.75" relative-y="-30">
           <syllabic>single</syllabic>
           <text>り</text>
@@ -1991,14 +1971,10 @@
           <octave>4</octave>
           </pitch>
         <duration>4</duration>
-        <tie type="stop" />
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <notations>
-          <tied type="stop" />
-          </notations>
-        </note>
+        <lyric number="1"><syllabic>single</syllabic><text>ー</text></lyric></note>
       <note default-x="101.34" default-y="-5">
         <pitch>
           <step>E</step>
@@ -2288,14 +2264,10 @@
           <octave>4</octave>
           </pitch>
         <duration>8</duration>
-        <tie type="start" />
         <voice>1</voice>
         <type>half</type>
         <accidental>flat</accidental>
         <stem>up</stem>
-        <notations>
-          <tied type="start" />
-          </notations>
         <lyric number="1" default-y="-55.2" relative-y="-30">
           <syllabic>single</syllabic>
           <text>ぐ</text>
@@ -2316,14 +2288,10 @@
           <octave>4</octave>
           </pitch>
         <duration>4</duration>
-        <tie type="stop" />
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <notations>
-          <tied type="stop" />
-          </notations>
-        </note>
+        <lyric number="1"><syllabic>single</syllabic><text>ー</text></lyric></note>
       <note default-x="80.16" default-y="-20">
         <rest />
         <duration>4</duration>
@@ -3035,14 +3003,10 @@
           <octave>4</octave>
           </pitch>
         <duration>8</duration>
-        <tie type="start" />
         <voice>1</voice>
         <type>half</type>
         <accidental>flat</accidental>
         <stem>up</stem>
-        <notations>
-          <tied type="start" />
-          </notations>
         <lyric number="1" default-y="-46.65" relative-y="-30">
           <syllabic>single</syllabic>
           <text>し</text>
@@ -3057,14 +3021,10 @@
           <octave>4</octave>
           </pitch>
         <duration>4</duration>
-        <tie type="stop" />
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <notations>
-          <tied type="stop" />
-          </notations>
-        </note>
+        <lyric number="1"><syllabic>single</syllabic><text>ー</text></lyric></note>
       <note default-x="54.64" default-y="-5">
         <pitch>
           <step>E</step>
@@ -3363,14 +3323,10 @@
           <octave>4</octave>
           </pitch>
         <duration>8</duration>
-        <tie type="start" />
         <voice>1</voice>
         <type>half</type>
         <accidental>flat</accidental>
         <stem>up</stem>
-        <notations>
-          <tied type="start" />
-          </notations>
         <lyric number="1" default-y="-55.2" relative-y="-30">
           <syllabic>single</syllabic>
           <text>む</text>
@@ -3391,14 +3347,10 @@
           <octave>4</octave>
           </pitch>
         <duration>4</duration>
-        <tie type="stop" />
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <notations>
-          <tied type="stop" />
-          </notations>
-        </note>
+        <lyric number="1"><syllabic>single</syllabic><text>ー</text></lyric></note>
       <note default-x="76.18" default-y="-20">
         <rest />
         <duration>4</duration>
@@ -4110,14 +4062,10 @@
           <octave>4</octave>
           </pitch>
         <duration>8</duration>
-        <tie type="start" />
         <voice>1</voice>
         <type>half</type>
         <accidental>flat</accidental>
         <stem>up</stem>
-        <notations>
-          <tied type="start" />
-          </notations>
         <lyric number="1" default-y="-48.95" relative-y="-30">
           <syllabic>single</syllabic>
           <text>し</text>
@@ -4132,14 +4080,10 @@
           <octave>4</octave>
           </pitch>
         <duration>4</duration>
-        <tie type="stop" />
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <notations>
-          <tied type="stop" />
-          </notations>
-        </note>
+        <lyric number="1"><syllabic>single</syllabic><text>ー</text></lyric></note>
       <note default-x="55.73" default-y="-5">
         <pitch>
           <step>E</step>
@@ -4438,14 +4382,10 @@
           <octave>4</octave>
           </pitch>
         <duration>8</duration>
-        <tie type="start" />
         <voice>1</voice>
         <type>half</type>
         <accidental>flat</accidental>
         <stem>up</stem>
-        <notations>
-          <tied type="start" />
-          </notations>
         <lyric number="1" default-y="-55.2" relative-y="-30">
           <syllabic>single</syllabic>
           <text>う</text>
@@ -4460,14 +4400,10 @@
           <octave>4</octave>
           </pitch>
         <duration>4</duration>
-        <tie type="stop" />
         <voice>1</voice>
         <type>quarter</type>
         <stem>up</stem>
-        <notations>
-          <tied type="stop" />
-          </notations>
-        </note>
+        <lyric number="1"><syllabic>single</syllabic><text>ー</text></lyric></note>
       <note default-x="88.61" default-y="-20">
         <rest />
         <duration>8</duration>
