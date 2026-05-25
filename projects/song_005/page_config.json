@@ -1,0 +1,14 @@
+{
+  "theme": {
+    "primary_color": "#c0392b"
+  },
+  "description_markdown": "米沢高等工業学校の校歌。ハ長調、21小節。",
+  "score_viewer_settings": {
+    "default_zoom": 1.0,
+    "default_visible_parts": ["vocal"]
+  },
+  "downloads": {
+    "allow_xml": true,
+    "allow_mp3": true
+  }
+}

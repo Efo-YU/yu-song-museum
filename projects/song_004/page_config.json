@@ -1,0 +1,14 @@
+{
+  "theme": {
+    "primary_color": "#5c3a8a"
+  },
+  "description_markdown": "山形高等学校の校歌。変ホ長調、66小節（繰り返し展開）。",
+  "score_viewer_settings": {
+    "default_zoom": 1.0,
+    "default_visible_parts": ["vocal"]
+  },
+  "downloads": {
+    "allow_xml": true,
+    "allow_mp3": true
+  }
+}
