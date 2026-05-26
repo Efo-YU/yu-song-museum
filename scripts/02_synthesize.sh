@@ -205,14 +205,13 @@ PYEOF
     -F "$OUT_DIR/inst_raw.wav" -r 44100
 
 else
-  echo "[synth] No accompaniment file — generating silence matched to vocal length"
-  duration=$(ffprobe -v error \
-    -show_entries format=duration \
-    -of csv=p=0 \
-    "$OUT_DIR/vocal_raw.wav")
-  ffmpeg -y \
-    -f lavfi -i "anullsrc=r=44100:cl=stereo" \
-    -t "$duration" \
+  # No dedicated accompaniment: derive a backing-vocal track from the vocal
+  # synthesis by adding reverb (80 ms echo at 40 % decay).  This gives the
+  # mix body without requiring a separate score or MIDI file.
+  echo "[synth] No accompaniment file — deriving backing vocal from vocal synthesis"
+  ffmpeg -y -i "$OUT_DIR/vocal_raw.wav" \
+    -af "aecho=0.8:0.88:80:0.4" \
+    -ar 44100 -ac 2 \
     "$OUT_DIR/inst_raw.wav"
 fi
 
