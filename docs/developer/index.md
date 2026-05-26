@@ -23,5 +23,4 @@ For the architecture rationale see
 
 | Document | Purpose |
 | -------- | ------- |
-
-_No component-level documents yet — add one per module as the codebase grows._
+| [local-synthesis.md](local-synthesis.md) | Running the synth → mix → video pipeline on a developer machine |
