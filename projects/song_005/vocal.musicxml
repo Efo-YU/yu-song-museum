@@ -738,7 +738,7 @@
           <text>い</text>
           </lyric>
         </note>
-      </measure>
+      <note><rest /><duration>4</duration><type>quarter</type></note><note><rest /><duration>4</duration><type>quarter</type></note></measure>
     <measure number="11" width="158.09">
       <note default-x="10" default-y="-25">
         <pitch>
@@ -1382,7 +1382,7 @@
       <barline location="right">
         <bar-style>light-heavy</bar-style>
         </barline>
-      </measure>
+      <note><rest /><duration>4</duration><type>quarter</type></note></measure>
     <measure number="22" implicit="yes" width="202.89">
       <note default-x="82.13" default-y="-30">
         <pitch>
@@ -2008,7 +2008,7 @@
           <text>り</text>
           </lyric>
         </note>
-      </measure>
+      <note><rest /><duration>4</duration><type>quarter</type></note><note><rest /><duration>4</duration><type>quarter</type></note></measure>
     <measure number="32" width="158.09">
       <note default-x="10" default-y="-25">
         <pitch>
@@ -2652,7 +2652,7 @@
       <barline location="right">
         <bar-style>light-heavy</bar-style>
         </barline>
-      </measure>
+      <note><rest /><duration>4</duration><type>quarter</type></note></measure>
     <measure number="43" implicit="yes" width="202.89">
       <note default-x="82.13" default-y="-30">
         <pitch>
@@ -3278,7 +3278,7 @@
           <text>み</text>
           </lyric>
         </note>
-      </measure>
+      <note><rest /><duration>4</duration><type>quarter</type></note><note><rest /><duration>4</duration><type>quarter</type></note></measure>
     <measure number="53" width="158.09">
       <note default-x="10" default-y="-25">
         <pitch>
@@ -3922,7 +3922,7 @@
       <barline location="right">
         <bar-style>light-heavy</bar-style>
         </barline>
-      </measure>
+      <note><rest /><duration>4</duration><type>quarter</type></note></measure>
     <measure number="64" implicit="yes" width="202.89">
       <note default-x="82.13" default-y="-30">
         <pitch>
@@ -4548,7 +4548,7 @@
           <text>べ</text>
           </lyric>
         </note>
-      </measure>
+      <note><rest /><duration>4</duration><type>quarter</type></note><note><rest /><duration>4</duration><type>quarter</type></note></measure>
     <measure number="74" width="158.09">
       <note default-x="10" default-y="-25">
         <pitch>
@@ -5192,6 +5192,6 @@
       <barline location="right">
         <bar-style>light-heavy</bar-style>
         </barline>
-      </measure>
+      <note><rest /><duration>4</duration><type>quarter</type></note></measure>
     </part>
   </score-partwise>

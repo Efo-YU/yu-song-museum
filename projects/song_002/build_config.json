@@ -1,7 +1,7 @@
 {
   "audio_settings": {
     "vocal_volume": 1.0,
-    "inst_volume": 0.0,
+    "inst_volume": 0.6,
     "effects": [
       { "type": "highpass", "frequency": 80 }
     ]
