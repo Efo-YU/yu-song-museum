@@ -497,16 +497,16 @@
           <step>A</step>
           <octave>3</octave>
           </pitch>
-        <duration>8</duration>
+        <duration>4</duration>
         <voice>1</voice>
-        <type>half</type>
+        <type>quarter</type>
         <stem>up</stem>
         <lyric number="1">
           <syllabic>single</syllabic>
           <text>て</text>
           </lyric>
         </note>
-      </measure>
+      <note><rest /><duration>4</duration><type>quarter</type></note></measure>
     <measure number="5" width="170.05">
       <note default-x="13" default-y="-40">
         <pitch>
@@ -905,7 +905,7 @@
           <step>A</step>
           <octave>4</octave>
           </pitch>
-        <duration>12</duration>
+        <duration>8</duration>
         <voice>1</voice>
         <type>half</type>
         <dot default-x="100.36" default-y="-25" />
@@ -918,7 +918,7 @@
       <barline location="right">
         <bar-style>light-heavy</bar-style>
         </barline>
-      </measure>
+      <note><rest /><duration>4</duration><type>quarter</type></note></measure>
     <measure number="10" width="236">
       <note default-x="80.23" default-y="-40">
         <pitch>
@@ -1293,16 +1293,16 @@
           <step>A</step>
           <octave>3</octave>
           </pitch>
-        <duration>8</duration>
+        <duration>4</duration>
         <voice>1</voice>
-        <type>half</type>
+        <type>quarter</type>
         <stem>up</stem>
         <lyric number="1">
           <syllabic>single</syllabic>
           <text>や</text>
           </lyric>
         </note>
-      </measure>
+      <note><rest /><duration>4</duration><type>quarter</type></note></measure>
     <measure number="14" width="170.05">
       <note default-x="13" default-y="-40">
         <pitch>
@@ -1701,7 +1701,7 @@
           <step>A</step>
           <octave>4</octave>
           </pitch>
-        <duration>12</duration>
+        <duration>8</duration>
         <voice>1</voice>
         <type>half</type>
         <dot default-x="100.36" default-y="-25" />
@@ -1714,7 +1714,7 @@
       <barline location="right">
         <bar-style>light-heavy</bar-style>
         </barline>
-      </measure>
+      <note><rest /><duration>4</duration><type>quarter</type></note></measure>
     <measure number="19" width="236">
       <note default-x="80.23" default-y="-40">
         <pitch>
@@ -2089,16 +2089,16 @@
           <step>A</step>
           <octave>3</octave>
           </pitch>
-        <duration>8</duration>
+        <duration>4</duration>
         <voice>1</voice>
-        <type>half</type>
+        <type>quarter</type>
         <stem>up</stem>
         <lyric number="1">
           <syllabic>single</syllabic>
           <text>ん</text>
           </lyric>
         </note>
-      </measure>
+      <note><rest /><duration>4</duration><type>quarter</type></note></measure>
     <measure number="23" width="170.05">
       <note default-x="13" default-y="-40">
         <pitch>
@@ -2497,7 +2497,7 @@
           <step>A</step>
           <octave>4</octave>
           </pitch>
-        <duration>12</duration>
+        <duration>8</duration>
         <voice>1</voice>
         <type>half</type>
         <dot default-x="100.36" default-y="-25" />
@@ -2510,6 +2510,6 @@
       <barline location="right">
         <bar-style>light-heavy</bar-style>
         </barline>
-      </measure>
+      <note><rest /><duration>4</duration><type>quarter</type></note></measure>
     </part>
   </score-partwise>
