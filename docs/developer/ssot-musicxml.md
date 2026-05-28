@@ -4,7 +4,7 @@ This document explains how to use a single combined MusicXML score
 (the "SSoT") as the authoritative source for both the NEUTRINO vocal
 synthesis and the FluidSynth accompaniment rendering.
 
-Last reviewed: 2026-05-30
+Last reviewed: 2026-05-28
 
 ## The problem this solves
 
@@ -124,6 +124,7 @@ before `synth`, so the generated files are always up to date.
 | Lyric text cleaning | Japanese and common punctuation (`、`, `。`, `！`, `？`, `「」`, etc.) is stripped from `<text>` elements |
 | Dummy lyric fill | Any sounding, non-tied note without a lyric receives the placeholder text `あ` |
 | Layout strip | `<print>` elements and barline repeat/ending markers are removed from the expanded output |
+| Leading rest | If the first measure of the expanded vocal contains sounding notes, a whole-measure rest is prepended to **both** `vocal.musicxml` and `inst.musicxml`.  NEUTRINO's `musicXMLtoLabel` requires the vocal to begin with a rest; without this it auto-inserts one (vocal only), creating a leading offset.  The decision is made once from the vocal score and applied symmetrically — songs with a piano intro (e.g. koto-kouka, whose vocal already starts with rest measures) receive no extra rest on either track. |
 | Tempo injection | If `song.json` has a `bpm` field and no `<sound tempo>` already exists in the score, a `<direction><sound tempo="N"/></direction>` is prepended to the first measure so NEUTRINO and music21/FluidSynth both use the correct tempo |
 
 ### Backing score (`inst.musicxml`)
