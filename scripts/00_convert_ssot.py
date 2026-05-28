@@ -736,6 +736,82 @@ def inject_tempo(root: ET.Element, bpm: float) -> None:
     first_measure.insert(insert_pos, direction)
 
 
+def _vocal_starts_with_notes(vocal_root: ET.Element) -> bool:
+    """Return True when the vocal score's first measure contains sounding notes.
+
+    Used to decide — once, from the vocal score — whether both vocal and backing
+    need a prepended rest.  Keeping the decision in one place prevents the
+    asymmetry that arises when vocal and backing have different first-measure
+    content (e.g. koto-kouka: 10-measure piano intro means the vocal leads with
+    rests while the backing leads with notes).
+    """
+    first_part = vocal_root.find("part")
+    if first_part is None:
+        return False
+    first_m = first_part.find("measure")
+    if first_m is None:
+        return False
+    return any(
+        n.find("rest") is None and n.find("grace") is None
+        for n in first_m.findall("note")
+    )
+
+
+def _prepend_leading_rest(root: ET.Element) -> None:
+    """
+    Unconditionally prepend a whole-measure rest to every part.
+
+    Call this only after _vocal_starts_with_notes() has confirmed that a rest
+    is needed.  Never call it independently on vocal and backing — both must
+    receive the rest (or neither must), otherwise the two tracks are offset by
+    one measure.
+    """
+    parts = root.findall("part")
+    if not parts:
+        return
+
+    # Read divisions and beat count from the first attributes block
+    first_m = parts[0].find("measure")
+    divs, beats, beat_type = 4, 4, 4
+    if first_m is not None:
+        attrs_el = first_m.find("attributes")
+        if attrs_el is not None:
+            d = attrs_el.findtext("divisions")
+            if d:
+                divs = int(d)
+            b = attrs_el.findtext("time/beats")
+            if b:
+                beats = int(b)
+            bt = attrs_el.findtext("time/beat-type")
+            if bt:
+                beat_type = int(bt)
+
+    # Duration of one full measure in MusicXML divisions
+    # (divisions = quarter-note units, so adjust for non-quarter beat types)
+    measure_duration = int(divs * beats * 4 / beat_type)
+
+    for part in parts:
+        part_first_m = part.find("measure")
+        rest_m = ET.Element("measure")
+        rest_m.set("number", "0")
+
+        part_attrs = part_first_m.find("attributes") if part_first_m is not None else None
+        if part_attrs is not None:
+            rest_m.append(copy.deepcopy(part_attrs))
+
+        rest_note = ET.SubElement(rest_m, "note")
+        ET.SubElement(rest_note, "rest").set("measure", "yes")
+        ET.SubElement(rest_note, "duration").text = str(measure_duration)
+        ET.SubElement(rest_note, "voice").text = "1"
+
+        part.insert(0, rest_m)
+
+    # Re-number measures from 1
+    for part in parts:
+        for idx, m in enumerate(part.findall("measure"), start=1):
+            m.set("number", str(idx))
+
+
 # ── Output ────────────────────────────────────────────────────────────────────
 
 
@@ -815,6 +891,14 @@ def main() -> None:
     # Vocal score
     print("[convert-ssot] Building vocal score ...")
     vocal_root = build_vocal_score(root, vocal_ids)
+
+    # Decide whether a leading rest is needed by inspecting the VOCAL score only.
+    # The same decision is then applied to the backing so both tracks share the
+    # same t=0 offset.  An independent check per score causes asymmetry when the
+    # vocal starts with rests (e.g. piano intro) but the backing starts with notes.
+    needs_leading_rest = _vocal_starts_with_notes(vocal_root)
+    if needs_leading_rest:
+        _prepend_leading_rest(vocal_root)
     if song_bpm is not None:
         inject_tempo(vocal_root, song_bpm)
     vocal_out = song_dir / "vocal.musicxml"
@@ -825,6 +909,8 @@ def main() -> None:
     if backing_ids:
         print("[convert-ssot] Building backing score ...")
         backing_root = build_backing_score(root, vocal_ids)
+        if needs_leading_rest:  # same decision as vocal — not an independent check
+            _prepend_leading_rest(backing_root)
         if song_bpm is not None:
             inject_tempo(backing_root, song_bpm)
         inst_out = song_dir / "inst.musicxml"

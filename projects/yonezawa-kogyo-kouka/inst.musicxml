@@ -90,16 +90,7 @@
     </score-part>
   </part-list>
   <part id="P1">
-    <measure number="0" implicit="yes" width="203.07">
-      <print>
-        <system-layout>
-          <system-margins>
-            <left-margin>0</left-margin>
-            <right-margin>0</right-margin>
-          </system-margins>
-          <top-system-distance>170</top-system-distance>
-        </system-layout>
-      </print>
+    <measure number="1">
       <attributes>
         <divisions>4</divisions>
         <key>
@@ -123,6 +114,36 @@
         </direction-type>
         <sound tempo="80" />
       </direction>
+      <note>
+        <rest measure="yes" />
+        <duration>16</duration>
+        <voice>1</voice>
+      </note>
+    </measure>
+    <measure number="2" implicit="yes" width="203.07">
+      <print>
+        <system-layout>
+          <system-margins>
+            <left-margin>0</left-margin>
+            <right-margin>0</right-margin>
+          </system-margins>
+          <top-system-distance>170</top-system-distance>
+        </system-layout>
+      </print>
+      <attributes>
+        <divisions>4</divisions>
+        <key>
+          <fifths>0</fifths>
+        </key>
+        <time symbol="common">
+          <beats>4</beats>
+          <beat-type>4</beat-type>
+        </time>
+        <clef>
+          <sign>G</sign>
+          <line>2</line>
+        </clef>
+      </attributes>
       <barline location="left">
         <bar-style>heavy-light</bar-style>
         <repeat direction="forward" />
@@ -165,7 +186,7 @@
         </notations>
       </note>
     </measure>
-    <measure number="1" width="173.65">
+    <measure number="3" width="173.65">
       <note default-x="10" default-y="-40">
         <pitch>
           <step>E</step>
@@ -217,7 +238,7 @@
         </notations>
       </note>
     </measure>
-    <measure number="2" width="192.2">
+    <measure number="4" width="192.2">
       <note default-x="10" default-y="-40">
         <pitch>
           <step>E</step>
@@ -283,7 +304,7 @@
         </notations>
       </note>
     </measure>
-    <measure number="3" width="161.28">
+    <measure number="5" width="161.28">
       <note default-x="10" default-y="-30">
         <pitch>
           <step>G</step>
@@ -319,7 +340,7 @@
         </notations>
       </note>
     </measure>
-    <measure number="4" width="173.65">
+    <measure number="6" width="173.65">
       <note default-x="10" default-y="-45">
         <pitch>
           <step>D</step>
@@ -372,7 +393,7 @@
         </notations>
       </note>
     </measure>
-    <measure number="5" width="173.65">
+    <measure number="7" width="173.65">
       <note default-x="10" default-y="-40">
         <pitch>
           <step>E</step>
@@ -424,7 +445,7 @@
         </notations>
       </note>
     </measure>
-    <measure number="6" width="225.07">
+    <measure number="8" width="225.07">
       <print new-system="yes">
         <system-layout>
           <system-margins>
@@ -499,7 +520,7 @@
         </notations>
       </note>
     </measure>
-    <measure number="7" width="140.8">
+    <measure number="9" width="140.8">
       <note default-x="10" default-y="-45">
         <pitch>
           <step>D</step>
@@ -535,7 +556,7 @@
         </notations>
       </note>
     </measure>
-    <measure number="8" width="156.59">
+    <measure number="10" width="156.59">
       <note default-x="10" default-y="-50">
         <pitch>
           <step>C</step>
@@ -585,7 +606,7 @@
         <stem>down</stem>
       </note>
     </measure>
-    <measure number="9" width="102.81">
+    <measure number="11" width="102.81">
       <note default-x="10" default-y="-15">
         <pitch>
           <step>C</step>
@@ -621,7 +642,7 @@
         <beam number="2">backward hook</beam>
       </note>
     </measure>
-    <measure number="10" width="158.09">
+    <measure number="12" width="158.09">
       <note default-x="10" default-y="-25">
         <pitch>
           <step>A</step>
@@ -673,7 +694,7 @@
         <beam number="2">backward hook</beam>
       </note>
     </measure>
-    <measure number="11" width="158.09">
+    <measure number="13" width="158.09">
       <note default-x="10" default-y="-25">
         <pitch>
           <step>A</step>
@@ -719,7 +740,7 @@
         <beam number="2">backward hook</beam>
       </note>
     </measure>
-    <measure number="12" width="136.03">
+    <measure number="14" width="136.03">
       <note default-x="10" default-y="-15">
         <pitch>
           <step>C</step>
@@ -756,7 +777,7 @@
         <beam number="2">backward hook</beam>
       </note>
     </measure>
-    <measure number="13" width="221.69">
+    <measure number="15" width="221.69">
       <print new-system="yes">
         <system-layout>
           <system-margins>
@@ -811,7 +832,7 @@
         <beam number="2">backward hook</beam>
       </note>
     </measure>
-    <measure number="14" width="173.08">
+    <measure number="16" width="173.08">
       <note default-x="10" default-y="-25">
         <pitch>
           <step>A</step>
@@ -863,7 +884,7 @@
         <beam number="2">backward hook</beam>
       </note>
     </measure>
-    <measure number="15" width="188.22">
+    <measure number="17" width="188.22">
       <note default-x="10" default-y="-25">
         <pitch>
           <step>A</step>
@@ -918,7 +939,7 @@
         <beam number="1">end</beam>
       </note>
     </measure>
-    <measure number="16" width="148.34">
+    <measure number="18" width="148.34">
       <note default-x="10" default-y="-45">
         <pitch>
           <step>D</step>
@@ -955,7 +976,7 @@
         <beam number="2">backward hook</beam>
       </note>
     </measure>
-    <measure number="17" width="173.08">
+    <measure number="19" width="173.08">
       <note default-x="10" default-y="-15">
         <pitch>
           <step>C</step>
@@ -1007,7 +1028,7 @@
         <beam number="2">backward hook</beam>
       </note>
     </measure>
-    <measure number="18" width="173.08">
+    <measure number="20" width="173.08">
       <note default-x="10" default-y="-30">
         <pitch>
           <step>G</step>
@@ -1059,7 +1080,7 @@
         <beam number="2">backward hook</beam>
       </note>
     </measure>
-    <measure number="19" width="201.83">
+    <measure number="21" width="201.83">
       <print new-system="yes">
         <system-layout>
           <system-margins>
@@ -1111,7 +1132,7 @@
         <stem>down</stem>
       </note>
     </measure>
-    <measure number="20" width="87.55">
+    <measure number="22" width="87.55">
       <note default-x="10" default-y="-15">
         <pitch>
           <step>C</step>
@@ -1122,6 +1143,12 @@
         <type>half</type>
         <dot default-x="26.5" default-y="-15" />
         <stem>down</stem>
+      </note>
+      <note>
+        <rest />
+        <duration>4</duration>
+        <voice>1</voice>
+        <type>quarter</type>
       </note>
       <barline location="right">
         <bar-style>light-heavy</bar-style>

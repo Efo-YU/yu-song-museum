@@ -1129,6 +1129,12 @@
         <dot default-x="26.5" default-y="-15" />
         <stem>down</stem>
       </note>
+      <note>
+        <rest />
+        <duration>4</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+      </note>
       <barline location="right">
         <bar-style>light-heavy</bar-style>
         <repeat direction="backward" times="4" />
@@ -3376,16 +3382,16 @@
           <text>に</text>
         </lyric>
       </note>
-      <barline location="right">
-        <bar-style>light-heavy</bar-style>
-        <repeat direction="backward" times="4" />
-      </barline>
       <note>
-        <rest measure="no" />
+        <rest />
         <duration>4</duration>
         <voice>1</voice>
         <type>quarter</type>
       </note>
+      <barline location="right">
+        <bar-style>light-heavy</bar-style>
+        <repeat direction="backward" times="4" />
+      </barline>
     </measure>
   </part>
 </score-partwise>

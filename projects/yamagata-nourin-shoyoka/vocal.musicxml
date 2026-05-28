@@ -114,6 +114,27 @@
         </direction-type>
         <sound tempo="80" />
       </direction>
+      <note>
+        <rest measure="yes" />
+        <duration>16</duration>
+        <voice>1</voice>
+      </note>
+    </measure>
+    <measure number="2">
+      <attributes>
+        <divisions>4</divisions>
+        <key>
+          <fifths>0</fifths>
+        </key>
+        <time symbol="common">
+          <beats>4</beats>
+          <beat-type>4</beat-type>
+        </time>
+        <clef>
+          <sign>G</sign>
+          <line>2</line>
+        </clef>
+      </attributes>
       <note default-x="107.99" default-y="-40">
         <pitch>
           <step>E</step>
@@ -193,7 +214,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="2">
+    <measure number="3">
       <note default-x="12.5" default-y="-50">
         <pitch>
           <step>C</step>
@@ -305,7 +326,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="3">
+    <measure number="4">
       <note default-x="12.5" default-y="-35">
         <pitch>
           <step>F</step>
@@ -417,7 +438,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="4">
+    <measure number="5">
       <note default-x="12.5" default-y="-50">
         <pitch>
           <step>C</step>
@@ -497,7 +518,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="5">
+    <measure number="6">
       <note default-x="12.5" default-y="-40">
         <pitch>
           <step>E</step>
@@ -573,7 +594,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="6">
+    <measure number="7">
       <note default-x="58.1" default-y="-20">
         <pitch>
           <step>B</step>
@@ -685,7 +706,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="7">
+    <measure number="8">
       <note default-x="12.5" default-y="-35">
         <pitch>
           <step>F</step>
@@ -761,7 +782,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="8">
+    <measure number="9">
       <note default-x="12.5" default-y="-25">
         <pitch>
           <step>A</step>
@@ -857,7 +878,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="9">
+    <measure number="10">
       <note default-x="12.5" default-y="-25">
         <pitch>
           <step>A</step>
@@ -906,7 +927,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="10">
+    <measure number="11">
       <attributes>
         <divisions>4</divisions>
         <key>
@@ -1000,7 +1021,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="11">
+    <measure number="12">
       <note default-x="12.5" default-y="-50">
         <pitch>
           <step>C</step>
@@ -1112,7 +1133,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="12">
+    <measure number="13">
       <note default-x="12.5" default-y="-35">
         <pitch>
           <step>F</step>
@@ -1224,7 +1245,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="13">
+    <measure number="14">
       <note default-x="12.5" default-y="-50">
         <pitch>
           <step>C</step>
@@ -1304,7 +1325,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="14">
+    <measure number="15">
       <note default-x="12.5" default-y="-40">
         <pitch>
           <step>E</step>
@@ -1380,7 +1401,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="15">
+    <measure number="16">
       <note default-x="58.1" default-y="-20">
         <pitch>
           <step>B</step>
@@ -1492,7 +1513,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="16">
+    <measure number="17">
       <note default-x="12.5" default-y="-35">
         <pitch>
           <step>F</step>
@@ -1568,7 +1589,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="17">
+    <measure number="18">
       <note default-x="12.5" default-y="-25">
         <pitch>
           <step>A</step>
@@ -1664,7 +1685,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="18">
+    <measure number="19">
       <note default-x="12.5" default-y="-25">
         <pitch>
           <step>A</step>
@@ -1713,7 +1734,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="19">
+    <measure number="20">
       <attributes>
         <divisions>4</divisions>
         <key>
@@ -1807,7 +1828,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="20">
+    <measure number="21">
       <note default-x="12.5" default-y="-50">
         <pitch>
           <step>C</step>
@@ -1919,7 +1940,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="21">
+    <measure number="22">
       <note default-x="12.5" default-y="-35">
         <pitch>
           <step>F</step>
@@ -2031,7 +2052,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="22">
+    <measure number="23">
       <note default-x="12.5" default-y="-50">
         <pitch>
           <step>C</step>
@@ -2111,7 +2132,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="23">
+    <measure number="24">
       <note default-x="12.5" default-y="-40">
         <pitch>
           <step>E</step>
@@ -2187,7 +2208,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="24">
+    <measure number="25">
       <note default-x="58.1" default-y="-20">
         <pitch>
           <step>B</step>
@@ -2299,7 +2320,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="25">
+    <measure number="26">
       <note default-x="12.5" default-y="-35">
         <pitch>
           <step>F</step>
@@ -2375,7 +2396,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="26">
+    <measure number="27">
       <note default-x="12.5" default-y="-25">
         <pitch>
           <step>A</step>
@@ -2471,7 +2492,7 @@
         </lyric>
       </note>
     </measure>
-    <measure number="27">
+    <measure number="28">
       <note default-x="12.5" default-y="-25">
         <pitch>
           <step>A</step>

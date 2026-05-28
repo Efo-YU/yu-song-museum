@@ -90,7 +90,42 @@
     </score-part>
   </part-list>
   <part id="P1">
-    <measure number="1" width="254.41">
+    <measure number="1">
+      <attributes>
+        <divisions>4</divisions>
+        <key>
+          <fifths>0</fifths>
+        </key>
+        <time symbol="common">
+          <beats>4</beats>
+          <beat-type>4</beat-type>
+        </time>
+        <staves>2</staves>
+        <clef number="1">
+          <sign>G</sign>
+          <line>2</line>
+        </clef>
+        <clef number="2">
+          <sign>F</sign>
+          <line>4</line>
+        </clef>
+      </attributes>
+      <direction placement="above">
+        <direction-type>
+          <metronome parentheses="no">
+            <beat-unit>quarter</beat-unit>
+            <per-minute>80</per-minute>
+          </metronome>
+        </direction-type>
+        <sound tempo="80" />
+      </direction>
+      <note>
+        <rest measure="yes" />
+        <duration>16</duration>
+        <voice>1</voice>
+      </note>
+    </measure>
+    <measure number="2" width="254.41">
       <print>
         <system-layout>
           <system-margins>
@@ -122,15 +157,6 @@
           <line>4</line>
         </clef>
       </attributes>
-      <direction placement="above">
-        <direction-type>
-          <metronome parentheses="no">
-            <beat-unit>quarter</beat-unit>
-            <per-minute>80</per-minute>
-          </metronome>
-        </direction-type>
-        <sound tempo="80" />
-      </direction>
       <barline location="left">
         <bar-style>heavy-light</bar-style>
         <repeat direction="forward" />
@@ -308,7 +334,7 @@
         <staff>2</staff>
       </note>
     </measure>
-    <measure number="2" width="193.58">
+    <measure number="3" width="193.58">
       <note default-x="12.5" default-y="-50">
         <pitch>
           <step>C</step>
@@ -524,7 +550,7 @@
         <staff>2</staff>
       </note>
     </measure>
-    <measure number="3" width="199.48">
+    <measure number="4" width="199.48">
       <note default-x="12.5" default-y="-35">
         <pitch>
           <step>F</step>
@@ -760,7 +786,7 @@
         <staff>2</staff>
       </note>
     </measure>
-    <measure number="4" width="214.17">
+    <measure number="5" width="214.17">
       <note default-x="12.5" default-y="-50">
         <pitch>
           <step>C</step>
@@ -934,7 +960,7 @@
         <duration>8</duration>
       </forward>
     </measure>
-    <measure number="5" width="165.86">
+    <measure number="6" width="165.86">
       <note default-x="12.5" default-y="-40">
         <pitch>
           <step>E</step>
@@ -1104,7 +1130,7 @@
         <staff>2</staff>
       </note>
     </measure>
-    <measure number="6" width="321.46">
+    <measure number="7" width="321.46">
       <print new-system="yes">
         <system-layout>
           <system-margins>
@@ -1316,7 +1342,7 @@
         <staff>2</staff>
       </note>
     </measure>
-    <measure number="7" width="242.31">
+    <measure number="8" width="242.31">
       <note default-x="12.5" default-y="-35">
         <pitch>
           <step>F</step>
@@ -1488,7 +1514,7 @@
         <staff>2</staff>
       </note>
     </measure>
-    <measure number="8" width="262.84">
+    <measure number="9" width="262.84">
       <note default-x="12.5" default-y="-25">
         <pitch>
           <step>A</step>
@@ -1677,7 +1703,7 @@
         <staff>2</staff>
       </note>
     </measure>
-    <measure number="9" width="250.88">
+    <measure number="10" width="250.88">
       <note default-x="12.5" default-y="-25">
         <pitch>
           <step>A</step>

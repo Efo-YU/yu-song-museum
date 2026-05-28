@@ -91,16 +91,21 @@
     </score-part>
   </part-list>
   <part id="P1">
-    <measure number="1" width="321.93">
-      <print>
-        <system-layout>
-          <system-margins>
-            <left-margin>71.56</left-margin>
-            <right-margin>0</right-margin>
-          </system-margins>
-          <top-system-distance>168.66</top-system-distance>
-        </system-layout>
-      </print>
+    <measure number="1">
+      <attributes>
+        <divisions>4</divisions>
+        <key>
+          <fifths>3</fifths>
+        </key>
+        <time symbol="common">
+          <beats>4</beats>
+          <beat-type>4</beat-type>
+        </time>
+        <clef>
+          <sign>G</sign>
+          <line>2</line>
+        </clef>
+      </attributes>
       <direction placement="above">
         <direction-type>
           <metronome parentheses="no">
@@ -110,6 +115,22 @@
         </direction-type>
         <sound tempo="80" />
       </direction>
+      <note>
+        <rest measure="yes" />
+        <duration>16</duration>
+        <voice>1</voice>
+      </note>
+    </measure>
+    <measure number="2" width="321.93">
+      <print>
+        <system-layout>
+          <system-margins>
+            <left-margin>71.56</left-margin>
+            <right-margin>0</right-margin>
+          </system-margins>
+          <top-system-distance>168.66</top-system-distance>
+        </system-layout>
+      </print>
       <barline location="left">
         <bar-style>heavy-light</bar-style>
         <repeat direction="forward" />
@@ -182,7 +203,7 @@
         <stem>up</stem>
       </note>
     </measure>
-    <measure number="2" width="173.78">
+    <measure number="3" width="173.78">
       <note default-x="12.5" default-y="-30">
         <pitch>
           <step>G</step>
@@ -232,7 +253,7 @@
         </notations>
       </note>
     </measure>
-    <measure number="3" width="170.58">
+    <measure number="4" width="170.58">
       <note default-x="12.5" default-y="-40">
         <pitch>
           <step>E</step>
@@ -276,7 +297,7 @@
         <stem>up</stem>
       </note>
     </measure>
-    <measure number="4" width="168.47">
+    <measure number="5" width="168.47">
       <note default-x="12.5" default-y="-35">
         <pitch>
           <step>F</step>
@@ -316,7 +337,7 @@
         <type>quarter</type>
       </note>
     </measure>
-    <measure number="5" width="171.16">
+    <measure number="6" width="171.16">
       <note default-x="12.5" default-y="-55">
         <pitch>
           <step>B</step>
@@ -360,7 +381,7 @@
         <stem>up</stem>
       </note>
     </measure>
-    <measure number="6" width="1031.85">
+    <measure number="7" width="1031.85">
       <print new-system="yes">
         <system-layout>
           <system-margins>
@@ -419,7 +440,7 @@
         </notations>
       </note>
     </measure>
-    <measure number="7" width="248.08">
+    <measure number="8" width="248.08">
       <print new-system="yes">
         <system-layout>
           <system-margins>
@@ -485,7 +506,7 @@
         </direction-type>
       </direction>
     </measure>
-    <measure number="8" width="149.13">
+    <measure number="9" width="149.13">
       <note default-x="12.5" default-y="-40">
         <pitch>
           <step>E</step>
@@ -532,7 +553,7 @@
         </direction-type>
       </direction>
     </measure>
-    <measure number="9" width="158.94">
+    <measure number="10" width="158.94">
       <direction placement="above">
         <direction-type>
           <dynamics default-x="-4.18" default-y="24.15" relative-y="10">
@@ -584,7 +605,7 @@
         <stem>up</stem>
       </note>
     </measure>
-    <measure number="10" width="165.1">
+    <measure number="11" width="165.1">
       <note default-x="12.5" default-y="-15">
         <pitch>
           <step>C</step>
@@ -634,7 +655,7 @@
         </notations>
       </note>
     </measure>
-    <measure number="11" width="161.49">
+    <measure number="12" width="161.49">
       <direction placement="above">
         <direction-type>
           <wedge type="crescendo" default-y="22.18" spread="12" number="1" />
@@ -689,7 +710,7 @@
         </direction-type>
       </direction>
     </measure>
-    <measure number="12" width="149.13">
+    <measure number="13" width="149.13">
       <note default-x="12.5" default-y="-40">
         <pitch>
           <step>E</step>
@@ -737,7 +758,7 @@
         </direction-type>
       </direction>
     </measure>
-    <measure number="13" width="317.49">
+    <measure number="14" width="317.49">
       <print new-system="yes">
         <system-layout>
           <system-margins>
@@ -807,7 +828,7 @@
         </direction-type>
       </direction>
     </measure>
-    <measure number="14" width="225.12">
+    <measure number="15" width="225.12">
       <note default-x="12.5" default-y="-35">
         <pitch>
           <step>F</step>
@@ -868,7 +889,7 @@
         </direction-type>
       </direction>
     </measure>
-    <measure number="15" width="246.84">
+    <measure number="16" width="246.84">
       <direction placement="above">
         <direction-type>
           <dynamics default-x="-4.18" default-y="24.15" relative-y="10">
@@ -937,7 +958,7 @@
         </notations>
       </note>
     </measure>
-    <measure number="16" width="242.4">
+    <measure number="17" width="242.4">
       <note default-x="12.5" default-y="-35">
         <pitch>
           <step>F</step>
