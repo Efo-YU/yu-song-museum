@@ -1,0 +1,22 @@
+{
+  "slug": "yamagata-koto-kouka",
+  "title": "山形高等学校校歌",
+  "bpm": 88,
+  "key": "Eb major",
+  "credits": {
+    "vocalist": "MERROW (NEUTRINO)",
+    "composer": "Unknown",
+    "lyricist": "Unknown"
+  },
+  "page_config": {
+    "theme": {
+      "primary_color": "#5c3a8a"
+    },
+    "description_markdown": "山形高等学校の校歌。変ホ長調、66小節（繰り返し展開）。",
+    "downloads": {
+      "allow_xml": true,
+      "allow_mp3": true
+    }
+  },
+  "default_version": "with-piano"
+}

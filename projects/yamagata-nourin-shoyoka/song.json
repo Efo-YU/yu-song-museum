@@ -1,0 +1,22 @@
+{
+  "slug": "yamagata-nourin-shoyoka",
+  "title": "山形県立農林専門学校逍遥歌",
+  "bpm": 80,
+  "key": "C major",
+  "credits": {
+    "vocalist": "MERROW (NEUTRINO)",
+    "composer": "Unknown",
+    "lyricist": "Unknown"
+  },
+  "page_config": {
+    "theme": {
+      "primary_color": "#4a7c59"
+    },
+    "description_markdown": "山形県立農林専門学校の逍遥歌。ハ長調、9小節。",
+    "downloads": {
+      "allow_xml": true,
+      "allow_mp3": true
+    }
+  },
+  "default_version": "with-piano"
+}

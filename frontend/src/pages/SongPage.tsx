@@ -1,15 +1,17 @@
 import { lazy, Suspense } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import songsData from '../data/songs.json';
-import type { Song } from '../types/song';
+import type { Song, SongVersion } from '../types/song';
 
 const ScoreViewer = lazy(() => import('../components/ScoreViewer'));
 
 const songs = songsData as Song[];
 
 export default function SongPage() {
-  const { id } = useParams<{ id: string }>();
-  const song = songs.find((s) => s.id === id);
+  const { slug, version: versionParam } = useParams<{ slug: string; version: string }>();
+  const navigate = useNavigate();
+
+  const song = songs.find((s) => s.slug === slug);
 
   if (!song) {
     return (
@@ -18,6 +20,21 @@ export default function SongPage() {
         <p className="song-page__not-found">This work could not be found.</p>
       </main>
     );
+  }
+
+  const defaultSlug = song.default_version ?? song.versions[0]?.slug;
+  const activeSlug = versionParam ?? defaultSlug;
+  const activeVersion: SongVersion | undefined = song.versions.find((v) => v.slug === activeSlug)
+    ?? song.versions[0];
+
+  const multipleVersions = song.versions.length > 1;
+
+  function handleVersionSelect(v: SongVersion) {
+    if (v.slug === defaultSlug) {
+      navigate(`/songs/${song!.slug}`);
+    } else {
+      navigate(`/songs/${song!.slug}/${v.slug}`);
+    }
   }
 
   const pc = song.page_config;
@@ -54,13 +71,31 @@ export default function SongPage() {
         )}
       </header>
 
-      {song.youtube_id && (
+      {multipleVersions && (
+        <nav className="version-tabs" aria-label="Versions">
+          {song.versions.map((v) => (
+            <button
+              key={v.slug}
+              type="button"
+              className={`version-tab${v.slug === activeVersion?.slug ? ' version-tab--active' : ''}`}
+              onClick={() => handleVersionSelect(v)}
+            >
+              {v.label}
+              {v.description && (
+                <span className="version-tab__desc">{v.description}</span>
+              )}
+            </button>
+          ))}
+        </nav>
+      )}
+
+      {activeVersion?.youtube_id && (
         <section className="song-page__video">
           <iframe
             width="100%"
             style={{ aspectRatio: '16/9', border: 'none', display: 'block' }}
-            src={`https://www.youtube.com/embed/${song.youtube_id}`}
-            title={song.title}
+            src={`https://www.youtube.com/embed/${activeVersion.youtube_id}`}
+            title={`${song.title} — ${activeVersion.label}`}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
@@ -74,13 +109,13 @@ export default function SongPage() {
         </section>
       )}
 
-      {song.score_url && (
+      {activeVersion?.score_url && (
         <section className="song-page__score">
           <h2 className="section-heading">Score</h2>
           <Suspense fallback={<p className="score-status">Loading score…</p>}>
             <ScoreViewer
-              url={song.score_url}
-              settings={pc?.score_viewer_settings}
+              url={activeVersion.score_url}
+              settings={activeVersion.score_viewer_settings}
             />
           </Suspense>
         </section>
@@ -89,24 +124,24 @@ export default function SongPage() {
       <section className="song-page__downloads">
         <h2 className="section-heading">Downloads &amp; Links</h2>
         <ul className="download-list">
-          {allowMp3 && song.audio_url && (
+          {allowMp3 && activeVersion?.audio_url && (
             <li>
-              <a href={song.audio_url} download className="download-link">
+              <a href={activeVersion.audio_url} download className="download-link">
                 Audio (MP3)
               </a>
             </li>
           )}
-          {allowXml && song.score_url && (
+          {allowXml && activeVersion?.score_url && (
             <li>
-              <a href={song.score_url} download className="download-link">
+              <a href={activeVersion.score_url} download className="download-link">
                 Score (MusicXML)
               </a>
             </li>
           )}
-          {song.youtube_url && (
+          {activeVersion?.youtube_url && (
             <li>
               <a
-                href={song.youtube_url}
+                href={activeVersion.youtube_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="download-link"

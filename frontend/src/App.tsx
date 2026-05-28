@@ -7,7 +7,8 @@ export default function App() {
     <HashRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/songs/:id" element={<SongPage />} />
+        <Route path="/songs/:slug" element={<SongPage />} />
+        <Route path="/songs/:slug/:version" element={<SongPage />} />
       </Routes>
     </HashRouter>
   );

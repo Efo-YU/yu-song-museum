@@ -1,0 +1,23 @@
+{
+  "slug": "default",
+  "label": "Standard",
+  "build_config": {
+    "audio_settings": {
+      "vocal_volume": 1.0,
+      "inst_volume": 0.6,
+      "effects": [
+        { "type": "highpass", "frequency": 80 }
+      ]
+    },
+    "video_settings": {
+      "resolution": "1920x1080",
+      "fps": 30,
+      "style": "waveform",
+      "background_image_path": ""
+    }
+  },
+  "score_viewer_settings": {
+    "default_zoom": 1.0,
+    "default_visible_parts": ["vocal"]
+  }
+}

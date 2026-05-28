@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate a video for a song using FFmpeg.
+"""Generate a video for a song version using FFmpeg.
 
 Produces a 1080p video with:
   - A background image (or solid black fallback)
@@ -7,15 +7,15 @@ Produces a 1080p video with:
   - Title and credits overlay
 
 Usage:
-    python3 scripts/04_generate_video.py <song_dir>
+    python3 scripts/04_generate_video.py <song_dir> <version_dir>
 
 Reads:
-    <song_dir>/project_metadata.json
-    <song_dir>/build_config.json
-    <song_dir>/output/audio.wav
+    <song_dir>/song.json
+    <version_dir>/version.json
+    <version_dir>/output/audio.wav
 
 Writes:
-    <song_dir>/output/temp.mp4   — H.264 video ready for YouTube upload
+    <version_dir>/output/temp.mp4   — H.264 video ready for YouTube upload
 """
 
 from __future__ import annotations
@@ -68,7 +68,6 @@ def build_filter_graph(
     wave_y = (height - wave_h) // 2
 
     if has_bg:
-        # Scale background image to fill the frame
         base = (
             f"[1:v]scale={width}:{height}:force_original_aspect_ratio=increase,"
             f"crop={width}:{height}[bg];"
@@ -103,15 +102,17 @@ def build_filter_graph(
 
 
 def main() -> None:
-    if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <song_dir>", file=sys.stderr)
+    if len(sys.argv) < 3:
+        print(f"Usage: {sys.argv[0]} <song_dir> <version_dir>", file=sys.stderr)
         sys.exit(1)
 
     song_dir = Path(sys.argv[1])
-    meta = json.loads((song_dir / "project_metadata.json").read_text())
-    config = json.loads((song_dir / "build_config.json").read_text())
+    version_dir = Path(sys.argv[2])
 
-    out_dir = song_dir / "output"
+    song_meta = json.loads((song_dir / "song.json").read_text())
+    version_meta = json.loads((version_dir / "version.json").read_text())
+
+    out_dir = version_dir / "output"
     audio_wav = out_dir / "audio.wav"
     video_mp4 = out_dir / "temp.mp4"
 
@@ -119,7 +120,7 @@ def main() -> None:
         print(f"ERROR: {audio_wav} not found — run 03_mixdown.py first", file=sys.stderr)
         sys.exit(1)
 
-    vs = config.get("video_settings", {})
+    vs = version_meta.get("build_config", {}).get("video_settings", {})
     resolution: str = vs.get("resolution", "1920x1080")
     fps: int = int(vs.get("fps", 30))
     bg_path: str = vs.get("background_image_path", "")
@@ -127,15 +128,14 @@ def main() -> None:
     width_s, height_s = resolution.split("x")
     width, height = int(width_s), int(height_s)
 
-    title: str = meta.get("title", "Untitled")
-    credits: dict = meta.get("credits", {})
+    title: str = song_meta.get("title", "Untitled")
+    credits: dict = song_meta.get("credits", {})
     parts = [v for k, v in credits.items() if v]
     subtitle = " / ".join(parts[:3])
 
     bg_file = song_dir / bg_path if bg_path else None
     has_bg = bool(bg_file and bg_file.exists())
 
-    # Measure audio duration so the infinite color source is bounded.
     probe = subprocess.run(
         ["ffprobe", "-v", "error", "-show_entries", "format=duration",
          "-of", "default=noprint_wrappers=1:nokey=1", str(audio_wav)],

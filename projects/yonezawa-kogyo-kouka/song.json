@@ -1,0 +1,22 @@
+{
+  "slug": "yonezawa-kogyo-kouka",
+  "title": "米沢高等工業学校校歌",
+  "bpm": 80,
+  "key": "C major",
+  "credits": {
+    "vocalist": "MERROW (NEUTRINO)",
+    "composer": "Unknown",
+    "lyricist": "Unknown"
+  },
+  "page_config": {
+    "theme": {
+      "primary_color": "#c0392b"
+    },
+    "description_markdown": "米沢高等工業学校の校歌。ハ長調、21小節。",
+    "downloads": {
+      "allow_xml": true,
+      "allow_mp3": true
+    }
+  },
+  "default_version": "with-piano"
+}

@@ -277,6 +277,57 @@ main { max-width: 1060px; margin: 0 auto; padding: 2rem 2rem 4rem; }
   text-decoration: none;
 }
 
+/* ── Version tabs ──────────────────────────────────────────────── */
+.version-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.version-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--border-dark);
+  background: none;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.version-tab:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.version-tab--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.version-tab__desc {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+.song-card__versions {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-light);
+  margin-top: 0.5rem;
+}
+
 /* ── Not-found ─────────────────────────────────────────────────── */
 .song-page__not-found {
   font-style: italic;

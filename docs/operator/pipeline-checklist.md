@@ -81,31 +81,51 @@ to `main` before the push trigger fires:
 
 ## Phase 3 — Prepare a real song
 
-The sample `projects/song_001/` contains a placeholder MusicXML.
-Replace it with real content before running the pipeline in production:
+Each song lives under `projects/<song-slug>/` with a `versions/` subdirectory
+for each rendition. The sample song `projects/sample-song/` has a placeholder
+MusicXML; replace it with real content before production use.
+
+### Project layout
+
+```
+projects/<song-slug>/
+  song.json                    # title, bpm, key, credits, page_config
+  vocal.musicxml               # shared vocal score
+  inst.musicxml                # optional shared accompaniment score
+  versions/
+    <version-slug>/
+      version.json             # label, build_config, score_viewer_settings
+      vocal.musicxml           # optional per-version score override
+      inst.musicxml            # optional per-version accompaniment override
+```
 
 ### 3.1 Vocal MusicXML (`vocal.musicxml`)
 
 - Must be valid MusicXML 3.1 with Japanese lyrics if using a Japanese
   singer model (NEUTRINO requires kana/romaji lyrics).
-- Test locally: `make SONG=song_001 synth` (requires NEUTRINO installed
-  at `/tmp/neutrino` — fetch first with `make SONG=song_001 fetch-models`).
+- Test locally:
+  ```sh
+  make SONG=sample-song VERSION=default synth
+  # requires NEUTRINO at /tmp/neutrino; fetch first with:
+  make SONG=sample-song fetch-models
+  ```
 
 ### 3.2 Accompaniment (`inst.mid` or `inst.musicxml`)
 
 - Provide `inst.mid` (MIDI) for direct FluidSynth rendering.
 - Or `inst.musicxml` if MuseScore is installed in the environment
   (CI runner has no MuseScore — MIDI is strongly preferred).
+- Place at the song root level to share across versions, or inside
+  a version directory to override for that version only.
 
 ### 3.3 JSON configuration
 
 Review and edit:
 
-| File                    | Key fields to check                                  |
-| ----------------------- | ---------------------------------------------------- |
-| `project_metadata.json` | `title`, `bpm`, `key`, `credits`                     |
-| `build_config.json`     | `vocal_volume`, `inst_volume`, `resolution`          |
-| `page_config.json`      | `primary_color`, `description_markdown`, `allow_mp3` |
+| File                               | Key fields to check                                                    |
+| ---------------------------------- | ---------------------------------------------------------------------- |
+| `song.json`                        | `slug`, `title`, `bpm`, `key`, `credits`, `page_config`                |
+| `versions/<slug>/version.json`     | `label`, `build_config.audio_settings`, `build_config.video_settings`  |
 
 ---
 
@@ -115,13 +135,14 @@ Review and edit:
 
 1. Go to **Actions → Music Production Pipeline**.
 2. Click **Run workflow**.
-3. Enter `song_001` in the **song_id** field.
-4. Click **Run workflow**.
+3. In the **song** field, enter the song slug (e.g. `sample-song`).
+4. In the **version** field, enter the version slug (e.g. `default`).
+5. Click **Run workflow**.
 
 Watch each job:
 
 - **Job 0 (detect-diff):** should output `has_changes=true`
-- **Job 1 (pipeline: song_001):** watch for errors in each step
+- **Job 1 (pipeline: sample-song/default):** watch for errors in each step
 - **Job 2 (deploy-web):** deploys to GitHub Pages
 
 ### 4.2 Confirm outputs
@@ -141,12 +162,13 @@ Once the manual run succeeds, all future changes to `projects/**` on
 
 ## Ongoing operations
 
-| Task                                                   | Command / Location                                                                                    |
-| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| Add a new song                                         | Create `projects/song_NNN/` with the three JSON files and `vocal.musicxml`, commit and push to `main` |
-| Update GAS relay code                                  | `cd gas && npm run push && npm run deploy`                                                            |
-| Rotate R2 credentials                                  | Create new token in Cloudflare, update GitHub secret, revoke old token                                |
-| Re-process an existing song without changing its files | Trigger workflow manually with `song_id=song_NNN`                                                     |
-| Check pipeline logs                                    | GitHub → Actions → select the run → expand each step                                                  |
+| Task                                                          | Command / Location                                                                                       |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Add a new song                                                | Create `projects/<slug>/` with `song.json`, `vocal.musicxml`, and at least one version; push to `main`  |
+| Add a new version to an existing song                         | Create `projects/<slug>/versions/<version>/` with `version.json`; push to `main`                        |
+| Update GAS relay code                                         | `cd gas && npm run push && npm run deploy`                                                               |
+| Rotate R2 credentials                                         | Create new token in Cloudflare, update GitHub secret, revoke old token                                   |
+| Re-process a version without changing its files               | Trigger workflow manually with the song and version slugs                                                 |
+| Check pipeline logs                                           | GitHub → Actions → select the run → expand each step                                                    |
 
 Last reviewed: 2026-05-23

@@ -1,6 +1,6 @@
 ## Music Automation Pipeline — local task runner
 ##
-## All targets accept SONG=<song_id> (default: song_001).
+## All targets accept SONG=<song-slug> VERSION=<version-slug>.
 ## They mirror the GHA pipeline steps exactly so CI behaviour
 ## is reproducible on a developer's machine.
 ##
@@ -12,16 +12,20 @@
 ##   R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_ENDPOINT, R2_BUCKET,
 ##   GAS_RELAY_URL, SINGER
 
-SONG        ?= song_001
+SONG        ?= sample-song
+VERSION     ?= default
 SINGER      ?= MERROW
 NEUTRINO_DIR ?= /tmp/neutrino
 sf3_PATH    ?= /tmp/default.sf3
 SONG_DIR     = projects/$(SONG)
+VERSION_DIR  = projects/$(SONG)/versions/$(VERSION)
 
 .PHONY: all fetch-models synth mix video upload-gas merge-songs \
-        build-frontend dev-frontend clean help
+        build-frontend dev-frontend \
+        dev-populate dev-synth-populate \
+        clean clean-dev help
 
-## Run the full pipeline for one song (except YouTube upload)
+## Run the full pipeline for one version (except YouTube upload)
 all: fetch-models synth mix video
 
 ## Download NEUTRINO models and SoundFont from R2
@@ -30,21 +34,22 @@ fetch-models:
 
 ## Synthesize vocal and render accompaniment
 synth:
-	SONG_DIR=$(SONG_DIR) SINGER=$(SINGER) \
+	SONG_DIR=$(SONG_DIR) VERSION_DIR=$(VERSION_DIR) \
+	SINGER=$(SINGER) \
 	NEUTRINO_DIR=$(NEUTRINO_DIR) sf3_PATH=$(sf3_PATH) \
 	bash scripts/02_synthesize.sh
 
 ## Mix vocal + accompaniment
 mix:
-	python3 scripts/03_mixdown.py $(SONG_DIR)
+	python3 scripts/03_mixdown.py $(VERSION_DIR)
 
 ## Generate video (writes temp.mp4)
 video:
-	python3 scripts/04_generate_video.py $(SONG_DIR)
+	python3 scripts/04_generate_video.py $(SONG_DIR) $(VERSION_DIR)
 
 ## Upload temp.mp4 via GAS relay and write meta.json
 upload-gas:
-	python3 scripts/05_trigger_gas.py $(SONG_DIR)
+	python3 scripts/05_trigger_gas.py $(SONG_DIR) $(VERSION_DIR)
 
 ## Merge all meta.json artifacts into songs.json and copy assets
 merge-songs:
@@ -58,13 +63,29 @@ build-frontend:
 dev-frontend:
 	cd frontend && pnpm install && pnpm dev
 
-## Detect which songs changed (for scripting / debugging)
+## Detect which (song, version) pairs changed (for scripting / debugging)
 detect-diff:
 	@bash scripts/00_detect_diff.sh
 
-## Remove generated output for one song
+## ── Local dev helpers ────────────────────────────────────────────────────────
+## Populate frontend/public/{audio,scores}/ and songs.json from local outputs.
+## Run after `make synth mix` to see audio in the browser.
+dev-populate:
+	python3 scripts/dev-populate.py
+
+## Synthesize + mix one version, then populate the frontend (local dev only).
+##   make dev-synth-populate SONG=yamagata-shihan-kouka VERSION=with-organ
+dev-synth-populate: synth mix dev-populate
+
+## Remove generated output for one version
 clean:
-	rm -rf $(SONG_DIR)/output
+	rm -rf $(VERSION_DIR)/output
+
+## Remove ALL local-dev frontend assets and reset songs.json to [].
+## Safe to run before committing.
+clean-dev:
+	rm -rf frontend/public/audio frontend/public/scores
+	git restore frontend/src/data/songs.json
 
 ## Show this help
 help:

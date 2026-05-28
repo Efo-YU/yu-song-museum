@@ -10,7 +10,7 @@ Flow:
        - version       — short commit hash + date, appended to the video title
   4. GAS uploads to YouTube, returns the new video_id.
   5. Delete R2 object and local temp.mp4.
-  6. Persist new youtube_id into project_metadata.json.
+  6. Persist new youtube_id into version.json.
   7. Write output/meta.json.
 
 Required env vars:
@@ -21,7 +21,7 @@ Optional env vars:
     GITHUB_SHA  — full commit SHA; 7-char prefix used as version tag
 
 Usage:
-    python3 scripts/05_trigger_gas.py <song_dir>
+    python3 scripts/05_trigger_gas.py <song_dir> <version_dir>
 """
 
 from __future__ import annotations
@@ -68,36 +68,42 @@ def build_version_tag() -> str:
 
 
 def main() -> None:
-    if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <song_dir>", file=sys.stderr)
+    if len(sys.argv) < 3:
+        print(f"Usage: {sys.argv[0]} <song_dir> <version_dir>", file=sys.stderr)
         sys.exit(1)
 
     song_dir = Path(sys.argv[1])
-    out_dir = song_dir / "output"
+    version_dir = Path(sys.argv[2])
+
+    song_slug = song_dir.name
+    version_slug = version_dir.name
+
+    out_dir = version_dir / "output"
     temp_mp4 = out_dir / "temp.mp4"
     meta_json_path = out_dir / "meta.json"
-    project_meta_path = song_dir / "project_metadata.json"
+    version_json_path = version_dir / "version.json"
 
     if not temp_mp4.exists():
         print(f"ERROR: {temp_mp4} not found — run 04_generate_video.py first",
               file=sys.stderr)
         sys.exit(1)
 
-    meta = json.loads(project_meta_path.read_text())
-    song_id: str = meta["id"]
-    credits: dict = meta.get("credits", {})
+    song_meta = json.loads((song_dir / "song.json").read_text())
+    version_meta = json.loads(version_json_path.read_text())
+
+    credits: dict = song_meta.get("credits", {})
     description = "\n".join(filter(None, [
         f"Composer: {credits['composer']}" if credits.get("composer") else "",
         f"Vocalist: {credits['vocalist']}" if credits.get("vocalist") else "",
         f"Lyricist: {credits['lyricist']}" if credits.get("lyricist") else "",
     ]))
 
-    version = build_version_tag()
-    prev_youtube_id: str = meta.get("youtube_id", "")
+    commit_version = build_version_tag()
+    prev_youtube_id: str = version_meta.get("youtube_id", "")
 
     # ── Upload temp.mp4 to R2 ────────────────────────────────────────────────
     bucket = get_env("R2_BUCKET")
-    r2_key = f"tmp/video/{song_id}/{uuid.uuid4().hex}.mp4"
+    r2_key = f"tmp/video/{song_slug}/{version_slug}/{uuid.uuid4().hex}.mp4"
     s3 = make_s3_client()
 
     print(f"[gas] Uploading {temp_mp4} → r2://{bucket}/{r2_key}")
@@ -115,11 +121,11 @@ def main() -> None:
     gas_url = get_env("GAS_RELAY_URL")
     payload: dict = {
         "r2_url": presigned_url,
-        "title": meta["title"],
+        "title": song_meta["title"],
         "description": description,
-        "tags": [song_id, "NEUTRINO", "AI singing"],
+        "tags": [song_slug, version_slug, "NEUTRINO", "AI singing"],
         "privacy_status": "public",
-        "version": version,
+        "version": commit_version,
     }
     if prev_youtube_id:
         payload["prev_youtube_id"] = prev_youtube_id
@@ -144,20 +150,23 @@ def main() -> None:
     temp_mp4.unlink()
     print(f"[gas] Local temp.mp4 deleted")
 
-    # ── Persist new youtube_id ───────────────────────────────────────────────
-    meta["youtube_id"] = video_id
-    project_meta_path.write_text(
-        json.dumps(meta, ensure_ascii=False, indent=2) + "\n"
+    # ── Persist new youtube_id into version.json ─────────────────────────────
+    version_meta["youtube_id"] = video_id
+    version_json_path.write_text(
+        json.dumps(version_meta, ensure_ascii=False, indent=2) + "\n"
     )
-    print(f"[gas] youtube_id persisted to {project_meta_path}")
+    print(f"[gas] youtube_id persisted to {version_json_path}")
 
     # ── Write meta.json ──────────────────────────────────────────────────────
     output_meta = {
-        **meta,
-        "youtube_id": video_id,
-        "youtube_url": youtube_url,
-        "audio_url": f"audio/{song_id}/audio.mp3",
-        "score_url": f"scores/{song_id}/vocal.musicxml",
+        **song_meta,
+        "version": {
+            **{k: v for k, v in version_meta.items() if k != "build_config"},
+            "youtube_id": video_id,
+            "youtube_url": youtube_url,
+            "audio_url": f"audio/{song_slug}/{version_slug}/audio.mp3",
+            "score_url": f"scores/{song_slug}/{version_meta.get('score_file', 'vocal.musicxml')}",
+        },
     }
     meta_json_path.write_text(json.dumps(output_meta, ensure_ascii=False, indent=2))
     print(f"[gas] meta.json written: {meta_json_path}")
