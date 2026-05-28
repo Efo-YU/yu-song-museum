@@ -3,6 +3,11 @@
 This covers the full `synth → mix → video` pipeline on a developer machine,
 using the `./neutrino` and `./soundfonts` mirrors that are gitignored.
 
+> **SSoT workflow:** If a song has `projects/<song>/full.musicxml`, run
+> `make SONG=<slug> convert-ssot` first to regenerate `vocal.musicxml` and
+> `inst.musicxml` from it.  See
+> [ssot-musicxml.md](ssot-musicxml.md) for the full authoring guide.
+
 ## Prerequisites
 
 | Item | Location | Notes |
@@ -17,16 +22,16 @@ using the `./neutrino` and `./soundfonts` mirrors that are gitignored.
 > `./neutrino/` must match what `01_fetch_models.sh` creates:
 > `bin/`, `model/<SINGER>/`, `score/musicxml/`, `score/label/`, `output/`.
 
-## Run one version
+## Run one variant
 
 ```sh
-make SONG=yamagata-shihan-kouka VERSION=default \
+make SONG=yamagata-shihan-kouka VARIANT=default \
      NEUTRINO_DIR=/workspaces/yu-song-museum/neutrino \
      sf3_PATH=/workspaces/yu-song-museum/soundfonts/default.sf3 \
      synth mix video
 ```
 
-Outputs land in `projects/yamagata-shihan-kouka/versions/default/output/`:
+Outputs land in `projects/yamagata-shihan-kouka/variants/default/output/`:
 
 | File | Description |
 | ---- | ----------- |
@@ -36,11 +41,11 @@ Outputs land in `projects/yamagata-shihan-kouka/versions/default/output/`:
 | `audio.mp3` | Mixed-down MP3 (192 kbps) |
 | `temp.mp4` | Score video (without YouTube upload) |
 
-## Run all songs (default version)
+## Run all songs (default variant)
 
 ```sh
 for s in yamagata-shihan-kouka yamagata-nourin-shoyoka yamagata-koto-kouka yonezawa-kogyo-kouka; do
-  make SONG=$s VERSION=default \
+  make SONG=$s VARIANT=default \
        NEUTRINO_DIR=/workspaces/yu-song-museum/neutrino \
        sf3_PATH=/workspaces/yu-song-museum/soundfonts/default.sf3 \
        synth mix
@@ -54,13 +59,13 @@ done
 ```
 projects/<song-slug>/
   song.json                    # title, bpm, key, credits, page_config
-  vocal.musicxml               # shared vocal score (all versions)
+  vocal.musicxml               # shared vocal score (all variants)
   inst.musicxml                # optional shared accompaniment score
-  versions/
-    <version-slug>/
-      version.json             # label, build_config, score_viewer_settings
-      vocal.musicxml           # optional per-version score override
-      inst.musicxml            # optional per-version accompaniment override
+  variants/
+    <variant-slug>/
+      variant.json             # label, build_config, score_viewer_settings
+      vocal.musicxml           # optional per-variant score override
+      inst.musicxml            # optional per-variant accompaniment override
       output/                  # generated files (gitignored)
 ```
 
@@ -85,9 +90,9 @@ songs (≥ ~120 s):
    Each call is bounded to that phrase's audio; RAM usage stays low.
 3. **Concat** — voiced phrases and silence gaps are joined with `ffmpeg -f concat`.
 
-Score resolution order (version-level overrides song-level):
+Score resolution order (variant-level overrides song-level):
 
-1. `versions/<version>/vocal.musicxml` if present
+1. `variants/<variant>/vocal.musicxml` if present
 2. `vocal.musicxml` at the song root (fallback)
 
 Same resolution applies to `inst.mid` and `inst.musicxml`.
@@ -107,5 +112,5 @@ groups the entire song into one phrase, accumulating all audio in RAM.
 the mix uses the longer track.  For other songs a mismatch of more than ~1 s
 indicates a missing verse in `inst.musicxml`.
 
-**Cleaning up between runs** — `make SONG=yamagata-shihan-kouka VERSION=default clean`
-removes everything in the version's `output/` directory.
+**Cleaning up between runs** — `make SONG=yamagata-shihan-kouka VARIANT=default clean`
+removes everything in the variant's `output/` directory.

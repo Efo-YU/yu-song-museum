@@ -18,5 +18,5 @@
       "allow_mp3": true
     }
   },
-  "default_version": "with-organ"
+  "default_variant": "with-organ"
 }

@@ -19,7 +19,7 @@
 #
 # Required env vars:
 #   SONG_DIR     — path to the song directory, e.g. projects/yamagata-shihan-kouka
-#   VERSION_DIR  — path to the version directory, e.g. projects/yamagata-shihan-kouka/versions/default
+#   VARIANT_DIR  — path to the variant directory, e.g. projects/yamagata-shihan-kouka/variants/default
 #
 # Optional env vars:
 #   SINGER        — NEUTRINO singer model name (default: MERROW)
@@ -35,7 +35,7 @@
 set -euo pipefail
 
 SONG_DIR="${SONG_DIR:?SONG_DIR not set}"
-VERSION_DIR="${VERSION_DIR:?VERSION_DIR not set}"
+VARIANT_DIR="${VARIANT_DIR:?VARIANT_DIR not set}"
 SINGER="${SINGER:-MERROW}"
 NEUTRINO_DIR="${NEUTRINO_DIR:-/tmp/neutrino}"
 sf3_PATH="${sf3_PATH:-/tmp/default.sf3}"
@@ -43,12 +43,12 @@ NUM_THREADS="${NUM_THREADS:-4}"
 TRANSPOSE="${TRANSPOSE:-0}"
 
 SONG_SLUG=$(basename "$SONG_DIR")
-VERSION_SLUG=$(basename "$VERSION_DIR")
+VARIANT_SLUG=$(basename "$VARIANT_DIR")
 # Unique stem for NEUTRINO's intermediate files; avoids collisions in parallel runs
-SCORE_ID="${SONG_SLUG}-${VERSION_SLUG}"
+SCORE_ID="${SONG_SLUG}-${VARIANT_SLUG}"
 
 ABS_SONG="$(cd "$SONG_DIR" && pwd)"
-ABS_VERSION="$(cd "$VERSION_DIR" && pwd)"
+ABS_VERSION="$(cd "$VARIANT_DIR" && pwd)"
 NEUTRINO_ABS="$(cd "$NEUTRINO_DIR" && pwd)"
 OUT_DIR="$ABS_VERSION/output"
 
@@ -58,18 +58,18 @@ mkdir -p "$OUT_DIR"
 NO_INST=$(python3 -c "
 import json, sys
 try:
-    d = json.load(open('$ABS_VERSION/version.json'))
+    d = json.load(open('$ABS_VERSION/variant.json'))
     print('true' if d.get('no_accompaniment', False) else 'false')
 except: print('false')
 " 2>/dev/null || echo "false")
 
 # ── Skip-vocal flag ───────────────────────────────────────────────────────────
-# Read skip_vocal_synthesis from version.json (default: false).
+# Read skip_vocal_synthesis from variant.json (default: false).
 # Also skip if no vocal.musicxml exists in either version dir or song dir.
 SKIP_VOCAL=$(python3 -c "
 import json, sys
 try:
-    d = json.load(open('$ABS_VERSION/version.json'))
+    d = json.load(open('$ABS_VERSION/variant.json'))
     print('true' if d.get('skip_vocal_synthesis', False) else 'false')
 except: print('false')
 " 2>/dev/null || echo "false")

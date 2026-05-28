@@ -16,7 +16,7 @@ export interface PageConfig {
   downloads?: { allow_xml?: boolean; allow_mp3?: boolean };
 }
 
-export interface SongVersion {
+export interface SongVariant {
   slug: string;
   label: string;
   description?: string;
@@ -34,6 +34,6 @@ export interface Song {
   key?: string;
   credits?: Credits;
   page_config?: PageConfig;
-  versions: SongVersion[];
-  default_version?: string;
+  variants: SongVariant[];
+  default_variant?: string;
 }

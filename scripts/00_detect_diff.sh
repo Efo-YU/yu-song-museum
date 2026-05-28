@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-# Detect changed (song, version) pairs under projects/ and emit a JSON array.
+# Detect changed (song, variant) pairs under projects/ and emit a JSON array.
 #
 # Usage:
 #   BASE_REF=origin/main HEAD_REF=HEAD bash scripts/00_detect_diff.sh
 #
 # Outputs a JSON array of objects, e.g.:
-#   [{"song":"yamagata-shihan-kouka","version":"default"}]
+#   [{"song":"yamagata-shihan-kouka","variant":"default"}]
 # or [] if nothing changed.
 #
 # Rules:
-#   - A change to projects/{slug}/versions/{version}/** → that (slug, version) pair
+#   - A change to projects/{slug}/variants/{variant}/** → that (slug, variant) pair
 #   - A change to any other file under projects/{slug}/ (shared files: song.json,
-#     *.musicxml) → all versions of that song are included
+#     *.musicxml) → all variants of that song are included
 
 set -euo pipefail
 
@@ -21,17 +21,17 @@ HEAD_REF="${HEAD_REF:-HEAD}"
 declare -A pairs_set
 
 while IFS= read -r path; do
-  if [[ "$path" =~ ^projects/([^/]+)/versions/([^/]+)/ ]]; then
+  if [[ "$path" =~ ^projects/([^/]+)/variants/([^/]+)/ ]]; then
     song="${BASH_REMATCH[1]}"
-    version="${BASH_REMATCH[2]}"
-    pairs_set["${song}/${version}"]=1
+    variant="${BASH_REMATCH[2]}"
+    pairs_set["${song}/${variant}"]=1
   elif [[ "$path" =~ ^projects/([^/]+)/ ]]; then
     song="${BASH_REMATCH[1]}"
-    if [[ -d "projects/$song/versions" ]]; then
-      for vdir in "projects/$song/versions"/*/; do
+    if [[ -d "projects/$song/variants" ]]; then
+      for vdir in "projects/$song/variants"/*/; do
         [[ -d "$vdir" ]] || continue
-        version=$(basename "$vdir")
-        pairs_set["${song}/${version}"]=1
+        variant=$(basename "$vdir")
+        pairs_set["${song}/${variant}"]=1
       done
     fi
   fi
@@ -41,9 +41,9 @@ pairs_json="["
 first=true
 for key in "${!pairs_set[@]}"; do
   song="${key%%/*}"
-  version="${key##*/}"
+  variant="${key##*/}"
   [[ "$first" == "true" ]] || pairs_json+=","
-  pairs_json+="{\"song\":\"$song\",\"version\":\"$version\"}"
+  pairs_json+="{\"song\":\"$song\",\"variant\":\"$variant\"}"
   first=false
 done
 pairs_json+="]"

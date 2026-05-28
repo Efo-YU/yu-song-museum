@@ -4,24 +4,24 @@
 NOT for CI use — CI runs 06_merge_songs.py with GHA artifacts instead.
 
 This script:
-  1. Reads song metadata from projects/*/song.json and version metadata
-     from projects/*/versions/*/version.json.
+  1. Reads song metadata from projects/*/song.json and variant metadata
+     from projects/*/variants/*/variant.json.
   2. Copies MusicXML scores (song root) → frontend/public/scores/{slug}/.
   3. Copies audio.mp3 (if already synthesized) from
-     projects/{slug}/versions/{version}/output/audio.mp3
-     → frontend/public/audio/{slug}/{version}/audio.mp3
-     and sets audio_url in songs.json for that version.
+     projects/{slug}/variants/{variant}/output/audio.mp3
+     → frontend/public/audio/{slug}/{variant}/audio.mp3
+     and sets audio_url in songs.json for that variant.
   4. Writes frontend/src/data/songs.json.
 
 Typical workflow:
-  # First time: synthesize one or more versions
-  make SONG=yamagata-shihan-kouka VERSION=with-organ synth mix
+  # First time: synthesize one or more variants
+  make SONG=yamagata-shihan-kouka VARIANT=with-organ synth mix
 
   # Then populate the frontend
   python3 scripts/dev-populate.py
 
   # Or do both in one step
-  make dev-synth-populate SONG=yamagata-shihan-kouka VERSION=with-organ
+  make dev-synth-populate SONG=yamagata-shihan-kouka VARIANT=with-organ
 
 Reset songs.json to the committed empty state:
   git restore frontend/src/data/songs.json
@@ -58,14 +58,14 @@ def main() -> None:
         for xml in song_dir.glob("*.musicxml"):
             shutil.copy2(xml, score_dest / xml.name)
 
-        versions = []
-        versions_dir = song_dir / "versions"
-        if versions_dir.exists():
-            for vdir in sorted(versions_dir.iterdir()):
-                if not vdir.is_dir() or not (vdir / "version.json").exists():
+        variants = []
+        variants_dir = song_dir / "variants"
+        if variants_dir.exists():
+            for vdir in sorted(variants_dir.iterdir()):
+                if not vdir.is_dir() or not (vdir / "variant.json").exists():
                     continue
 
-                vmeta = json.loads((vdir / "version.json").read_text())
+                vmeta = json.loads((vdir / "variant.json").read_text())
                 vslug: str = vmeta["slug"]
                 score_file: str = vmeta.get("score_file", "vocal.musicxml")
 
@@ -88,18 +88,18 @@ def main() -> None:
                     print(f"  [{vslug}] audio OK")
                 else:
                     print(f"  [{vslug}] no audio yet"
-                          f" — run: make SONG={slug} VERSION={vslug} synth mix")
+                          f" — run: make SONG={slug} VARIANT={vslug} synth mix")
 
-                versions.append(entry)
+                variants.append(entry)
 
-        songs.append({**song, "versions": versions})
-        print(f"{slug}: {len(versions)} version(s)")
+        songs.append({**song, "variants": variants})
+        print(f"{slug}: {len(variants)} variant(s)")
 
     SONGS_JSON.parent.mkdir(parents=True, exist_ok=True)
     SONGS_JSON.write_text(json.dumps(songs, ensure_ascii=False, indent=2) + "\n")
 
     print(f"\n[dev-populate] songs.json written"
-          f" ({len(songs)} songs, {audio_count} version(s) with audio)")
+          f" ({len(songs)} songs, {audio_count} variant(s) with audio)")
     print("[dev-populate] NOTE: songs.json is now local-dev state.")
     print("[dev-populate] Reset before committing:"
           " git restore frontend/src/data/songs.json")

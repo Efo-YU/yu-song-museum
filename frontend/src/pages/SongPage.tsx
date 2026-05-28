@@ -1,14 +1,14 @@
 import { lazy, Suspense } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import songsData from '../data/songs.json';
-import type { Song, SongVersion } from '../types/song';
+import type { Song, SongVariant } from '../types/song';
 
 const ScoreViewer = lazy(() => import('../components/ScoreViewer'));
 
 const songs = songsData as Song[];
 
 export default function SongPage() {
-  const { slug, version: versionParam } = useParams<{ slug: string; version: string }>();
+  const { slug, variant: variantParam } = useParams<{ slug: string; variant: string }>();
   const navigate = useNavigate();
 
   const song = songs.find((s) => s.slug === slug);
@@ -22,14 +22,14 @@ export default function SongPage() {
     );
   }
 
-  const defaultSlug = song.default_version ?? song.versions[0]?.slug;
-  const activeSlug = versionParam ?? defaultSlug;
-  const activeVersion: SongVersion | undefined = song.versions.find((v) => v.slug === activeSlug)
-    ?? song.versions[0];
+  const defaultSlug = song.default_variant ?? song.variants[0]?.slug;
+  const activeSlug = variantParam ?? defaultSlug;
+  const activeVariant: SongVariant | undefined = song.variants.find((v) => v.slug === activeSlug)
+    ?? song.variants[0];
 
-  const multipleVersions = song.versions.length > 1;
+  const multipleVariants = song.variants.length > 1;
 
-  function handleVersionSelect(v: SongVersion) {
+  function handleVariantSelect(v: SongVariant) {
     if (v.slug === defaultSlug) {
       navigate(`/songs/${song!.slug}`);
     } else {
@@ -71,31 +71,31 @@ export default function SongPage() {
         )}
       </header>
 
-      {multipleVersions && (
-        <nav className="version-tabs" aria-label="Versions">
-          {song.versions.map((v) => (
+      {multipleVariants && (
+        <nav className="variant-tabs" aria-label="Variants">
+          {song.variants.map((v) => (
             <button
               key={v.slug}
               type="button"
-              className={`version-tab${v.slug === activeVersion?.slug ? ' version-tab--active' : ''}`}
-              onClick={() => handleVersionSelect(v)}
+              className={`variant-tab${v.slug === activeVariant?.slug ? ' variant-tab--active' : ''}`}
+              onClick={() => handleVariantSelect(v)}
             >
               {v.label}
               {v.description && (
-                <span className="version-tab__desc">{v.description}</span>
+                <span className="variant-tab__desc">{v.description}</span>
               )}
             </button>
           ))}
         </nav>
       )}
 
-      {activeVersion?.youtube_id && (
+      {activeVariant?.youtube_id && (
         <section className="song-page__video">
           <iframe
             width="100%"
             style={{ aspectRatio: '16/9', border: 'none', display: 'block' }}
-            src={`https://www.youtube.com/embed/${activeVersion.youtube_id}`}
-            title={`${song.title} — ${activeVersion.label}`}
+            src={`https://www.youtube.com/embed/${activeVariant.youtube_id}`}
+            title={`${song.title} — ${activeVariant.label}`}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
@@ -109,25 +109,25 @@ export default function SongPage() {
         </section>
       )}
 
-      {activeVersion?.score_url && (
+      {activeVariant?.score_url && (
         <section className="song-page__score">
           <h2 className="section-heading">Score</h2>
           <Suspense fallback={<p className="score-status">Loading score…</p>}>
             <ScoreViewer
-              url={activeVersion.score_url}
-              settings={activeVersion.score_viewer_settings}
+              url={activeVariant.score_url}
+              settings={activeVariant.score_viewer_settings}
             />
           </Suspense>
         </section>
       )}
 
-      {allowMp3 && activeVersion?.audio_url && (
+      {allowMp3 && activeVariant?.audio_url && (
         <section className="song-page__audio">
-          <h2 className="section-heading">Listen — {activeVersion.label}</h2>
+          <h2 className="section-heading">Listen — {activeVariant.label}</h2>
           <audio
-            key={activeVersion.audio_url}
+            key={activeVariant.audio_url}
             controls
-            src={activeVersion.audio_url}
+            src={activeVariant.audio_url}
             className="audio-player"
           />
         </section>
@@ -136,24 +136,24 @@ export default function SongPage() {
       <section className="song-page__downloads">
         <h2 className="section-heading">Downloads &amp; Links</h2>
         <ul className="download-list">
-          {allowMp3 && activeVersion?.audio_url && (
+          {allowMp3 && activeVariant?.audio_url && (
             <li>
-              <a href={activeVersion.audio_url} download className="download-link">
-                Audio — {activeVersion.label} (MP3)
+              <a href={activeVariant.audio_url} download className="download-link">
+                Audio — {activeVariant.label} (MP3)
               </a>
             </li>
           )}
-          {allowXml && activeVersion?.score_url && (
+          {allowXml && activeVariant?.score_url && (
             <li>
-              <a href={activeVersion.score_url} download className="download-link">
+              <a href={activeVariant.score_url} download className="download-link">
                 Score (MusicXML)
               </a>
             </li>
           )}
-          {activeVersion?.youtube_url && (
+          {activeVariant?.youtube_url && (
             <li>
               <a
-                href={activeVersion.youtube_url}
+                href={activeVariant.youtube_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="download-link"

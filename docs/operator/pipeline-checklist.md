@@ -81,7 +81,7 @@ to `main` before the push trigger fires:
 
 ## Phase 3 — Prepare a real song
 
-Each song lives under `projects/<song-slug>/` with a `versions/` subdirectory
+Each song lives under `projects/<song-slug>/` with a `variants/` subdirectory
 for each rendition. The sample song `projects/sample-song/` has a placeholder
 MusicXML; replace it with real content before production use.
 
@@ -92,11 +92,11 @@ projects/<song-slug>/
   song.json                    # title, bpm, key, credits, page_config
   vocal.musicxml               # shared vocal score
   inst.musicxml                # optional shared accompaniment score
-  versions/
-    <version-slug>/
-      version.json             # label, build_config, score_viewer_settings
-      vocal.musicxml           # optional per-version score override
-      inst.musicxml            # optional per-version accompaniment override
+  variants/
+    <variant-slug>/
+      variant.json             # label, build_config, score_viewer_settings
+      vocal.musicxml           # optional per-variant score override
+      inst.musicxml            # optional per-variant accompaniment override
 ```
 
 ### 3.1 Vocal MusicXML (`vocal.musicxml`)
@@ -115,8 +115,8 @@ projects/<song-slug>/
 - Provide `inst.mid` (MIDI) for direct FluidSynth rendering.
 - Or `inst.musicxml` if MuseScore is installed in the environment
   (CI runner has no MuseScore — MIDI is strongly preferred).
-- Place at the song root level to share across versions, or inside
-  a version directory to override for that version only.
+- Place at the song root level to share across variants, or inside
+  a variant directory to override for that variant only.
 
 ### 3.3 JSON configuration
 
@@ -125,7 +125,7 @@ Review and edit:
 | File                               | Key fields to check                                                    |
 | ---------------------------------- | ---------------------------------------------------------------------- |
 | `song.json`                        | `slug`, `title`, `bpm`, `key`, `credits`, `page_config`                |
-| `versions/<slug>/version.json`     | `label`, `build_config.audio_settings`, `build_config.video_settings`  |
+| `variants/<slug>/variant.json`     | `label`, `build_config.audio_settings`, `build_config.video_settings`  |
 
 ---
 
@@ -136,7 +136,7 @@ Review and edit:
 1. Go to **Actions → Music Production Pipeline**.
 2. Click **Run workflow**.
 3. In the **song** field, enter the song slug (e.g. `sample-song`).
-4. In the **version** field, enter the version slug (e.g. `default`).
+4. In the **variant** field, enter the variant slug (e.g. `default`).
 5. Click **Run workflow**.
 
 Watch each job:
@@ -164,11 +164,11 @@ Once the manual run succeeds, all future changes to `projects/**` on
 
 | Task                                                          | Command / Location                                                                                       |
 | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| Add a new song                                                | Create `projects/<slug>/` with `song.json`, `vocal.musicxml`, and at least one version; push to `main`  |
-| Add a new version to an existing song                         | Create `projects/<slug>/versions/<version>/` with `version.json`; push to `main`                        |
+| Add a new song                                                | Create `projects/<slug>/` with `song.json`, `vocal.musicxml`, and at least one variant; push to `main`  |
+| Add a new variant to an existing song                         | Create `projects/<slug>/variants/<variant>/` with `variant.json`; push to `main`                        |
 | Update GAS relay code                                         | `cd gas && npm run push && npm run deploy`                                                               |
 | Rotate R2 credentials                                         | Create new token in Cloudflare, update GitHub secret, revoke old token                                   |
-| Re-process a version without changing its files               | Trigger workflow manually with the song and version slugs                                                 |
+| Re-process a variant without changing its files               | Trigger workflow manually with the song and variant slugs                                                 |
 | Check pipeline logs                                           | GitHub → Actions → select the run → expand each step                                                    |
 
 Last reviewed: 2026-05-23

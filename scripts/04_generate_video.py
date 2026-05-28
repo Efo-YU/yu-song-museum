@@ -11,7 +11,7 @@ Usage:
 
 Reads:
     <song_dir>/song.json
-    <version_dir>/version.json
+    <version_dir>/variant.json
     <version_dir>/output/audio.wav
 
 Writes:
@@ -110,7 +110,7 @@ def main() -> None:
     version_dir = Path(sys.argv[2])
 
     song_meta = json.loads((song_dir / "song.json").read_text())
-    version_meta = json.loads((version_dir / "version.json").read_text())
+    version_meta = json.loads((version_dir / "variant.json").read_text())
 
     out_dir = version_dir / "output"
     audio_wav = out_dir / "audio.wav"

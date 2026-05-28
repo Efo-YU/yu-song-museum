@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Mix vocal and accompaniment with FFmpeg, driven by version.json.
+"""Mix vocal and accompaniment with FFmpeg, driven by variant.json.
 
 Usage:
-    python3 scripts/03_mixdown.py <version_dir>
+    python3 scripts/03_mixdown.py <variant_dir>
 
 Reads:
-    <version_dir>/version.json              — build_config.audio_settings
-    <version_dir>/output/vocal_raw.wav
-    <version_dir>/output/inst_raw.wav
+    <variant_dir>/variant.json              — build_config.audio_settings
+    <variant_dir>/output/vocal_raw.wav
+    <variant_dir>/output/inst_raw.wav
 
 Writes:
-    <version_dir>/output/audio.wav    — final mixed audio (WAV, 44100 Hz, stereo)
-    <version_dir>/output/audio.mp3    — web-delivery copy (CBR 192 kbps)
+    <variant_dir>/output/audio.wav    — final mixed audio (WAV, 44100 Hz, stereo)
+    <variant_dir>/output/audio.mp3    — web-delivery copy (CBR 192 kbps)
 """
 
 from __future__ import annotations
@@ -61,11 +61,11 @@ def build_filter(vocal_vol: float, inst_vol: float, effects: list[dict]) -> str:
 
 def main() -> None:
     if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <version_dir>", file=sys.stderr)
+        print(f"Usage: {sys.argv[0]} <variant_dir>", file=sys.stderr)
         sys.exit(1)
 
     version_dir = Path(sys.argv[1])
-    config = json.loads((version_dir / "version.json").read_text())
+    config = json.loads((version_dir / "variant.json").read_text())
 
     audio = config.get("build_config", {}).get("audio_settings", {})
     vocal_vol = float(audio.get("vocal_volume", 1.0))

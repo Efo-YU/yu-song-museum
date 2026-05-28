@@ -2,7 +2,7 @@ name: Music Production Pipeline
 
 # Triggers:
 #   - Push to main that touches projects/ (normal production flow)
-#   - Manual dispatch with optional song/version overrides
+#   - Manual dispatch with optional song/variant overrides
 on:
   push:
     branches: [main]
@@ -13,8 +13,8 @@ on:
         description: "Force-process a single song slug (leave blank to use git diff)"
         required: false
         default: ""
-      version:
-        description: "Version slug for the forced song (default: default)"
+      variant:
+        description: "Variant slug for the forced song (default: default)"
         required: false
         default: "default"
 
@@ -24,9 +24,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # ── Job 0: Detect changed (song, version) pairs ───────────────────────────
+  # ── Job 0: Detect changed (song, variant) pairs ───────────────────────────
   detect-diff:
-    name: Detect changed versions
+    name: Detect changed variants
     runs-on: ubuntu-latest
     outputs:
       pairs: ${{ steps.diff.outputs.pairs }}
@@ -36,29 +36,29 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Detect changed (song, version) pairs
+      - name: Detect changed (song, variant) pairs
         id: diff
         env:
           FORCE_SONG: ${{ github.event.inputs.song }}
-          FORCE_VERSION: ${{ github.event.inputs.version }}
+          FORCE_VARIANT: ${{ github.event.inputs.variant }}
         run: |
           if [[ -n "$FORCE_SONG" ]]; then
-            pairs="[{\"song\":\"$FORCE_SONG\",\"version\":\"$FORCE_VERSION\"}]"
+            pairs="[{\"song\":\"$FORCE_SONG\",\"variant\":\"$FORCE_VARIANT\"}]"
           else
             pairs=$(bash scripts/00_detect_diff.sh)
           fi
           echo "pairs=$pairs" >> "$GITHUB_OUTPUT"
           if [[ "$pairs" == "[]" ]]; then
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
-            echo "No changed versions detected — skipping pipeline."
+            echo "No changed variants detected — skipping pipeline."
           else
             echo "has_changes=true" >> "$GITHUB_OUTPUT"
             echo "Changed pairs: $pairs"
           fi
 
-  # ── Job 1: Per-version pipeline (matrix) ─────────────────────────────────
+  # ── Job 1: Per-variant pipeline (matrix) ─────────────────────────────────
   pipeline:
-    name: "Pipeline: ${{ matrix.song }}/${{ matrix.version }}"
+    name: "Pipeline: ${{ matrix.song }}/${{ matrix.variant }}"
     needs: detect-diff
     if: needs.detect-diff.outputs.has_changes == 'true'
     runs-on: ubuntu-latest
@@ -95,11 +95,20 @@ jobs:
           SINGER: ${{ secrets.NEUTRINO_SINGER }}
         run: bash scripts/01_fetch_models.sh
 
+      # ── Step 1.5: SSoT conversion (runs only when full.musicxml is present) ──
+      - name: Convert SSoT MusicXML into vocal + backing parts
+        run: |
+          if [ -f "projects/${{ matrix.song }}/full.musicxml" ]; then
+            python3 scripts/00_convert_ssot.py --song "${{ matrix.song }}"
+          else
+            echo "[convert-ssot] No full.musicxml for ${{ matrix.song }} — skipping"
+          fi
+
       # ── Step 2: Synthesis ──────────────────────────────────────────────────
       - name: Synthesize vocal and accompaniment
         env:
           SONG_DIR: projects/${{ matrix.song }}
-          VERSION_DIR: projects/${{ matrix.song }}/versions/${{ matrix.version }}
+          VARIANT_DIR: projects/${{ matrix.song }}/variants/${{ matrix.variant }}
           SINGER: ${{ secrets.NEUTRINO_SINGER }}
           NEUTRINO_DIR: /tmp/neutrino
           sf3_PATH: /tmp/default.sf3
@@ -109,16 +118,16 @@ jobs:
       - name: Mix vocal + accompaniment
         run: >
           python3 scripts/03_mixdown.py
-          projects/${{ matrix.song }}/versions/${{ matrix.version }}
+          projects/${{ matrix.song }}/variants/${{ matrix.variant }}
 
       # ── Persist audio (7-day retention) ────────────────────────────────────
       - name: Upload audio artifact
         uses: actions/upload-artifact@v4
         with:
-          name: audio-${{ matrix.song }}-${{ matrix.version }}
+          name: audio-${{ matrix.song }}-${{ matrix.variant }}
           path: |
-            projects/${{ matrix.song }}/versions/${{ matrix.version }}/output/audio.wav
-            projects/${{ matrix.song }}/versions/${{ matrix.version }}/output/audio.mp3
+            projects/${{ matrix.song }}/variants/${{ matrix.variant }}/output/audio.wav
+            projects/${{ matrix.song }}/variants/${{ matrix.variant }}/output/audio.mp3
           retention-days: 7
 
       # ── Step 4: Generate video (not persisted) ─────────────────────────────
@@ -126,7 +135,7 @@ jobs:
         run: >
           python3 scripts/04_generate_video.py
           projects/${{ matrix.song }}
-          projects/${{ matrix.song }}/versions/${{ matrix.version }}
+          projects/${{ matrix.song }}/variants/${{ matrix.variant }}
 
       # ── Step 5: YouTube upload via GAS relay ───────────────────────────────
       - name: Upload to YouTube via GAS relay
@@ -140,17 +149,17 @@ jobs:
         run: >
           python3 scripts/05_trigger_gas.py
           projects/${{ matrix.song }}
-          projects/${{ matrix.song }}/versions/${{ matrix.version }}
+          projects/${{ matrix.song }}/variants/${{ matrix.variant }}
 
-      # ── Persist outputs (video ID + audio + updated version.json) ──────────
+      # ── Persist outputs (video ID + audio + updated variant.json) ──────────
       - name: Upload meta artifact
         uses: actions/upload-artifact@v4
         with:
-          name: meta-${{ matrix.song }}-${{ matrix.version }}
+          name: meta-${{ matrix.song }}-${{ matrix.variant }}
           path: |
-            projects/${{ matrix.song }}/versions/${{ matrix.version }}/output/meta.json
-            projects/${{ matrix.song }}/versions/${{ matrix.version }}/output/audio.mp3
-            projects/${{ matrix.song }}/versions/${{ matrix.version }}/version.json
+            projects/${{ matrix.song }}/variants/${{ matrix.variant }}/output/meta.json
+            projects/${{ matrix.song }}/variants/${{ matrix.variant }}/output/audio.mp3
+            projects/${{ matrix.song }}/variants/${{ matrix.variant }}/variant.json
           retention-days: 30
 
   # ── Job 2: Web deploy ─────────────────────────────────────────────────────
@@ -190,13 +199,13 @@ jobs:
       - name: Merge songs.json and copy public assets
         run: python3 scripts/06_merge_songs.py
 
-      - name: Commit youtube_id back to version.json files
+      - name: Commit youtube_id back to variant.json files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add projects/*/versions/*/version.json
+          git add projects/*/variants/*/variant.json
           git diff --cached --quiet && echo "No youtube_id changes." || (
-            git commit -m "chore: persist youtube_id for processed versions [skip ci]" &&
+            git commit -m "chore: persist youtube_id for processed variants [skip ci]" &&
             git push origin HEAD:main
           )
 

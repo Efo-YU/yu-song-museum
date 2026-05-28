@@ -25,8 +25,8 @@ export default function SongCard({ song, index }: Props) {
           {[song.key, song.bpm ? `${song.bpm} bpm` : ''].filter(Boolean).join('  ·  ')}
         </p>
       )}
-      {song.versions.length > 1 && (
-        <p className="song-card__versions">{song.versions.length} versions</p>
+      {song.variants.length > 1 && (
+        <p className="song-card__variants">{song.variants.length} variants</p>
       )}
     </Link>
   );
