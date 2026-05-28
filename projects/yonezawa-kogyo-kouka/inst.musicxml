@@ -120,7 +120,7 @@
         <voice>1</voice>
       </note>
     </measure>
-    <measure number="2" implicit="yes" width="203.07">
+    <measure number="2" width="203.07">
       <print>
         <system-layout>
           <system-margins>
@@ -148,6 +148,12 @@
         <bar-style>heavy-light</bar-style>
         <repeat direction="forward" />
       </barline>
+      <note>
+        <rest />
+        <duration>4</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+      </note>
       <note default-x="82.13" default-y="-30">
         <pitch>
           <step>G</step>
@@ -640,6 +646,12 @@
         <stem>down</stem>
         <beam number="1">end</beam>
         <beam number="2">backward hook</beam>
+      </note>
+      <note>
+        <rest />
+        <duration>8</duration>
+        <voice>1</voice>
+        <type>half</type>
       </note>
     </measure>
     <measure number="12" width="158.09">

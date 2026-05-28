@@ -120,7 +120,7 @@
         <voice>1</voice>
       </note>
     </measure>
-    <measure number="2" implicit="yes">
+    <measure number="2">
       <attributes>
         <divisions>4</divisions>
         <key>
@@ -135,6 +135,12 @@
           <line>2</line>
         </clef>
       </attributes>
+      <note>
+        <rest />
+        <duration>4</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+      </note>
       <note default-x="107.99" default-y="-30">
         <pitch>
           <step>G</step>
@@ -762,6 +768,12 @@
           <syllabic>single</syllabic>
           <text>ら</text>
         </lyric>
+      </note>
+      <note>
+        <rest />
+        <duration>8</duration>
+        <voice>1</voice>
+        <type>half</type>
       </note>
     </measure>
     <measure number="12">
@@ -1415,7 +1427,7 @@
         <type>quarter</type>
       </note>
     </measure>
-    <measure number="23" implicit="yes">
+    <measure number="23">
       <attributes>
         <divisions>4</divisions>
         <key>
@@ -1430,6 +1442,12 @@
           <line>2</line>
         </clef>
       </attributes>
+      <note>
+        <rest />
+        <duration>4</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+      </note>
       <note default-x="107.99" default-y="-30">
         <pitch>
           <step>G</step>
@@ -2057,6 +2075,12 @@
           <syllabic>single</syllabic>
           <text>た</text>
         </lyric>
+      </note>
+      <note>
+        <rest />
+        <duration>8</duration>
+        <voice>1</voice>
+        <type>half</type>
       </note>
     </measure>
     <measure number="33">
@@ -2710,7 +2734,7 @@
         <type>quarter</type>
       </note>
     </measure>
-    <measure number="44" implicit="yes">
+    <measure number="44">
       <attributes>
         <divisions>4</divisions>
         <key>
@@ -2725,6 +2749,12 @@
           <line>2</line>
         </clef>
       </attributes>
+      <note>
+        <rest />
+        <duration>4</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+      </note>
       <note default-x="107.99" default-y="-30">
         <pitch>
           <step>G</step>
@@ -3352,6 +3382,12 @@
           <syllabic>single</syllabic>
           <text>の</text>
         </lyric>
+      </note>
+      <note>
+        <rest />
+        <duration>8</duration>
+        <voice>1</voice>
+        <type>half</type>
       </note>
     </measure>
     <measure number="54">
@@ -4005,7 +4041,7 @@
         <type>quarter</type>
       </note>
     </measure>
-    <measure number="65" implicit="yes">
+    <measure number="65">
       <attributes>
         <divisions>4</divisions>
         <key>
@@ -4020,6 +4056,12 @@
           <line>2</line>
         </clef>
       </attributes>
+      <note>
+        <rest />
+        <duration>4</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+      </note>
       <note default-x="107.99" default-y="-30">
         <pitch>
           <step>G</step>
@@ -4647,6 +4689,12 @@
           <syllabic>single</syllabic>
           <text>る</text>
         </lyric>
+      </note>
+      <note>
+        <rest />
+        <duration>8</duration>
+        <voice>1</voice>
+        <type>half</type>
       </note>
     </measure>
     <measure number="75">
