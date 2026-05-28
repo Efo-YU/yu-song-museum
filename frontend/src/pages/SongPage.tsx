@@ -121,13 +121,25 @@ export default function SongPage() {
         </section>
       )}
 
+      {allowMp3 && activeVersion?.audio_url && (
+        <section className="song-page__audio">
+          <h2 className="section-heading">Listen — {activeVersion.label}</h2>
+          <audio
+            key={activeVersion.audio_url}
+            controls
+            src={activeVersion.audio_url}
+            className="audio-player"
+          />
+        </section>
+      )}
+
       <section className="song-page__downloads">
         <h2 className="section-heading">Downloads &amp; Links</h2>
         <ul className="download-list">
           {allowMp3 && activeVersion?.audio_url && (
             <li>
               <a href={activeVersion.audio_url} download className="download-link">
-                Audio (MP3)
+                Audio — {activeVersion.label} (MP3)
               </a>
             </li>
           )}

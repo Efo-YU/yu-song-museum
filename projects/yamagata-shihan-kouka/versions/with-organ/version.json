@@ -1,11 +1,11 @@
 {
   "slug": "with-organ",
   "label": "With Organ",
-  "score_file": "vocal.musicxml",
+  "score_file": "with-organ.musicxml",
   "build_config": {
     "audio_settings": {
       "vocal_volume": 1.0,
-      "inst_volume": 0.7,
+      "inst_volume": 1.0,
       "effects": [
         {
           "type": "highpass",
@@ -23,7 +23,8 @@
   "score_viewer_settings": {
     "default_zoom": 1.0,
     "default_visible_parts": [
-      "vocal"
+      "ボーカル",
+      "オルガン"
     ]
   }
 }

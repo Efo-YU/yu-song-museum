@@ -23,10 +23,16 @@ from pathlib import Path
 
 
 def build_filter(vocal_vol: float, inst_vol: float, effects: list[dict]) -> str:
+    # Normalize each non-silent track to -16 LUFS before mixing so that
+    # NEUTRINO vocal and FluidSynth accompaniment land at comparable levels
+    # regardless of their raw output levels.  Skip loudnorm for silent tracks
+    # (vol == 0) to avoid amplifying noise in the placeholder WAV.
+    vocal_pre = "loudnorm=I=-16:TP=-1.5:LRA=11," if vocal_vol > 0 else ""
+    inst_pre  = "loudnorm=I=-16:TP=-1.5:LRA=11," if inst_vol  > 0 else ""
     chains = [
-        f"[0:a]volume={vocal_vol}[v]",
-        f"[1:a]volume={inst_vol}[i]",
-        "[v][i]amix=inputs=2:duration=longest[mixed]",
+        f"[0:a]{vocal_pre}volume={vocal_vol}[v]",
+        f"[1:a]{inst_pre}volume={inst_vol}[i]",
+        "[v][i]amix=inputs=2:duration=longest:normalize=0[mixed]",
     ]
 
     label = "mixed"

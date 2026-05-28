@@ -213,7 +213,14 @@ main { max-width: 1060px; margin: 0 auto; padding: 2rem 2rem 4rem; }
 .song-page__video,
 .song-page__description,
 .song-page__score,
+.song-page__audio,
 .song-page__downloads { margin-top: 3rem; }
+
+.audio-player {
+  width: 100%;
+  margin-top: 0.75rem;
+  accent-color: var(--ink);
+}
 
 .song-page__video {
   overflow: hidden;

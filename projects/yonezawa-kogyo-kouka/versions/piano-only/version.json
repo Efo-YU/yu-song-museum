@@ -26,5 +26,6 @@
     "default_visible_parts": [
       "Piano"
     ]
-  }
+  },
+  "score_file": "piano-only.musicxml"
 }

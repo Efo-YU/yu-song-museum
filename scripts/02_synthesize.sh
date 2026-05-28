@@ -54,6 +54,15 @@ OUT_DIR="$ABS_VERSION/output"
 
 mkdir -p "$OUT_DIR"
 
+# ── no_accompaniment flag (checked early so we can exit before NEUTRINO) ──────
+NO_INST=$(python3 -c "
+import json, sys
+try:
+    d = json.load(open('$ABS_VERSION/version.json'))
+    print('true' if d.get('no_accompaniment', False) else 'false')
+except: print('false')
+" 2>/dev/null || echo "false")
+
 # ── Skip-vocal flag ───────────────────────────────────────────────────────────
 # Read skip_vocal_synthesis from version.json (default: false).
 # Also skip if no vocal.musicxml exists in either version dir or song dir.
@@ -197,6 +206,14 @@ echo "[synth] Vocal synthesis complete: $OUT_DIR/vocal_raw.wav"
 fi  # end: SKIP_VOCAL == false (NEUTRINO synthesis block)
 
 # ── Accompaniment rendering (FluidSynth) ─────────────────────────────────────
+
+if [[ "$NO_INST" == "true" ]]; then
+  echo "[synth] no_accompaniment=true — generating 1 s silent inst placeholder"
+  ffmpeg -y -f lavfi -i "anullsrc=r=44100:cl=stereo" -t 1 \
+    -ar 44100 -ac 2 "$OUT_DIR/inst_raw.wav"
+  echo "[synth] Done: vocal_raw.wav and inst_raw.wav written to $OUT_DIR"
+  exit 0
+fi
 
 # Resolve inst file: version-level override wins over song-level default
 INST_MID=""

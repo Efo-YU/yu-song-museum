@@ -5,7 +5,7 @@
   "build_config": {
     "audio_settings": {
       "vocal_volume": 1.0,
-      "inst_volume": 0.5,
+      "inst_volume": 0.0,
       "effects": [
         {
           "type": "highpass",
@@ -25,5 +25,6 @@
     "default_visible_parts": [
       "Voice"
     ]
-  }
+  },
+  "no_accompaniment": true
 }

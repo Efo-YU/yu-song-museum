@@ -26,5 +26,6 @@
     "default_visible_parts": [
       "オルガン"
     ]
-  }
+  },
+  "score_file": "organ-only.musicxml"
 }
