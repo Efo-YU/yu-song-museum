@@ -27,6 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git curl ca-certificates less procps \
         jq ripgrep fd-find zsh \
         build-essential \
+        fonts-noto-cjk \
     && rm -rf /var/lib/apt/lists/*
 
 # GitHub CLI (`gh`).
