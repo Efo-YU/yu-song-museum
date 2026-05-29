@@ -284,6 +284,14 @@ jobs:
           path: artifacts/meta
           merge-multiple: false
 
+      - name: Set up Python for SVG generation
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install verovio for SVG generation
+        run: pip install --quiet verovio
+
       - name: Merge songs.json and copy public assets
         run: python3 scripts/06_merge_songs.py
 
