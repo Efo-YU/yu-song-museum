@@ -32,6 +32,7 @@ export interface SongVariant {
   youtube_url?: string;
   audio_url?: string;
   score_url?: string;
+  svg_url?: string;
   score_viewer_settings?: ScoreViewerSettings;
 }
 

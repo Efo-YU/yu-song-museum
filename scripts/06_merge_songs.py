@@ -26,6 +26,23 @@ import shutil
 from pathlib import Path
 
 
+def _generate_svg(xml_path: Path, svg_path: Path) -> None:
+    """Convert MusicXML to SVG. No-op if verovio is unavailable."""
+    try:
+        import importlib.util as _ilu
+        _script = Path(__file__).parent / "07_generate_svg.py"
+        spec = _ilu.spec_from_file_location("_gen_svg", _script)
+        if spec is None or spec.loader is None:
+            return
+        mod = _ilu.module_from_spec(spec)
+        spec.loader.exec_module(mod)  # type: ignore[union-attr]
+        mod.convert(xml_path, svg_path)  # type: ignore[attr-defined]
+    except ImportError:
+        pass  # verovio not available; SVGs will be absent this run
+    except Exception as exc:
+        print(f"WARNING: SVG generation failed for {xml_path.name}: {exc}")
+
+
 REPO_ROOT = Path(__file__).parent.parent
 ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "meta"
 FRONTEND_DIR = REPO_ROOT / "frontend"
@@ -56,12 +73,14 @@ def collect_new_metas() -> list[tuple[dict, Path]]:
 
 
 def copy_scores(song_slug: str) -> None:
-    """Copy MusicXML files from the song root to public/scores/<slug>/."""
+    """Copy MusicXML files from the song root to public/scores/<slug>/ and generate SVGs."""
     song_dir = PROJECTS_DIR / song_slug
     score_dest = PUBLIC_SCORES / song_slug
     score_dest.mkdir(parents=True, exist_ok=True)
     for xml in song_dir.glob("*.musicxml"):
-        shutil.copy2(xml, score_dest / xml.name)
+        dest_xml = score_dest / xml.name
+        shutil.copy2(xml, dest_xml)
+        _generate_svg(dest_xml, dest_xml.with_suffix(".svg"))
 
 
 def copy_audio(song_slug: str, variant_slug: str, artifact_dir: Path) -> None:
@@ -123,6 +142,10 @@ def main() -> None:
             for field in ("title", "bpm", "key", "credits", "page_config"):
                 if field in live_meta:
                     existing[song_slug][field] = live_meta[field]
+
+        # Derive svg_url from score_url (e.g. scores/slug/full.musicxml → .svg)
+        if "score_url" in variant_data and "svg_url" not in variant_data:
+            variant_data["svg_url"] = variant_data["score_url"].replace(".musicxml", ".svg")
 
         # Update or insert the variant entry
         variants: list[dict] = existing[song_slug].setdefault("variants", [])

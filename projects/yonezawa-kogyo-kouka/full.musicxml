@@ -74,10 +74,10 @@
   </credit>
   <part-list>
     <score-part id="P1">
-      <part-name>Piano</part-name>
+      <part-name>Pno.</part-name>
       <part-abbreviation>Pno.</part-abbreviation>
       <score-instrument id="P1-I1">
-        <instrument-name>Piano</instrument-name>
+        <instrument-name>Pno.</instrument-name>
         <instrument-sound>keyboard.piano</instrument-sound>
       </score-instrument>
       <midi-device id="P1-I1" port="1" />
@@ -89,10 +89,10 @@
       </midi-instrument>
     </score-part>
     <score-part id="P2">
-      <part-name>ボーカル</part-name>
+      <part-name>Vo.</part-name>
       <part-abbreviation>Vo.</part-abbreviation>
       <score-instrument id="P2-I1">
-        <instrument-name>ボーカル</instrument-name>
+        <instrument-name>Vo.</instrument-name>
         <instrument-sound>voice.vocals</instrument-sound>
       </score-instrument>
       <midi-device id="P2-I1" port="1" />

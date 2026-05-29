@@ -24,7 +24,7 @@
   "score_viewer_settings": {
     "default_zoom": 1.0,
     "default_visible_parts": [
-      "Piano"
+      "Pno."
     ]
   },
   "score_file": "inst.musicxml"

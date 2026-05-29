@@ -22,11 +22,23 @@
 #   VARIANT_DIR  — path to the variant directory, e.g. projects/yamagata-shihan-kouka/variants/default
 #
 # Optional env vars:
-#   SINGER        — NEUTRINO singer model name (default: MERROW)
+#   SINGER        — NEUTRINO singer model name, used as fallback when variant.json
+#                   does not specify a "singers" array (default: MERROW)
 #   NEUTRINO_DIR  — path to the fetched NEUTRINO package (default: /tmp/neutrino)
 #   sf3_PATH      — SoundFont file path (default: /tmp/default.sf3)
 #   NUM_THREADS   — synthesis parallelism (default: 4)
 #   TRANSPOSE     — semitone shift, 0 = no change (default: 0)
+#
+# Multi-singer support:
+#   When variant.json contains a "singers" array, each entry is synthesized
+#   separately and the results are mixed:
+#     "singers": [
+#       {"model": "MERROW", "volume": 1.0},
+#       {"model": "ITAKO",  "volume": 0.6}
+#     ]
+#   Volumes are applied before amix so relative loudness is preserved.
+#   When "singers" is absent or empty, falls back to the SINGER env var
+#   with volume 1.0 (existing behaviour).
 #
 # Output files written to $VERSION_DIR/output/:
 #   vocal_raw.wav — synthesized vocal WAV (sample rate set by NEUTRINO model)
@@ -53,6 +65,33 @@ NEUTRINO_ABS="$(cd "$NEUTRINO_DIR" && pwd)"
 OUT_DIR="$ABS_VERSION/output"
 
 mkdir -p "$OUT_DIR"
+
+# ── Read singer list from variant.json ───────────────────────────────────────
+# Output format: one "model:volume" pair per line.
+# Falls back to $SINGER env var with volume 1.0 when "singers" is absent/empty.
+read_singers() {
+  python3 - "$ABS_VERSION/variant.json" "$SINGER" <<'PYEOF'
+import json, sys
+
+path, fallback = sys.argv[1], sys.argv[2]
+try:
+    data = json.load(open(path))
+    singers = data.get("singers", [])
+except Exception:
+    singers = []
+
+if singers:
+    for s in singers:
+        model = s.get("model", fallback)
+        vol   = float(s.get("volume", 1.0))
+        print(f"{model}:{vol}")
+else:
+    print(f"{fallback}:1.0")
+PYEOF
+}
+
+mapfile -t SINGER_ENTRIES < <(read_singers)
+SINGER_COUNT=${#SINGER_ENTRIES[@]}
 
 # ── no_accompaniment flag (checked early so we can exit before NEUTRINO) ──────
 NO_INST=$(python3 -c "
@@ -114,93 +153,147 @@ bin/musicXMLtoLabel \
   "score/label/full/${SCORE_ID}.lab" \
   "score/label/mono/${SCORE_ID}.lab"
 
-echo "[synth] Step 2: Neural synthesis → WAV"
-PHRASELIST="output/${SCORE_ID}-phraselist.txt"
-rm -f "$PHRASELIST"
+# ── Per-singer NEUTRINO synthesis ───────────────────────────────────────────
+# synthesize_singer <model> <out_wav>
+#   Runs all phrases for the given model and writes the combined WAV.
+synthesize_singer() {
+  local MODEL="$1"
+  local OUT_WAV="$2"
 
-echo "[synth] Step 2a: bootstrap phrase 1 (generates phraselist)"
-bin/neutrino \
-  "score/label/full/${SCORE_ID}.lab" \
-  "score/label/timing/${SCORE_ID}.lab" \
-  "output/${SCORE_ID}-1.f0" \
-  "output/${SCORE_ID}-1.melspec" \
-  "output/${SCORE_ID}-1.wav" \
-  "model/${SINGER}/" \
-  -n "$NUM_THREADS" -f "$TRANSPOSE" \
-  -i "$PHRASELIST" -p 1 -m -t
+  echo "[synth] Step 2: Neural synthesis → WAV (model: $MODEL)"
+  local PHRASELIST="output/${SCORE_ID}-phraselist.txt"
+  rm -f "$PHRASELIST"
 
-mapfile -t PL_IDX    < <(awk '{print $1}' "$PHRASELIST")
-mapfile -t PL_START  < <(awk '{print $2}' "$PHRASELIST")
-mapfile -t PL_VOICED < <(awk '{print $3}' "$PHRASELIST")
-N_PHRASES=${#PL_IDX[@]}
-
-TOTAL_MS=$(awk 'END{printf "%.0f", $2/10000}' "score/label/timing/${SCORE_ID}.lab")
-
-for (( i=0; i<N_PHRASES; i++ )); do
-  idx="${PL_IDX[$i]}"
-  if [[ "${PL_VOICED[$i]}" != "1" || "$idx" == "1" ]]; then continue; fi
-  if (( i + 1 < N_PHRASES )); then
-    end_ms="${PL_START[$((i+1))]}"
-  else
-    end_ms="$TOTAL_MS"
-  fi
-  echo "[synth] Step 2b: phrase $idx (${PL_START[$i]}–${end_ms} ms)"
+  echo "[synth] Step 2a: bootstrap phrase 1 (generates phraselist)"
   bin/neutrino \
     "score/label/full/${SCORE_ID}.lab" \
     "score/label/timing/${SCORE_ID}.lab" \
-    "output/${SCORE_ID}-${idx}.f0" \
-    "output/${SCORE_ID}-${idx}.melspec" \
-    "output/${SCORE_ID}-${idx}.wav" \
-    "model/${SINGER}/" \
+    "output/${SCORE_ID}-1.f0" \
+    "output/${SCORE_ID}-1.melspec" \
+    "output/${SCORE_ID}-1.wav" \
+    "model/${MODEL}/" \
     -n "$NUM_THREADS" -f "$TRANSPOSE" \
-    -i "$PHRASELIST" -p "$idx" -m -t
+    -i "$PHRASELIST" -p 1 -m -t
+
+  mapfile -t PL_IDX    < <(awk '{print $1}' "$PHRASELIST")
+  mapfile -t PL_START  < <(awk '{print $2}' "$PHRASELIST")
+  mapfile -t PL_VOICED < <(awk '{print $3}' "$PHRASELIST")
+  local N_PHRASES=${#PL_IDX[@]}
+
+  local TOTAL_MS
+  TOTAL_MS=$(awk 'END{printf "%.0f", $2/10000}' "score/label/timing/${SCORE_ID}.lab")
+
+  for (( i=0; i<N_PHRASES; i++ )); do
+    local idx="${PL_IDX[$i]}"
+    if [[ "${PL_VOICED[$i]}" != "1" || "$idx" == "1" ]]; then continue; fi
+    local end_ms
+    if (( i + 1 < N_PHRASES )); then
+      end_ms="${PL_START[$((i+1))]}"
+    else
+      end_ms="$TOTAL_MS"
+    fi
+    echo "[synth] Step 2b: phrase $idx (${PL_START[$i]}–${end_ms} ms)"
+    bin/neutrino \
+      "score/label/full/${SCORE_ID}.lab" \
+      "score/label/timing/${SCORE_ID}.lab" \
+      "output/${SCORE_ID}-${idx}.f0" \
+      "output/${SCORE_ID}-${idx}.melspec" \
+      "output/${SCORE_ID}-${idx}.wav" \
+      "model/${MODEL}/" \
+      -n "$NUM_THREADS" -f "$TRANSPOSE" \
+      -i "$PHRASELIST" -p "$idx" -m -t
+  done
+
+  local FIRST_IDX
+  FIRST_IDX=$(awk '$3==1{print $1; exit}' "$PHRASELIST")
+  local SR
+  SR=$(ffprobe -v error -select_streams a:0 \
+    -show_entries stream=sample_rate -of csv=p=0 \
+    "output/${SCORE_ID}-${FIRST_IDX}.wav")
+
+  local CONCAT_LIST="output/${SCORE_ID}_concat.txt"
+  > "$CONCAT_LIST"
+  for (( i=0; i<N_PHRASES; i++ )); do
+    local idx="${PL_IDX[$i]}"
+    local start_ms="${PL_START[$i]}"
+    local end_ms
+    if (( i + 1 < N_PHRASES )); then
+      end_ms="${PL_START[$((i+1))]}"
+    else
+      end_ms="$TOTAL_MS"
+    fi
+    local dur_ms=$(( end_ms - start_ms ))
+    if (( dur_ms <= 0 )); then continue; fi
+
+    if [[ "${PL_VOICED[$i]}" == "1" ]]; then
+      echo "file '$(pwd)/output/${SCORE_ID}-${idx}.wav'" >> "$CONCAT_LIST"
+    else
+      local sil="output/${SCORE_ID}-sil${idx}.wav"
+      local dur_s
+      dur_s=$(awk -v ms="$dur_ms" 'BEGIN{printf "%.6f", ms/1000}')
+      ffmpeg -y -f lavfi -i "anullsrc=r=${SR}:cl=mono" \
+        -t "$dur_s" -ar "$SR" -ac 1 -acodec pcm_s16le "$sil"
+      echo "file '$(pwd)/$sil'" >> "$CONCAT_LIST"
+    fi
+  done
+
+  ffmpeg -y -f concat -safe 0 -i "$CONCAT_LIST" \
+    -acodec pcm_s16le -ar "$SR" -ac 1 "$OUT_WAV"
+
+  rm -f "$CONCAT_LIST"
+  for (( i=0; i<N_PHRASES; i++ )); do
+    local idx="${PL_IDX[$i]}"
+    rm -f \
+      "output/${SCORE_ID}-${idx}.f0" \
+      "output/${SCORE_ID}-${idx}.melspec" \
+      "output/${SCORE_ID}-${idx}.wav" \
+      "output/${SCORE_ID}-sil${idx}.wav"
+  done
+
+  echo "[synth] Singer $MODEL done: $OUT_WAV"
+}
+
+# ── Synthesize all singers ───────────────────────────────────────────────────
+SINGER_WAVS=()
+SINGER_VOLUMES=()
+
+for entry in "${SINGER_ENTRIES[@]}"; do
+  MODEL="${entry%%:*}"
+  VOL="${entry##*:}"
+  SINGER_WAV="output/${SCORE_ID}-${MODEL}.wav"
+  synthesize_singer "$MODEL" "$SINGER_WAV"
+  SINGER_WAVS+=("$(pwd)/$SINGER_WAV")
+  SINGER_VOLUMES+=("$VOL")
 done
 
-FIRST_IDX=$(awk '$3==1{print $1; exit}' "$PHRASELIST")
-SR=$(ffprobe -v error -select_streams a:0 \
-  -show_entries stream=sample_rate -of csv=p=0 \
-  "output/${SCORE_ID}-${FIRST_IDX}.wav")
-
-CONCAT_LIST="output/${SCORE_ID}_concat.txt"
-> "$CONCAT_LIST"
-for (( i=0; i<N_PHRASES; i++ )); do
-  idx="${PL_IDX[$i]}"
-  start_ms="${PL_START[$i]}"
-  if (( i + 1 < N_PHRASES )); then
-    end_ms="${PL_START[$((i+1))]}"
-  else
-    end_ms="$TOTAL_MS"
-  fi
-  dur_ms=$(( end_ms - start_ms ))
-  if (( dur_ms <= 0 )); then continue; fi
-
-  if [[ "${PL_VOICED[$i]}" == "1" ]]; then
-    echo "file '$(pwd)/output/${SCORE_ID}-${idx}.wav'" >> "$CONCAT_LIST"
-  else
-    sil="output/${SCORE_ID}-sil${idx}.wav"
-    dur_s=$(awk -v ms="$dur_ms" 'BEGIN{printf "%.6f", ms/1000}')
-    ffmpeg -y -f lavfi -i "anullsrc=r=${SR}:cl=mono" \
-      -t "$dur_s" -ar "$SR" -ac 1 -acodec pcm_s16le "$sil"
-    echo "file '$(pwd)/$sil'" >> "$CONCAT_LIST"
-  fi
-done
-
-ffmpeg -y -f concat -safe 0 -i "$CONCAT_LIST" \
-  -acodec pcm_s16le -ar "$SR" -ac 1 "output/${SCORE_ID}.wav"
-
-rm -f "$CONCAT_LIST"
-for (( i=0; i<N_PHRASES; i++ )); do
-  idx="${PL_IDX[$i]}"
-  rm -f \
-    "output/${SCORE_ID}-${idx}.f0" \
-    "output/${SCORE_ID}-${idx}.melspec" \
-    "output/${SCORE_ID}-${idx}.wav" \
-    "output/${SCORE_ID}-sil${idx}.wav"
-done
-
+# ── Mix singers (or just rename if single) ──────────────────────────────────
 cd - >/dev/null
 
-cp "$NEUTRINO_ABS/output/${SCORE_ID}.wav" "$OUT_DIR/vocal_raw.wav"
+if [[ "$SINGER_COUNT" -eq 1 ]]; then
+  cp "${SINGER_WAVS[0]}" "$OUT_DIR/vocal_raw.wav"
+  rm -f "${SINGER_WAVS[0]}"
+else
+  echo "[synth] Mixing $SINGER_COUNT singers"
+  FILTER=""
+  INPUT_ARGS=()
+  for i in "${!SINGER_WAVS[@]}"; do
+    INPUT_ARGS+=("-i" "${SINGER_WAVS[$i]}")
+    FILTER+="[${i}:a]volume=${SINGER_VOLUMES[$i]}[s${i}];"
+  done
+  # Build amix input list: [s0][s1]...[sN-1]
+  MIX_INPUTS=""
+  for i in "${!SINGER_WAVS[@]}"; do
+    MIX_INPUTS+="[s${i}]"
+  done
+  FILTER+="${MIX_INPUTS}amix=inputs=${SINGER_COUNT}:normalize=0[out]"
+
+  ffmpeg -y "${INPUT_ARGS[@]}" \
+    -filter_complex "$FILTER" \
+    -map "[out]" -acodec pcm_s16le "$OUT_DIR/vocal_raw.wav"
+
+  for wav in "${SINGER_WAVS[@]}"; do rm -f "$wav"; done
+fi
+
 echo "[synth] Vocal synthesis complete: $OUT_DIR/vocal_raw.wav"
 
 fi  # end: SKIP_VOCAL == false (NEUTRINO synthesis block)

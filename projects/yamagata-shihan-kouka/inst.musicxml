@@ -75,10 +75,10 @@
   </credit>
   <part-list>
     <score-part id="P1">
-      <part-name>オルガン</part-name>
+      <part-name>Org.</part-name>
       <part-abbreviation>Org.</part-abbreviation>
       <score-instrument id="P1-I1">
-        <instrument-name>オルガン</instrument-name>
+        <instrument-name>Org.</instrument-name>
         <instrument-sound>keyboard.organ</instrument-sound>
       </score-instrument>
       <midi-device id="P1-I1" port="1" />

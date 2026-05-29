@@ -1,12 +1,15 @@
 {
-  "slug": "organ-only",
-  "label": "Organ Only",
-  "description": "Organ accompaniment only, no vocal synthesis.",
-  "skip_vocal_synthesis": true,
+  "slug": "multi-singer",
+  "label": "Multi-singer (MERROW + NAKUMO)",
+  "description": "Blend of MERROW (vol 1.0) and NAKUMO (vol 0.6)",
+  "singers": [
+    {"model": "MERROW", "volume": 1.0},
+    {"model": "NAKUMO", "volume": 0.6}
+  ],
   "build_config": {
     "audio_settings": {
-      "vocal_volume": 0.0,
-      "inst_volume": 1.0,
+      "vocal_volume": 1.0,
+      "inst_volume": 0.5,
       "effects": [
         {
           "type": "highpass",
@@ -24,8 +27,7 @@
   "score_viewer_settings": {
     "default_zoom": 1.0,
     "default_visible_parts": [
-      "Org."
+      "Vo."
     ]
-  },
-  "score_file": "inst.musicxml"
+  }
 }
