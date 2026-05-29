@@ -69,6 +69,35 @@ def build_version_tag() -> str:
     return date
 
 
+def _write_meta(
+    meta_json_path: Path,
+    song_meta: dict,
+    variant_meta: dict,
+    song_slug: str,
+    variant_slug: str,
+    video_id: str = "",
+    youtube_url: str = "",
+) -> None:
+    """Write meta.json with or without youtube_id.
+
+    Called on both success and failure so deploy-web always has an artifact
+    to merge, and update-queue can distinguish uploaded from pending variants.
+    """
+    variant_entry = {
+        **{k: v for k, v in variant_meta.items() if k != "build_config"},
+        "audio_url": f"audio/{song_slug}/{variant_slug}/audio.mp3",
+        "score_url": (
+            f"scores/{song_slug}/{variant_meta.get('score_file', 'vocal.musicxml')}"
+        ),
+    }
+    if video_id:
+        variant_entry["youtube_id"] = video_id
+        variant_entry["youtube_url"] = youtube_url
+    output_meta = {**song_meta, "variant": variant_entry}
+    meta_json_path.write_text(json.dumps(output_meta, ensure_ascii=False, indent=2))
+    print(f"[gas] meta.json written: {meta_json_path}")
+
+
 def main() -> None:
     if len(sys.argv) < 3:
         print(f"Usage: {sys.argv[0]} <song_dir> <variant_dir>", file=sys.stderr)
@@ -103,78 +132,75 @@ def main() -> None:
     commit_version = build_version_tag()
     prev_youtube_id: str = variant_meta.get("youtube_id", "")
 
-    # ── Upload temp.mp4 to R2 ────────────────────────────────────────────────
-    bucket = get_env("R2_BUCKET")
-    r2_key = f"tmp/video/{song_slug}/{variant_slug}/{uuid.uuid4().hex}.mp4"
-    s3 = make_s3_client()
+    try:
+        # ── Upload temp.mp4 to R2 ────────────────────────────────────────────
+        bucket = get_env("R2_BUCKET")
+        r2_key = f"tmp/video/{song_slug}/{variant_slug}/{uuid.uuid4().hex}.mp4"
+        s3 = make_s3_client()
 
-    print(f"[gas] Uploading {temp_mp4} → r2://{bucket}/{r2_key}")
-    with temp_mp4.open("rb") as fh:
-        s3.upload_fileobj(fh, bucket, r2_key, ExtraArgs={"ContentType": "video/mp4"})
+        print(f"[gas] Uploading {temp_mp4} → r2://{bucket}/{r2_key}")
+        with temp_mp4.open("rb") as fh:
+            s3.upload_fileobj(fh, bucket, r2_key, ExtraArgs={"ContentType": "video/mp4"})
 
-    presigned_url: str = s3.generate_presigned_url(
-        "get_object",
-        Params={"Bucket": bucket, "Key": r2_key},
-        ExpiresIn=PRESIGNED_EXPIRY,
-    )
-    print(f"[gas] Presigned URL generated (expires in {PRESIGNED_EXPIRY}s)")
+        presigned_url: str = s3.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": bucket, "Key": r2_key},
+            ExpiresIn=PRESIGNED_EXPIRY,
+        )
+        print(f"[gas] Presigned URL generated (expires in {PRESIGNED_EXPIRY}s)")
 
-    # ── POST to GAS relay ────────────────────────────────────────────────────
-    gas_url = get_env("GAS_RELAY_URL")
-    payload: dict = {
-        "r2_url": presigned_url,
-        "title": song_meta["title"],
-        "description": description,
-        "tags": [song_slug, variant_slug, "NEUTRINO", "AI singing"],
-        "privacy_status": "public",
-        "version": commit_version,
-    }
-    gas_api_key = os.environ.get("GAS_API_KEY", "")
-    if gas_api_key:
-        payload["api_key"] = gas_api_key
-    if prev_youtube_id:
-        payload["prev_youtube_id"] = prev_youtube_id
-        print(f"[gas] Previous video {prev_youtube_id} will be archived to unlisted")
+        # ── POST to GAS relay ────────────────────────────────────────────────
+        gas_url = get_env("GAS_RELAY_URL")
+        payload: dict = {
+            "r2_url": presigned_url,
+            "title": song_meta["title"],
+            "description": description,
+            "tags": [song_slug, variant_slug, "NEUTRINO", "AI singing"],
+            "privacy_status": "public",
+            "version": commit_version,
+        }
+        gas_api_key = os.environ.get("GAS_API_KEY", "")
+        if gas_api_key:
+            payload["api_key"] = gas_api_key
+        if prev_youtube_id:
+            payload["prev_youtube_id"] = prev_youtube_id
+            print(f"[gas] Previous video {prev_youtube_id} will be archived to unlisted")
 
-    print(f"[gas] POST → {gas_url}")
-    resp = requests.post(gas_url, json=payload, timeout=600)
-    resp.raise_for_status()
+        print(f"[gas] POST → {gas_url}")
+        resp = requests.post(gas_url, json=payload, timeout=600)
+        resp.raise_for_status()
 
-    result: dict = resp.json()
-    if "error" in result:
-        print(f"ERROR from GAS: {result['error']}", file=sys.stderr)
+        result: dict = resp.json()
+        if "error" in result:
+            raise RuntimeError(f"GAS relay error: {result['error']}")
+
+        video_id: str = result["video_id"]
+        youtube_url = f"https://www.youtube.com/watch?v={video_id}"
+        print(f"[gas] YouTube upload complete: {youtube_url}")
+
+        # ── Clean up R2 object and local temp file ───────────────────────────
+        s3.delete_object(Bucket=bucket, Key=r2_key)
+        print(f"[gas] R2 object deleted: {r2_key}")
+        temp_mp4.unlink()
+        print(f"[gas] Local temp.mp4 deleted")
+
+        # ── Persist new youtube_id into variant.json ─────────────────────────
+        variant_meta["youtube_id"] = video_id
+        variant_json_path.write_text(
+            json.dumps(variant_meta, ensure_ascii=False, indent=2) + "\n"
+        )
+        print(f"[gas] youtube_id persisted to {variant_json_path}")
+
+        # ── Write meta.json (success) ────────────────────────────────────────
+        _write_meta(meta_json_path, song_meta, variant_meta,
+                    song_slug, variant_slug, video_id, youtube_url)
+
+    except Exception as exc:
+        # Write meta.json without youtube_id so deploy-web can still deploy
+        # audio and update-queue can enqueue this variant for tomorrow's retry.
+        print(f"[gas] Upload failed: {exc}", file=sys.stderr)
+        _write_meta(meta_json_path, song_meta, variant_meta, song_slug, variant_slug)
         sys.exit(1)
-
-    video_id: str = result["video_id"]
-    youtube_url = f"https://www.youtube.com/watch?v={video_id}"
-    print(f"[gas] YouTube upload complete: {youtube_url}")
-
-    # ── Clean up R2 object and local temp file ───────────────────────────────
-    s3.delete_object(Bucket=bucket, Key=r2_key)
-    print(f"[gas] R2 object deleted: {r2_key}")
-    temp_mp4.unlink()
-    print(f"[gas] Local temp.mp4 deleted")
-
-    # ── Persist new youtube_id into variant.json ─────────────────────────────
-    variant_meta["youtube_id"] = video_id
-    variant_json_path.write_text(
-        json.dumps(variant_meta, ensure_ascii=False, indent=2) + "\n"
-    )
-    print(f"[gas] youtube_id persisted to {variant_json_path}")
-
-    # ── Write meta.json ──────────────────────────────────────────────────────
-    output_meta = {
-        **song_meta,
-        "variant": {
-            **{k: v for k, v in variant_meta.items() if k != "build_config"},
-            "youtube_id": video_id,
-            "youtube_url": youtube_url,
-            "audio_url": f"audio/{song_slug}/{variant_slug}/audio.mp3",
-            "score_url": f"scores/{song_slug}/{variant_meta.get('score_file', 'vocal.musicxml')}",
-        },
-    }
-    meta_json_path.write_text(json.dumps(output_meta, ensure_ascii=False, indent=2))
-    print(f"[gas] meta.json written: {meta_json_path}")
 
 
 if __name__ == "__main__":
