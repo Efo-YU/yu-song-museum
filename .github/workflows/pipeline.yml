@@ -42,34 +42,37 @@ jobs:
           FORCE_SONG: ${{ github.event.inputs.song }}
           FORCE_VARIANT: ${{ github.event.inputs.variant }}
         run: |
+          build_pairs_all() {
+            local p="[" first=true
+            for sd in projects/*/; do
+              local song; song=$(basename "$sd")
+              for vd in "projects/$song/variants"/*/; do
+                [[ -d "$vd" ]] || continue
+                local v; v=$(basename "$vd")
+                [[ "$first" == "true" ]] || p+=","
+                p+="{\"song\":\"$song\",\"variant\":\"$v\"}"
+                first=false
+              done
+            done
+            echo "${p}]"
+          }
+          build_pairs_song() {
+            local song="$1" p="[" first=true
+            for vd in "projects/$song/variants"/*/; do
+              [[ -d "$vd" ]] || continue
+              local v; v=$(basename "$vd")
+              [[ "$first" == "true" ]] || p+=","
+              p+="{\"song\":\"$song\",\"variant\":\"$v\"}"
+              first=false
+            done
+            echo "${p}]"
+          }
           if [[ "$FORCE_SONG" == "all" ]]; then
-            # Expand to every variant of every song
-            pairs=$(python3 - <<'PY'
-import json, pathlib
-pairs = []
-for song_dir in sorted(pathlib.Path("projects").iterdir()):
-    vdir = song_dir / "variants"
-    if not vdir.is_dir():
-        continue
-    for v in sorted(vdir.iterdir()):
-        if v.is_dir():
-            pairs.append({"song": song_dir.name, "variant": v.name})
-print(json.dumps(pairs))
-PY
-            )
+            pairs=$(build_pairs_all)
           elif [[ -n "$FORCE_SONG" && -n "$FORCE_VARIANT" ]]; then
-            # Specific song + specific variant
             pairs="[{\"song\":\"$FORCE_SONG\",\"variant\":\"$FORCE_VARIANT\"}]"
           elif [[ -n "$FORCE_SONG" ]]; then
-            # Specific song, all its variants
-            pairs=$(python3 - <<PY
-import json, pathlib
-vdir = pathlib.Path("projects/$FORCE_SONG/variants")
-pairs = [{"song": "$FORCE_SONG", "variant": v.name}
-         for v in sorted(vdir.iterdir()) if v.is_dir()]
-print(json.dumps(pairs))
-PY
-            )
+            pairs=$(build_pairs_song "$FORCE_SONG")
           else
             pairs=$(bash scripts/00_detect_diff.sh)
           fi
