@@ -1,7 +1,7 @@
 {
   "slug": "with-organ",
   "label": "With Organ",
-  "score_file": "with-organ.musicxml",
+  "score_file": "full.musicxml",
   "build_config": {
     "audio_settings": {
       "vocal_volume": 1.0,

@@ -1,7 +1,7 @@
 {
   "slug": "with-piano",
   "label": "With Piano",
-  "score_file": "with-piano.musicxml",
+  "score_file": "full.musicxml",
   "build_config": {
     "audio_settings": {
       "vocal_volume": 1.0,
