@@ -18,7 +18,9 @@ Required env vars:
     R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_ENDPOINT, R2_BUCKET
 
 Optional env vars:
-    GITHUB_SHA  — full commit SHA; 7-char prefix used as version tag
+    GITHUB_SHA   — full commit SHA; 7-char prefix used as version tag
+    GAS_API_KEY  — shared secret validated by the GAS relay; omit only for
+                   first-time setup before the Script Property is configured
 
 Usage:
     python3 scripts/05_trigger_gas.py <song_dir> <variant_dir>
@@ -127,6 +129,9 @@ def main() -> None:
         "privacy_status": "public",
         "version": commit_version,
     }
+    gas_api_key = os.environ.get("GAS_API_KEY", "")
+    if gas_api_key:
+        payload["api_key"] = gas_api_key
     if prev_youtube_id:
         payload["prev_youtube_id"] = prev_youtube_id
         print(f"[gas] Previous video {prev_youtube_id} will be archived to unlisted")
