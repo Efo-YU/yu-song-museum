@@ -1,7 +1,7 @@
 {
   "slug": "chorus-only",
   "label": "Chorus Only",
-  "score_file": "chorus-only.musicxml",
+  "score_file": "vocal.musicxml",
   "build_config": {
     "audio_settings": {
       "vocal_volume": 1.0,
@@ -23,7 +23,7 @@
   "score_viewer_settings": {
     "default_zoom": 1.0,
     "default_visible_parts": [
-      "Voice"
+      "ボーカル"
     ]
   },
   "no_accompaniment": true
