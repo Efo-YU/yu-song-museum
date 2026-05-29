@@ -12,6 +12,7 @@
     "type-check": "tsc -b --noEmit"
   },
   "dependencies": {
+    "marked": "^18.0.4",
     "opensheetmusicdisplay": "^1.9.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",

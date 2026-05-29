@@ -10,9 +10,17 @@ export interface ScoreViewerSettings {
   default_visible_parts?: string[];
 }
 
+export interface LyricVerse {
+  number: number;
+  lines: string[];
+}
+
 export interface PageConfig {
   theme?: { primary_color?: string };
   description_markdown?: string;
+  established?: string;
+  source?: string;
+  lyrics?: LyricVerse[];
   downloads?: { allow_xml?: boolean; allow_mp3?: boolean };
 }
 

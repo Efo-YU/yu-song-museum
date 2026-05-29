@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { marked } from 'marked';
 import songsData from '../data/songs.json';
 import type { Song, SongVariant } from '../types/song';
 
@@ -104,8 +105,29 @@ export default function SongPage() {
 
       {pc?.description_markdown && (
         <section className="song-page__description">
-          <h2 className="section-heading">About this work</h2>
-          <p>{pc.description_markdown}</p>
+          <h2 className="section-heading">この作品について</h2>
+          <div
+            className="prose"
+            dangerouslySetInnerHTML={{ __html: marked.parse(pc.description_markdown) as string }}
+          />
+          {pc.source && (
+            <p className="song-page__source">出典：{pc.source}</p>
+          )}
+        </section>
+      )}
+
+      {pc?.lyrics && pc.lyrics.length > 0 && (
+        <section className="song-page__lyrics">
+          <h2 className="section-heading">歌詞</h2>
+          <ol className="lyrics-list">
+            {pc.lyrics.map((verse) => (
+              <li key={verse.number} className="lyrics-verse">
+                {verse.lines.map((line, i) => (
+                  <span key={i} className="lyrics-line">{line}</span>
+                ))}
+              </li>
+            ))}
+          </ol>
         </section>
       )}
 
