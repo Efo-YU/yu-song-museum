@@ -55,7 +55,7 @@ export default function SongPage() {
             {Object.entries(song.credits).map(([role, name]) =>
               name ? (
                 <div key={role} className="song-page__credit-row">
-                  <dt>{capitalize(role)}</dt>
+                  <dt>{creditLabel(role)}</dt>
                   <dd>{name}</dd>
                 </div>
               ) : null,
@@ -190,6 +190,12 @@ export default function SongPage() {
   );
 }
 
-function capitalize(s: string): string {
-  return s.charAt(0).toUpperCase() + s.slice(1);
+const CREDIT_LABELS: Record<string, string> = {
+  lyricist: 'Lyricist',
+  composer: 'Composer',
+  vocalist: 'Covered by',
+};
+
+function creditLabel(role: string): string {
+  return CREDIT_LABELS[role] ?? role.charAt(0).toUpperCase() + role.slice(1);
 }

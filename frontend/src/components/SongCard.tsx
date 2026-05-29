@@ -15,7 +15,7 @@ export default function SongCard({ song, index }: Props) {
       <h2 className="song-card__title">{song.title}</h2>
       {song.credits && (
         <p className="song-card__credits">
-          {[song.credits.composer, song.credits.vocalist]
+          {[song.credits.lyricist, song.credits.composer]
             .filter(Boolean)
             .join(' · ')}
         </p>
