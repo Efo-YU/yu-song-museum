@@ -147,19 +147,26 @@ def main() -> None:
         if "score_url" in variant_data and "svg_url" not in variant_data:
             variant_data["svg_url"] = variant_data["score_url"].replace(".musicxml", ".svg")
 
-        # Propagate vocalist from song-level credits to variants that include
-        # vocal synthesis (i.e. skip_vocal_synthesis is absent or false in
-        # the project variant.json).
+        # Propagate vocalist to variants that include vocal synthesis.
+        # For multi-singer variants (singers array), build the name from
+        # the singer models; for single-singer variants, use song-level credits.
         if "vocalist" not in variant_data:
             variant_json_path = PROJECTS_DIR / song_slug / "variants" / variant_slug / "variant.json"
-            is_instrumental = False
+            vj: dict = {}
             if variant_json_path.exists():
                 vj = json.loads(variant_json_path.read_text())
-                is_instrumental = bool(vj.get("skip_vocal_synthesis"))
-            if not is_instrumental:
-                vocalist = live_meta.get("credits", {}).get("vocalist")
-                if vocalist:
-                    variant_data["vocalist"] = vocalist
+            if not vj.get("skip_vocal_synthesis"):
+                song_vocalist: str = live_meta.get("credits", {}).get("vocalist", "")
+                singers: list[dict] = vj.get("singers", [])
+                if singers and song_vocalist:
+                    # Extract engine suffix "(NEUTRINO)" from the song-level vocalist
+                    import re as _re
+                    suffix_m = _re.search(r"\s*\([^)]+\)\s*$", song_vocalist)
+                    suffix = suffix_m.group(0).strip() if suffix_m else ""
+                    names = " + ".join(s["model"] for s in singers if s.get("model"))
+                    variant_data["vocalist"] = f"{names} ({suffix.strip('()')})" if suffix else names
+                elif song_vocalist:
+                    variant_data["vocalist"] = song_vocalist
 
         # Update or insert the variant entry
         variants: list[dict] = existing[song_slug].setdefault("variants", [])
