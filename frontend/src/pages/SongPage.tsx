@@ -4,6 +4,9 @@ import { marked } from 'marked';
 import songsData from '../data/songs.json';
 import type { Song, SongVariant } from '../types/song';
 
+const BASE = import.meta.env.BASE_URL;
+const asset = (url: string) => `${BASE}${url}`;
+
 const ScoreViewer = lazy(() => import('../components/ScoreViewer'));
 
 const songs = songsData as Song[];
@@ -52,14 +55,15 @@ export default function SongPage() {
 
         {song.credits && (
           <dl className="song-page__credits">
-            {Object.entries(song.credits).map(([role, name]) =>
-              name ? (
+            {CREDIT_ORDER.map((role) => {
+              const name = song.credits![role];
+              return name ? (
                 <div key={role} className="song-page__credit-row">
                   <dt>{creditLabel(role)}</dt>
                   <dd>{name}</dd>
                 </div>
-              ) : null,
-            )}
+              ) : null;
+            })}
           </dl>
         )}
 
@@ -136,7 +140,7 @@ export default function SongPage() {
           <h2 className="section-heading">Score</h2>
           <Suspense fallback={<p className="score-status">Loading score…</p>}>
             <ScoreViewer
-              url={activeVariant.score_url}
+              url={asset(activeVariant.score_url)}
               settings={activeVariant.score_viewer_settings}
             />
           </Suspense>
@@ -149,7 +153,7 @@ export default function SongPage() {
           <audio
             key={activeVariant.audio_url}
             controls
-            src={activeVariant.audio_url}
+            src={asset(activeVariant.audio_url)}
             className="audio-player"
           />
         </section>
@@ -160,14 +164,14 @@ export default function SongPage() {
         <ul className="download-list">
           {allowMp3 && activeVariant?.audio_url && (
             <li>
-              <a href={activeVariant.audio_url} download className="download-link">
+              <a href={asset(activeVariant.audio_url)} download className="download-link">
                 Audio — {activeVariant.label} (MP3)
               </a>
             </li>
           )}
           {allowXml && activeVariant?.score_url && (
             <li>
-              <a href={activeVariant.score_url} download className="download-link">
+              <a href={asset(activeVariant.score_url)} download className="download-link">
                 Score (MusicXML)
               </a>
             </li>
@@ -189,6 +193,8 @@ export default function SongPage() {
     </main>
   );
 }
+
+const CREDIT_ORDER = ['lyricist', 'composer', 'vocalist'] as const;
 
 const CREDIT_LABELS: Record<string, string> = {
   lyricist: 'Lyricist',
