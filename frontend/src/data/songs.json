@@ -38,18 +38,69 @@
   {
     "slug": "yamagata-koto-kouka",
     "title": "山形高等学校校歌",
-    "bpm": 88,
+    "bpm": 120,
     "key": "Eb major",
     "credits": {
       "vocalist": "MERROW (NEUTRINO)",
-      "composer": "Unknown",
-      "lyricist": "Unknown"
+      "lyricist": "島村苳三（盛助）",
+      "composer": "大中寅二"
     },
     "page_config": {
       "theme": {
         "primary_color": "#5c3a8a"
       },
-      "description_markdown": "山形高等学校の校歌。変ホ長調、66小節（繰り返し展開）。",
+      "description_markdown": "1938年（昭和13年）に制定された山形高等学校の校歌。作詞は山形高等学校教授で英文学者の島村苳三（盛助）、作曲はオルガン奏者の大中寅二によるもの。",
+      "source": "山形高等学校学寮史編纂委員会編『学寮史』（山形高等学校学寮史刊行会、1938年）366〜367頁",
+      "lyrics": [
+        {
+          "number": 1,
+          "lines": [
+            "われらここに聚ふ",
+            "わがまなびやは",
+            "ひいでたる山のすがた",
+            "にごらざる水のながれ",
+            "たぐひなし",
+            "ああわがまなびや",
+            "われらここに聚ふ"
+          ]
+        },
+        {
+          "number": 2,
+          "lines": [
+            "われらここに仰ぐ",
+            "われらが則は",
+            "若人のきよきこころ",
+            "健かにおほしたてなむ",
+            "もとゐなり",
+            "ああこの綱領",
+            "われらここに仰ぐ"
+          ]
+        },
+        {
+          "number": 3,
+          "lines": [
+            "われらここに歩む",
+            "学びのみちは",
+            "とこしへの真理たづね",
+            "あらたなる知識もとめ",
+            "きはみなし",
+            "ひとすぢたゆまず",
+            "われらここに歩む"
+          ]
+        },
+        {
+          "number": 4,
+          "lines": [
+            "われらここに盟ふ",
+            "はらからわれら",
+            "日本の国の光輝",
+            "万邦の民の平和",
+            "まもるべし",
+            "五百のはらから",
+            "われらここに盟ふ"
+          ]
+        }
+      ],
       "downloads": {
         "allow_xml": true,
         "allow_mp3": true
@@ -61,11 +112,11 @@
         "slug": "chorus-only",
         "label": "Chorus Only",
         "description": "",
-        "score_url": "scores/yamagata-koto-kouka/chorus-only.musicxml",
+        "score_url": "scores/yamagata-koto-kouka/vocal.musicxml",
         "score_viewer_settings": {
           "default_zoom": 1.0,
           "default_visible_parts": [
-            "Voice"
+            "ボーカル"
           ]
         },
         "audio_url": "audio/yamagata-koto-kouka/chorus-only/audio.mp3"
@@ -74,7 +125,7 @@
         "slug": "piano-only",
         "label": "Piano Only",
         "description": "",
-        "score_url": "scores/yamagata-koto-kouka/piano-only.musicxml",
+        "score_url": "scores/yamagata-koto-kouka/inst.musicxml",
         "score_viewer_settings": {
           "default_zoom": 1.0,
           "default_visible_parts": [
@@ -102,18 +153,48 @@
   {
     "slug": "yamagata-nourin-shoyoka",
     "title": "山形県立農林専門学校逍遥歌",
-    "bpm": 80,
+    "bpm": 120,
     "key": "C major",
     "credits": {
       "vocalist": "MERROW (NEUTRINO)",
-      "composer": "Unknown",
-      "lyricist": "Unknown"
+      "lyricist": "尾河和夫",
+      "composer": "浅川淑彦"
     },
     "page_config": {
       "theme": {
         "primary_color": "#4a7c59"
       },
-      "description_markdown": "山形県立農林専門学校の逍遥歌。ハ長調、9小節。",
+      "description_markdown": "山形県立農林専門学校の逍遥歌。作詞は農業経営学担当の尾河和夫、作曲は英語担当の浅川淑彦によるもの。",
+      "source": "鶴岡郷土史研究会『会報』第22号（2015年）所収 vol22_shoyoka.pdf",
+      "lyrics": [
+        {
+          "number": 1,
+          "lines": [
+            "庄内の野の果遠く",
+            "稲穂垂るる秋は来たりて",
+            "香ぐはしき思想（おもい）ほのめき",
+            "新しき文化したう我等"
+          ]
+        },
+        {
+          "number": 2,
+          "lines": [
+            "豊かなる情緒（こころ）の潮",
+            "清けらく平らけくあれや",
+            "若人の胸にしみ入る",
+            "遥かなる高き理想文化"
+          ]
+        },
+        {
+          "number": 3,
+          "lines": [
+            "我等今ここに集いて",
+            "なごやかに歌を合せん",
+            "心よき友達来たり",
+            "にぎはしく心楽しや宴"
+          ]
+        }
+      ],
       "downloads": {
         "allow_xml": true,
         "allow_mp3": true
@@ -125,11 +206,11 @@
         "slug": "chorus-only",
         "label": "Chorus Only",
         "description": "",
-        "score_url": "scores/yamagata-nourin-shoyoka/chorus-only.musicxml",
+        "score_url": "scores/yamagata-nourin-shoyoka/vocal.musicxml",
         "score_viewer_settings": {
           "default_zoom": 1.0,
           "default_visible_parts": [
-            "vocal"
+            "ボーカル"
           ]
         },
         "audio_url": "audio/yamagata-nourin-shoyoka/chorus-only/audio.mp3"
@@ -151,7 +232,7 @@
         "slug": "with-piano",
         "label": "With Piano",
         "description": "",
-        "score_url": "scores/yamagata-nourin-shoyoka/with-piano.musicxml",
+        "score_url": "scores/yamagata-nourin-shoyoka/full.musicxml",
         "score_viewer_settings": {
           "default_zoom": 1.0,
           "default_visible_parts": [
@@ -166,18 +247,48 @@
   {
     "slug": "yamagata-shihan-kouka",
     "title": "山形県師範学校校歌",
-    "bpm": 80,
+    "bpm": 104,
     "key": "A major",
     "credits": {
       "vocalist": "MERROW (NEUTRINO)",
-      "composer": "Unknown",
-      "lyricist": "Unknown"
+      "lyricist": "土井晩翠",
+      "composer": "島崎赤太郎"
     },
     "page_config": {
       "theme": {
         "primary_color": "#8b5e3c"
       },
-      "description_markdown": "山形県師範学校の校歌。A長調、16小節。",
+      "description_markdown": "1928年（昭和3年）に制定された山形県師範学校の校歌。作詞は「荒城の月」で知られる詩人・土井晩翠、作曲は「山形県民歌」を作曲したオルガン奏者・島崎赤太郎によるもの。",
+      "source": "山形大学教育学部創立百周年記念事業実行委員会編刊『目でみる百年誌 山形大学教育学部同窓会』（1978年）131頁",
+      "lyrics": [
+        {
+          "number": 1,
+          "lines": [
+            "明治の昔 基をおきて",
+            "日本にあまねく 知られしわが名",
+            "山形師範の 母校のほまれ",
+            "薫を続けん 未来に遠く"
+          ]
+        },
+        {
+          "number": 2,
+          "lines": [
+            "千歳と竜山 南に対し",
+            "朝日と白鷹 見渡す西や",
+            "転じて高くも 仰ぐは月の",
+            "山なり向上 無窮のしるし"
+          ]
+        },
+        {
+          "number": 3,
+          "lines": [
+            "誠の一念 心と身とを",
+            "進めて琢きて 世のためつくせ",
+            "大道はるかに 歩みを誘ふ",
+            "ああわが青春 よろこびつきず"
+          ]
+        }
+      ],
       "downloads": {
         "allow_xml": true,
         "allow_mp3": true
@@ -189,7 +300,7 @@
         "slug": "organ-only",
         "label": "Organ Only",
         "description": "Organ accompaniment only, no vocal synthesis.",
-        "score_url": "scores/yamagata-shihan-kouka/organ-only.musicxml",
+        "score_url": "scores/yamagata-shihan-kouka/inst.musicxml",
         "score_viewer_settings": {
           "default_zoom": 1.0,
           "default_visible_parts": [
@@ -215,7 +326,7 @@
         "slug": "with-organ",
         "label": "With Organ",
         "description": "",
-        "score_url": "scores/yamagata-shihan-kouka/with-organ.musicxml",
+        "score_url": "scores/yamagata-shihan-kouka/full.musicxml",
         "score_viewer_settings": {
           "default_zoom": 1.0,
           "default_visible_parts": [
@@ -230,18 +341,59 @@
   {
     "slug": "yonezawa-kogyo-kouka",
     "title": "米沢高等工業学校校歌",
-    "bpm": 80,
+    "bpm": 120,
     "key": "C major",
     "credits": {
       "vocalist": "MERROW (NEUTRINO)",
-      "composer": "Unknown",
-      "lyricist": "Unknown"
+      "lyricist": "土井晩翠",
+      "composer": "松平信博"
     },
     "page_config": {
       "theme": {
         "primary_color": "#c0392b"
       },
-      "description_markdown": "米沢高等工業学校の校歌。ハ長調、21小節。",
+      "description_markdown": "1926年（大正15年）に制定された米沢高等工業学校の校歌。作詞は山形県師範学校校歌も手掛けた土井晩翠、作曲は「殿様作曲家」と呼ばれた松平信博によるもの。",
+      "source": "山形大学工学部50年史編集委員会編『山形大学工学部50年史』（山形大学工学部50周年記念会、1960年）52頁",
+      "lyrics": [
+        {
+          "number": 1,
+          "lines": [
+            "誉の名君治めし勲",
+            "余韻は絶えせしとこしへ遠く",
+            "勤倹習ひとなりたる此の地",
+            "新たの時世に新たの光添へ得つ高等工業校舎"
+          ]
+        },
+        {
+          "number": 2,
+          "lines": [
+            "明治の聖代四十と三を数へし其の年",
+            "基を置きてはくくみ来りし子弟の栄",
+            "今将た貢献四海の上に",
+            "教をしきゆく富国の道に"
+          ]
+        },
+        {
+          "number": 3,
+          "lines": [
+            "吾妻は聳えて高きをさとし",
+            "松川流れて遠きを示す",
+            "其の山其の水仰きて伏して",
+            "朝夕無言の教へに浸り",
+            "希望の溢るる数百の健児"
+          ]
+        },
+        {
+          "number": 4,
+          "lines": [
+            "金剛堅かれ心の誠",
+            "身を立て名を揚け東亜の空に",
+            "光と照るへく進みて励め",
+            "青春勇みの吾か世の門出",
+            "誉は伝へん無窮の末に"
+          ]
+        }
+      ],
       "downloads": {
         "allow_xml": true,
         "allow_mp3": true
@@ -253,7 +405,7 @@
         "slug": "piano-only",
         "label": "Piano Only",
         "description": "Piano accompaniment only, no vocal synthesis.",
-        "score_url": "scores/yonezawa-kogyo-kouka/piano-only.musicxml",
+        "score_url": "scores/yonezawa-kogyo-kouka/inst.musicxml",
         "score_viewer_settings": {
           "default_zoom": 1.0,
           "default_visible_parts": [
@@ -279,7 +431,7 @@
         "slug": "with-piano",
         "label": "With Piano",
         "description": "",
-        "score_url": "scores/yonezawa-kogyo-kouka/with-piano.musicxml",
+        "score_url": "scores/yonezawa-kogyo-kouka/full.musicxml",
         "score_viewer_settings": {
           "default_zoom": 1.0,
           "default_visible_parts": [

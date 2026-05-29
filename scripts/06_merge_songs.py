@@ -97,22 +97,32 @@ def main() -> None:
         variant_data: dict = meta.get("variant", {})
         variant_slug: str = variant_data.get("slug", "default")
 
+        # Always read song-level metadata from the repo's song.json so that
+        # credits, lyrics, and descriptions stay in sync with the source of
+        # truth rather than whatever was cached in an old artifact or the
+        # previously committed songs.json.
+        song_json_path = PROJECTS_DIR / song_slug / "song.json"
+        if song_json_path.exists():
+            live_meta = json.loads(song_json_path.read_text())
+        else:
+            live_meta = meta  # fallback for songs without a song.json
+
         # Ensure song entry exists in the database
         if song_slug not in existing:
             existing[song_slug] = {
                 "slug": song_slug,
-                "title": meta.get("title", ""),
-                "bpm": meta.get("bpm"),
-                "key": meta.get("key"),
-                "credits": meta.get("credits"),
-                "page_config": meta.get("page_config"),
+                "title": live_meta.get("title", ""),
+                "bpm": live_meta.get("bpm"),
+                "key": live_meta.get("key"),
+                "credits": live_meta.get("credits"),
+                "page_config": live_meta.get("page_config"),
                 "variants": [],
             }
         else:
-            # Refresh song-level fields from the artifact (they may have changed)
+            # Refresh song-level fields from the live song.json
             for field in ("title", "bpm", "key", "credits", "page_config"):
-                if field in meta:
-                    existing[song_slug][field] = meta[field]
+                if field in live_meta:
+                    existing[song_slug][field] = live_meta[field]
 
         # Update or insert the variant entry
         variants: list[dict] = existing[song_slug].setdefault("variants", [])
