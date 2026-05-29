@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Mix vocal and accompaniment with FFmpeg, driven by build_config.json.
+"""Mix vocal and accompaniment with FFmpeg, driven by variant.json.
 
 Usage:
-    python3 scripts/03_mixdown.py <song_dir>
+    python3 scripts/03_mixdown.py <variant_dir>
 
 Reads:
-    <song_dir>/build_config.json   — audio_settings (vocal_volume, inst_volume, effects)
-    <song_dir>/output/vocal_raw.wav
-    <song_dir>/output/inst_raw.wav
+    <variant_dir>/variant.json              — build_config.audio_settings
+    <variant_dir>/output/vocal_raw.wav
+    <variant_dir>/output/inst_raw.wav
 
 Writes:
-    <song_dir>/output/audio.wav    — final mixed audio (WAV, 44100 Hz, stereo)
-    <song_dir>/output/audio.mp3    — web-delivery copy (CBR 192 kbps)
+    <variant_dir>/output/audio.wav    — final mixed audio (WAV, 44100 Hz, stereo)
+    <variant_dir>/output/audio.mp3    — web-delivery copy (CBR 192 kbps)
 """
 
 from __future__ import annotations
@@ -23,10 +23,16 @@ from pathlib import Path
 
 
 def build_filter(vocal_vol: float, inst_vol: float, effects: list[dict]) -> str:
+    # Normalize each non-silent track to -16 LUFS before mixing so that
+    # NEUTRINO vocal and FluidSynth accompaniment land at comparable levels
+    # regardless of their raw output levels.  Skip loudnorm for silent tracks
+    # (vol == 0) to avoid amplifying noise in the placeholder WAV.
+    vocal_pre = "loudnorm=I=-16:TP=-1.5:LRA=11," if vocal_vol > 0 else ""
+    inst_pre  = "loudnorm=I=-16:TP=-1.5:LRA=11," if inst_vol  > 0 else ""
     chains = [
-        f"[0:a]volume={vocal_vol}[v]",
-        f"[1:a]volume={inst_vol}[i]",
-        "[v][i]amix=inputs=2:duration=longest[mixed]",
+        f"[0:a]{vocal_pre}volume={vocal_vol}[v]",
+        f"[1:a]{inst_pre}volume={inst_vol}[i]",
+        "[v][i]amix=inputs=2:duration=longest:normalize=0[mixed]",
     ]
 
     label = "mixed"
@@ -55,18 +61,18 @@ def build_filter(vocal_vol: float, inst_vol: float, effects: list[dict]) -> str:
 
 def main() -> None:
     if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <song_dir>", file=sys.stderr)
+        print(f"Usage: {sys.argv[0]} <variant_dir>", file=sys.stderr)
         sys.exit(1)
 
-    song_dir = Path(sys.argv[1])
-    config = json.loads((song_dir / "build_config.json").read_text())
+    version_dir = Path(sys.argv[1])
+    config = json.loads((version_dir / "variant.json").read_text())
 
-    audio = config.get("audio_settings", {})
+    audio = config.get("build_config", {}).get("audio_settings", {})
     vocal_vol = float(audio.get("vocal_volume", 1.0))
     inst_vol = float(audio.get("inst_volume", 0.8))
     effects: list[dict] = audio.get("effects", [])
 
-    out_dir = song_dir / "output"
+    out_dir = version_dir / "output"
     vocal_wav = out_dir / "vocal_raw.wav"
     inst_wav = out_dir / "inst_raw.wav"
     output_wav = out_dir / "audio.wav"
@@ -95,7 +101,7 @@ def main() -> None:
         check=True,
     )
 
-    print(f"[mix] Encoding MP3...")
+    print("[mix] Encoding MP3...")
     subprocess.run(
         [
             "ffmpeg", "-y",

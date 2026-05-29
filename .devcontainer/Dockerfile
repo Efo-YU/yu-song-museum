@@ -27,7 +27,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git curl ca-certificates less procps \
         jq ripgrep fd-find zsh \
         build-essential \
+        fonts-noto-cjk \
+        ffmpeg \
+        fluidsynth \
+        python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+# Python pipeline dependencies (music21, boto3, requests).
+# Installed system-wide as root so the unprivileged vscode user can import them.
+RUN pip3 install --no-cache-dir --break-system-packages \
+        music21 boto3 requests
 
 # GitHub CLI (`gh`).
 #

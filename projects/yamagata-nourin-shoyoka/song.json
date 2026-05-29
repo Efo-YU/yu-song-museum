@@ -1,0 +1,52 @@
+{
+  "slug": "yamagata-nourin-shoyoka",
+  "title": "山形県立農林専門学校逍遥歌",
+  "bpm": 120,
+  "key": "C major",
+  "credits": {
+    "vocalist": "MERROW (NEUTRINO)",
+    "lyricist": "尾河和夫",
+    "composer": "浅川淑彦"
+  },
+  "page_config": {
+    "theme": {
+      "primary_color": "#4a7c59"
+    },
+    "description_markdown": "山形県立農林専門学校の逍遥歌。作詞は農業経営学担当の尾河和夫、作曲は英語担当の浅川淑彦によるもの。",
+    "source": "鶴岡郷土史研究会『会報』第22号（2015年）所収 vol22_shoyoka.pdf",
+    "lyrics": [
+      {
+        "number": 1,
+        "lines": [
+          "庄内の野の果遠く",
+          "稲穂垂るる秋は来たりて",
+          "香ぐはしき思想（おもい）ほのめき",
+          "新しき文化したう我等"
+        ]
+      },
+      {
+        "number": 2,
+        "lines": [
+          "豊かなる情緒（こころ）の潮",
+          "清けらく平らけくあれや",
+          "若人の胸にしみ入る",
+          "遥かなる高き理想文化"
+        ]
+      },
+      {
+        "number": 3,
+        "lines": [
+          "我等今ここに集いて",
+          "なごやかに歌を合せん",
+          "心よき友達来たり",
+          "にぎはしく心楽しや宴"
+        ]
+      }
+    ],
+    "downloads": {
+      "allow_xml": true,
+      "allow_mp3": true
+    }
+  },
+  "default_variant": "with-piano"
+}

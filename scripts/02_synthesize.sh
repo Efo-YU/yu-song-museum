@@ -15,10 +15,11 @@
 # resolved via LD_LIBRARY_PATH=$PWD/bin — bin/ contains all .so files
 # including ONNX Runtime and bundled CUDA libs; no separate NSF/bin/ in v3).
 # Input MusicXML is copied into NEUTRINO's score/musicxml/ tree;
-# synthesized WAV is copied back to $SONG_DIR/output/.
+# synthesized WAV is copied back to $VERSION_DIR/output/.
 #
 # Required env vars:
-#   SONG_DIR    — path to the song directory, e.g. projects/song_001
+#   SONG_DIR     — path to the song directory, e.g. projects/yamagata-shihan-kouka
+#   VARIANT_DIR  — path to the variant directory, e.g. projects/yamagata-shihan-kouka/variants/default
 #
 # Optional env vars:
 #   SINGER        — NEUTRINO singer model name (default: MERROW)
@@ -27,29 +28,74 @@
 #   NUM_THREADS   — synthesis parallelism (default: 4)
 #   TRANSPOSE     — semitone shift, 0 = no change (default: 0)
 #
-# Output files written to $SONG_DIR/output/:
+# Output files written to $VERSION_DIR/output/:
 #   vocal_raw.wav — synthesized vocal WAV (sample rate set by NEUTRINO model)
 #   inst_raw.wav  — rendered accompaniment (44100 Hz, stereo)
 
 set -euo pipefail
 
 SONG_DIR="${SONG_DIR:?SONG_DIR not set}"
+VARIANT_DIR="${VARIANT_DIR:?VARIANT_DIR not set}"
 SINGER="${SINGER:-MERROW}"
 NEUTRINO_DIR="${NEUTRINO_DIR:-/tmp/neutrino}"
 sf3_PATH="${sf3_PATH:-/tmp/default.sf3}"
 NUM_THREADS="${NUM_THREADS:-4}"
 TRANSPOSE="${TRANSPOSE:-0}"
 
-SONG_ID=$(basename "$SONG_DIR")
+SONG_SLUG=$(basename "$SONG_DIR")
+VARIANT_SLUG=$(basename "$VARIANT_DIR")
+# Unique stem for NEUTRINO's intermediate files; avoids collisions in parallel runs
+SCORE_ID="${SONG_SLUG}-${VARIANT_SLUG}"
+
 ABS_SONG="$(cd "$SONG_DIR" && pwd)"
+ABS_VERSION="$(cd "$VARIANT_DIR" && pwd)"
 NEUTRINO_ABS="$(cd "$NEUTRINO_DIR" && pwd)"
-OUT_DIR="$ABS_SONG/output"
+OUT_DIR="$ABS_VERSION/output"
 
 mkdir -p "$OUT_DIR"
 
+# ── no_accompaniment flag (checked early so we can exit before NEUTRINO) ──────
+NO_INST=$(python3 -c "
+import json, sys
+try:
+    d = json.load(open('$ABS_VERSION/variant.json'))
+    print('true' if d.get('no_accompaniment', False) else 'false')
+except: print('false')
+" 2>/dev/null || echo "false")
+
+# ── Skip-vocal flag ───────────────────────────────────────────────────────────
+# Read skip_vocal_synthesis from variant.json (default: false).
+# Also skip if no vocal.musicxml exists in either version dir or song dir.
+SKIP_VOCAL=$(python3 -c "
+import json, sys
+try:
+    d = json.load(open('$ABS_VERSION/variant.json'))
+    print('true' if d.get('skip_vocal_synthesis', False) else 'false')
+except: print('false')
+" 2>/dev/null || echo "false")
+
+# If the flag is not set, still skip when no vocal MusicXML is available
+if [[ "$SKIP_VOCAL" == "false" ]]; then
+  if [[ ! -f "$ABS_VERSION/vocal.musicxml" && ! -f "$ABS_SONG/vocal.musicxml" ]]; then
+    SKIP_VOCAL="true"
+  fi
+fi
+
 # ── Vocal synthesis (NEUTRINO) ───────────────────────────────────────────────
 
-# Prepare NEUTRINO's internal working directories
+if [[ "$SKIP_VOCAL" == "true" ]]; then
+  echo "[synth] Skipping vocal synthesis — generating 1 s silent placeholder"
+  ffmpeg -y -f lavfi -i "anullsrc=r=44100:cl=mono" -t 1 \
+    -ar 44100 -ac 1 "$OUT_DIR/vocal_raw.wav"
+else
+
+# Resolve vocal MusicXML: version-level override wins over song-level default
+if [[ -f "$ABS_VERSION/vocal.musicxml" ]]; then
+  VOCAL_XML="$ABS_VERSION/vocal.musicxml"
+else
+  VOCAL_XML="$ABS_SONG/vocal.musicxml"
+fi
+
 mkdir -p \
   "$NEUTRINO_ABS/score/musicxml" \
   "$NEUTRINO_ABS/score/label/full" \
@@ -57,34 +103,28 @@ mkdir -p \
   "$NEUTRINO_ABS/score/label/timing" \
   "$NEUTRINO_ABS/output"
 
-# Copy input MusicXML into NEUTRINO's expected location
-cp "$ABS_SONG/vocal.musicxml" "$NEUTRINO_ABS/score/musicxml/${SONG_ID}.musicxml"
+cp "$VOCAL_XML" "$NEUTRINO_ABS/score/musicxml/${SCORE_ID}.musicxml"
 
 cd "$NEUTRINO_ABS"
-# bin/ contains all shared libraries (ONNX Runtime + bundled CUDA libs).
-# ONNX Runtime falls back to CPU automatically when no CUDA GPU is present.
 export LD_LIBRARY_PATH="$NEUTRINO_ABS/bin${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
 echo "[synth] Step 1: MusicXML → label"
 bin/musicXMLtoLabel \
-  "score/musicxml/${SONG_ID}.musicxml" \
-  "score/label/full/${SONG_ID}.lab" \
-  "score/label/mono/${SONG_ID}.lab"
+  "score/musicxml/${SCORE_ID}.musicxml" \
+  "score/label/full/${SCORE_ID}.lab" \
+  "score/label/mono/${SCORE_ID}.lab"
 
 echo "[synth] Step 2: Neural synthesis → WAV"
-PHRASELIST="output/${SONG_ID}-phraselist.txt"
+PHRASELIST="output/${SCORE_ID}-phraselist.txt"
 rm -f "$PHRASELIST"
 
-# Bootstrap with phrase 1: timing inference generates phraselist as a side effect
-# (runs only phrase 1's vocoder instead of the full song — ~8 s vs ~100+ s for a
-# long song, and avoids accumulating the full output buffer which causes OOM).
 echo "[synth] Step 2a: bootstrap phrase 1 (generates phraselist)"
 bin/neutrino \
-  "score/label/full/${SONG_ID}.lab" \
-  "score/label/timing/${SONG_ID}.lab" \
-  "output/${SONG_ID}-1.f0" \
-  "output/${SONG_ID}-1.melspec" \
-  "output/${SONG_ID}-1.wav" \
+  "score/label/full/${SCORE_ID}.lab" \
+  "score/label/timing/${SCORE_ID}.lab" \
+  "output/${SCORE_ID}-1.f0" \
+  "output/${SCORE_ID}-1.melspec" \
+  "output/${SCORE_ID}-1.wav" \
   "model/${SINGER}/" \
   -n "$NUM_THREADS" -f "$TRANSPOSE" \
   -i "$PHRASELIST" -p 1 -m -t
@@ -94,10 +134,8 @@ mapfile -t PL_START  < <(awk '{print $2}' "$PHRASELIST")
 mapfile -t PL_VOICED < <(awk '{print $3}' "$PHRASELIST")
 N_PHRASES=${#PL_IDX[@]}
 
-# Total duration from last timestamp in timing label (100 ns units → ms)
-TOTAL_MS=$(awk 'END{printf "%.0f", $2/10000}' "score/label/timing/${SONG_ID}.lab")
+TOTAL_MS=$(awk 'END{printf "%.0f", $2/10000}' "score/label/timing/${SCORE_ID}.lab")
 
-# Synthesize remaining voiced phrases (phrase 1 already done above)
 for (( i=0; i<N_PHRASES; i++ )); do
   idx="${PL_IDX[$i]}"
   if [[ "${PL_VOICED[$i]}" != "1" || "$idx" == "1" ]]; then continue; fi
@@ -108,24 +146,22 @@ for (( i=0; i<N_PHRASES; i++ )); do
   fi
   echo "[synth] Step 2b: phrase $idx (${PL_START[$i]}–${end_ms} ms)"
   bin/neutrino \
-    "score/label/full/${SONG_ID}.lab" \
-    "score/label/timing/${SONG_ID}.lab" \
-    "output/${SONG_ID}-${idx}.f0" \
-    "output/${SONG_ID}-${idx}.melspec" \
-    "output/${SONG_ID}-${idx}.wav" \
+    "score/label/full/${SCORE_ID}.lab" \
+    "score/label/timing/${SCORE_ID}.lab" \
+    "output/${SCORE_ID}-${idx}.f0" \
+    "output/${SCORE_ID}-${idx}.melspec" \
+    "output/${SCORE_ID}-${idx}.wav" \
     "model/${SINGER}/" \
     -n "$NUM_THREADS" -f "$TRANSPOSE" \
     -i "$PHRASELIST" -p "$idx" -m -t
 done
 
-# Probe sample rate from the first voiced phrase
 FIRST_IDX=$(awk '$3==1{print $1; exit}' "$PHRASELIST")
 SR=$(ffprobe -v error -select_streams a:0 \
   -show_entries stream=sample_rate -of csv=p=0 \
-  "output/${SONG_ID}-${FIRST_IDX}.wav")
+  "output/${SCORE_ID}-${FIRST_IDX}.wav")
 
-# Build concat list: voiced phrase WAVs interleaved with generated silence
-CONCAT_LIST="output/${SONG_ID}_concat.txt"
+CONCAT_LIST="output/${SCORE_ID}_concat.txt"
 > "$CONCAT_LIST"
 for (( i=0; i<N_PHRASES; i++ )); do
   idx="${PL_IDX[$i]}"
@@ -139,9 +175,9 @@ for (( i=0; i<N_PHRASES; i++ )); do
   if (( dur_ms <= 0 )); then continue; fi
 
   if [[ "${PL_VOICED[$i]}" == "1" ]]; then
-    echo "file '$(pwd)/output/${SONG_ID}-${idx}.wav'" >> "$CONCAT_LIST"
+    echo "file '$(pwd)/output/${SCORE_ID}-${idx}.wav'" >> "$CONCAT_LIST"
   else
-    sil="output/${SONG_ID}-sil${idx}.wav"
+    sil="output/${SCORE_ID}-sil${idx}.wav"
     dur_s=$(awk -v ms="$dur_ms" 'BEGIN{printf "%.6f", ms/1000}')
     ffmpeg -y -f lavfi -i "anullsrc=r=${SR}:cl=mono" \
       -t "$dur_s" -ar "$SR" -ac 1 -acodec pcm_s16le "$sil"
@@ -150,37 +186,56 @@ for (( i=0; i<N_PHRASES; i++ )); do
 done
 
 ffmpeg -y -f concat -safe 0 -i "$CONCAT_LIST" \
-  -acodec pcm_s16le -ar "$SR" -ac 1 "output/${SONG_ID}.wav"
+  -acodec pcm_s16le -ar "$SR" -ac 1 "output/${SCORE_ID}.wav"
 
-# Remove intermediate per-phrase files
 rm -f "$CONCAT_LIST"
 for (( i=0; i<N_PHRASES; i++ )); do
   idx="${PL_IDX[$i]}"
   rm -f \
-    "output/${SONG_ID}-${idx}.f0" \
-    "output/${SONG_ID}-${idx}.melspec" \
-    "output/${SONG_ID}-${idx}.wav" \
-    "output/${SONG_ID}-sil${idx}.wav"
+    "output/${SCORE_ID}-${idx}.f0" \
+    "output/${SCORE_ID}-${idx}.melspec" \
+    "output/${SCORE_ID}-${idx}.wav" \
+    "output/${SCORE_ID}-sil${idx}.wav"
 done
 
 cd - >/dev/null
 
-# Copy synthesized WAV to the song output directory
-cp "$NEUTRINO_ABS/output/${SONG_ID}.wav" "$OUT_DIR/vocal_raw.wav"
+cp "$NEUTRINO_ABS/output/${SCORE_ID}.wav" "$OUT_DIR/vocal_raw.wav"
 echo "[synth] Vocal synthesis complete: $OUT_DIR/vocal_raw.wav"
+
+fi  # end: SKIP_VOCAL == false (NEUTRINO synthesis block)
 
 # ── Accompaniment rendering (FluidSynth) ─────────────────────────────────────
 
-INST_MID="$ABS_SONG/inst.mid"
-INST_XML="$ABS_SONG/inst.musicxml"
+if [[ "$NO_INST" == "true" ]]; then
+  echo "[synth] no_accompaniment=true — generating 1 s silent inst placeholder"
+  ffmpeg -y -f lavfi -i "anullsrc=r=44100:cl=stereo" -t 1 \
+    -ar 44100 -ac 2 "$OUT_DIR/inst_raw.wav"
+  echo "[synth] Done: vocal_raw.wav and inst_raw.wav written to $OUT_DIR"
+  exit 0
+fi
+
+# Resolve inst file: version-level override wins over song-level default
+INST_MID=""
+INST_XML=""
+if [[ -f "$ABS_VERSION/inst.mid" ]]; then
+  INST_MID="$ABS_VERSION/inst.mid"
+elif [[ -f "$ABS_SONG/inst.mid" ]]; then
+  INST_MID="$ABS_SONG/inst.mid"
+elif [[ -f "$ABS_VERSION/inst.musicxml" ]]; then
+  INST_XML="$ABS_VERSION/inst.musicxml"
+elif [[ -f "$ABS_SONG/inst.musicxml" ]]; then
+  INST_XML="$ABS_SONG/inst.musicxml"
+fi
+
 INST_TMP_MID="$OUT_DIR/inst_tmp.mid"
 
-if [[ -f "$INST_MID" ]]; then
+if [[ -n "$INST_MID" ]]; then
   echo "[synth] Rendering accompaniment from inst.mid"
   fluidsynth -ni "$sf3_PATH" "$INST_MID" \
     -F "$OUT_DIR/inst_raw.wav" -r 44100
 
-elif [[ -f "$INST_XML" ]]; then
+elif [[ -n "$INST_XML" ]]; then
   echo "[synth] Converting inst.musicxml → MIDI"
   if command -v musescore4 &>/dev/null; then
     musescore4 -o "$INST_TMP_MID" "$INST_XML"
@@ -198,16 +253,12 @@ score.write("midi", fp=sys.argv[2])
 PYEOF
   else
     echo "ERROR: inst.musicxml present but neither MuseScore nor music21 is available."
-    echo "  Install MuseScore, run: pip install music21, or provide inst.mid."
     exit 1
   fi
   fluidsynth -ni "$sf3_PATH" "$INST_TMP_MID" \
     -F "$OUT_DIR/inst_raw.wav" -r 44100
 
 else
-  # No dedicated accompaniment: derive a backing-vocal track from the vocal
-  # synthesis by adding reverb (80 ms echo at 40 % decay).  This gives the
-  # mix body without requiring a separate score or MIDI file.
   echo "[synth] No accompaniment file — deriving backing vocal from vocal synthesis"
   ffmpeg -y -i "$OUT_DIR/vocal_raw.wav" \
     -af "aecho=0.8:0.88:80:0.4" \

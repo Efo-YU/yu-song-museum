@@ -1,1 +1,294 @@
-[]
+[
+  {
+    "slug": "sample-song",
+    "title": "Sample Song",
+    "bpm": 120,
+    "key": "C major",
+    "credits": {
+      "vocalist": "MERROW (NEUTRINO)",
+      "composer": "Your Name",
+      "lyricist": "Your Name"
+    },
+    "page_config": {
+      "theme": {
+        "primary_color": "#4a90d9"
+      },
+      "description_markdown": "A sample song to verify the end-to-end pipeline.",
+      "downloads": {
+        "allow_xml": true,
+        "allow_mp3": true
+      }
+    },
+    "variants": [
+      {
+        "slug": "default",
+        "label": "Standard",
+        "description": "",
+        "score_url": "scores/sample-song/vocal.musicxml",
+        "score_viewer_settings": {
+          "default_zoom": 1.0,
+          "default_visible_parts": [
+            "vocal"
+          ]
+        },
+        "audio_url": "audio/sample-song/default/audio.mp3"
+      }
+    ]
+  },
+  {
+    "slug": "yamagata-koto-kouka",
+    "title": "山形高等学校校歌",
+    "bpm": 88,
+    "key": "Eb major",
+    "credits": {
+      "vocalist": "MERROW (NEUTRINO)",
+      "composer": "Unknown",
+      "lyricist": "Unknown"
+    },
+    "page_config": {
+      "theme": {
+        "primary_color": "#5c3a8a"
+      },
+      "description_markdown": "山形高等学校の校歌。変ホ長調、66小節（繰り返し展開）。",
+      "downloads": {
+        "allow_xml": true,
+        "allow_mp3": true
+      }
+    },
+    "default_variant": "with-piano",
+    "variants": [
+      {
+        "slug": "chorus-only",
+        "label": "Chorus Only",
+        "description": "",
+        "score_url": "scores/yamagata-koto-kouka/chorus-only.musicxml",
+        "score_viewer_settings": {
+          "default_zoom": 1.0,
+          "default_visible_parts": [
+            "Voice"
+          ]
+        },
+        "audio_url": "audio/yamagata-koto-kouka/chorus-only/audio.mp3"
+      },
+      {
+        "slug": "piano-only",
+        "label": "Piano Only",
+        "description": "",
+        "score_url": "scores/yamagata-koto-kouka/piano-only.musicxml",
+        "score_viewer_settings": {
+          "default_zoom": 1.0,
+          "default_visible_parts": [
+            "Piano"
+          ]
+        },
+        "audio_url": "audio/yamagata-koto-kouka/piano-only/audio.mp3"
+      },
+      {
+        "slug": "with-piano",
+        "label": "With Piano",
+        "description": "",
+        "score_url": "scores/yamagata-koto-kouka/full.musicxml",
+        "score_viewer_settings": {
+          "default_zoom": 1.0,
+          "default_visible_parts": [
+            "ボーカル",
+            "Piano"
+          ]
+        },
+        "audio_url": "audio/yamagata-koto-kouka/with-piano/audio.mp3"
+      }
+    ]
+  },
+  {
+    "slug": "yamagata-nourin-shoyoka",
+    "title": "山形県立農林専門学校逍遥歌",
+    "bpm": 80,
+    "key": "C major",
+    "credits": {
+      "vocalist": "MERROW (NEUTRINO)",
+      "composer": "Unknown",
+      "lyricist": "Unknown"
+    },
+    "page_config": {
+      "theme": {
+        "primary_color": "#4a7c59"
+      },
+      "description_markdown": "山形県立農林専門学校の逍遥歌。ハ長調、9小節。",
+      "downloads": {
+        "allow_xml": true,
+        "allow_mp3": true
+      }
+    },
+    "default_variant": "with-piano",
+    "variants": [
+      {
+        "slug": "chorus-only",
+        "label": "Chorus Only",
+        "description": "",
+        "score_url": "scores/yamagata-nourin-shoyoka/chorus-only.musicxml",
+        "score_viewer_settings": {
+          "default_zoom": 1.0,
+          "default_visible_parts": [
+            "vocal"
+          ]
+        },
+        "audio_url": "audio/yamagata-nourin-shoyoka/chorus-only/audio.mp3"
+      },
+      {
+        "slug": "piano-only",
+        "label": "Piano Only",
+        "description": "Piano accompaniment only, no vocal synthesis.",
+        "score_url": "scores/yamagata-nourin-shoyoka/inst.musicxml",
+        "score_viewer_settings": {
+          "default_zoom": 1.0,
+          "default_visible_parts": [
+            "Piano"
+          ]
+        },
+        "audio_url": "audio/yamagata-nourin-shoyoka/piano-only/audio.mp3"
+      },
+      {
+        "slug": "with-piano",
+        "label": "With Piano",
+        "description": "",
+        "score_url": "scores/yamagata-nourin-shoyoka/with-piano.musicxml",
+        "score_viewer_settings": {
+          "default_zoom": 1.0,
+          "default_visible_parts": [
+            "ボーカル",
+            "Piano"
+          ]
+        },
+        "audio_url": "audio/yamagata-nourin-shoyoka/with-piano/audio.mp3"
+      }
+    ]
+  },
+  {
+    "slug": "yamagata-shihan-kouka",
+    "title": "山形県師範学校校歌",
+    "bpm": 80,
+    "key": "A major",
+    "credits": {
+      "vocalist": "MERROW (NEUTRINO)",
+      "composer": "Unknown",
+      "lyricist": "Unknown"
+    },
+    "page_config": {
+      "theme": {
+        "primary_color": "#8b5e3c"
+      },
+      "description_markdown": "山形県師範学校の校歌。A長調、16小節。",
+      "downloads": {
+        "allow_xml": true,
+        "allow_mp3": true
+      }
+    },
+    "default_variant": "with-organ",
+    "variants": [
+      {
+        "slug": "organ-only",
+        "label": "Organ Only",
+        "description": "Organ accompaniment only, no vocal synthesis.",
+        "score_url": "scores/yamagata-shihan-kouka/organ-only.musicxml",
+        "score_viewer_settings": {
+          "default_zoom": 1.0,
+          "default_visible_parts": [
+            "オルガン"
+          ]
+        },
+        "audio_url": "audio/yamagata-shihan-kouka/organ-only/audio.mp3"
+      },
+      {
+        "slug": "vocal-only",
+        "label": "Vocal Only",
+        "description": "",
+        "score_url": "scores/yamagata-shihan-kouka/vocal.musicxml",
+        "score_viewer_settings": {
+          "default_zoom": 1.0,
+          "default_visible_parts": [
+            "vocal"
+          ]
+        },
+        "audio_url": "audio/yamagata-shihan-kouka/vocal-only/audio.mp3"
+      },
+      {
+        "slug": "with-organ",
+        "label": "With Organ",
+        "description": "",
+        "score_url": "scores/yamagata-shihan-kouka/with-organ.musicxml",
+        "score_viewer_settings": {
+          "default_zoom": 1.0,
+          "default_visible_parts": [
+            "ボーカル",
+            "オルガン"
+          ]
+        },
+        "audio_url": "audio/yamagata-shihan-kouka/with-organ/audio.mp3"
+      }
+    ]
+  },
+  {
+    "slug": "yonezawa-kogyo-kouka",
+    "title": "米沢高等工業学校校歌",
+    "bpm": 80,
+    "key": "C major",
+    "credits": {
+      "vocalist": "MERROW (NEUTRINO)",
+      "composer": "Unknown",
+      "lyricist": "Unknown"
+    },
+    "page_config": {
+      "theme": {
+        "primary_color": "#c0392b"
+      },
+      "description_markdown": "米沢高等工業学校の校歌。ハ長調、21小節。",
+      "downloads": {
+        "allow_xml": true,
+        "allow_mp3": true
+      }
+    },
+    "default_variant": "with-piano",
+    "variants": [
+      {
+        "slug": "piano-only",
+        "label": "Piano Only",
+        "description": "Piano accompaniment only, no vocal synthesis.",
+        "score_url": "scores/yonezawa-kogyo-kouka/piano-only.musicxml",
+        "score_viewer_settings": {
+          "default_zoom": 1.0,
+          "default_visible_parts": [
+            "Piano"
+          ]
+        },
+        "audio_url": "audio/yonezawa-kogyo-kouka/piano-only/audio.mp3"
+      },
+      {
+        "slug": "vocal-only",
+        "label": "Vocal Only",
+        "description": "",
+        "score_url": "scores/yonezawa-kogyo-kouka/vocal.musicxml",
+        "score_viewer_settings": {
+          "default_zoom": 1.0,
+          "default_visible_parts": [
+            "vocal"
+          ]
+        },
+        "audio_url": "audio/yonezawa-kogyo-kouka/vocal-only/audio.mp3"
+      },
+      {
+        "slug": "with-piano",
+        "label": "With Piano",
+        "description": "",
+        "score_url": "scores/yonezawa-kogyo-kouka/with-piano.musicxml",
+        "score_viewer_settings": {
+          "default_zoom": 1.0,
+          "default_visible_parts": [
+            "ボーカル",
+            "Piano"
+          ]
+        },
+        "audio_url": "audio/yonezawa-kogyo-kouka/with-piano/audio.mp3"
+      }
+    ]
+  }
+]

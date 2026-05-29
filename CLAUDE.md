@@ -59,10 +59,45 @@ All commands in §3 assume you are inside the Dev Container at
 - Type-check GAS: `cd gas && npx tsc --noEmit`
 - Build frontend: `cd frontend && pnpm build`
 - Run pipeline locally (one song): `make SONG=song_001 all`
+- Run full local pipeline (all songs, no YouTube): see §3a below
+- songs.json is **skip-worktree** (applied by `make setup`, run automatically
+  by the Dev Container `postCreateCommand`). Local dev changes are invisible to
+  git. To restore the committed base state: `git restore frontend/src/data/songs.json`
 - Check documentation invariants: `bash scripts/check-docs.sh`
   (verifies `docs/*/index.md` ↔ filesystem consistency and
   `Last reviewed:` freshness for operator docs; see
   `docs/agent/documentation-policy.md` §3 and §7)
+
+### §3a. Running the full local pipeline (OOM-safe)
+
+NEUTRINO's vocoder accumulates per-phrase audio in RAM.  On the 15 GiB
+Dev Container, running multiple songs or variants concurrently causes OOM.
+
+**Rules:**
+1. **Never run two NEUTRINO synthesis jobs in parallel.**  Always use a
+   sequential loop (song by song, variant by variant).
+2. `scripts/02_synthesize.sh` already splits synthesis into per-phrase
+   invocations (`-p N` flag).  Do not bypass this by calling `bin/neutrino`
+   directly without `-p`.
+3. Prefer `make dev-synth-populate` over bare `make synth` so assets are
+   copied to the frontend immediately after each variant.
+
+**Full local run (all songs, no YouTube):**
+```bash
+NEUTRINO_DIR=./neutrino sf3_PATH=./soundfonts/default.sf3
+export NEUTRINO_DIR sf3_PATH
+for song in yamagata-koto-kouka yamagata-nourin-shoyoka \
+            yamagata-shihan-kouka yonezawa-kogyo-kouka; do
+  for variant in $(ls projects/$song/variants/); do
+    make SONG=$song VARIANT=$variant synth mix video
+  done
+done
+python3 scripts/dev-populate.py
+cd frontend && pnpm dev
+```
+
+Run `make dev-frontend` in a separate terminal after `dev-populate` if you
+want to keep the shell free for further pipeline runs.
 
 ### Git workflow
 

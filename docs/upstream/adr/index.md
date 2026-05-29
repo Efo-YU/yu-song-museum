@@ -13,4 +13,6 @@ for the format.
 | 0001 | [PostgreSQL over MySQL](0001-postgres-over-mysql.md) | accepted |
 -->
 
-_No ADRs yet._
+| # | Title | Status |
+|---|-------|--------|
+| 0001 | [SSoT MusicXML as the canonical score source](0001-ssot-musicxml-pipeline.md) | accepted |

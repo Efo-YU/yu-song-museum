@@ -23,6 +23,7 @@
  */
 
 interface UploadRequest {
+  api_key?: string;
   r2_url: string;
   title: string;
   description: string;
@@ -60,6 +61,15 @@ function handleRequest(
   if (!e.postData?.contents) throw new Error("Empty request body");
 
   const req = JSON.parse(e.postData.contents) as UploadRequest;
+
+  // Validate shared secret stored in Script Properties.
+  // Set via GAS UI: Project Settings → Script Properties → GAS_API_KEY.
+  // If the property is absent the check is skipped (facilitates first-time setup).
+  const expectedKey = PropertiesService.getScriptProperties().getProperty("GAS_API_KEY");
+  if (expectedKey && req.api_key !== expectedKey) {
+    throw new Error("Unauthorized");
+  }
+
   if (!req.r2_url) throw new Error("r2_url is required");
   if (!req.title)  throw new Error("title is required");
 

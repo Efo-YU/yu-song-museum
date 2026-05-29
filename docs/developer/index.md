@@ -24,3 +24,4 @@ For the architecture rationale see
 | Document | Purpose |
 | -------- | ------- |
 | [local-synthesis.md](local-synthesis.md) | Running the synth → mix → video pipeline on a developer machine |
+| [ssot-musicxml.md](ssot-musicxml.md) | Authoring a combined SSoT score and converting it to NEUTRINO/backing parts |

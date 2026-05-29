@@ -39,8 +39,21 @@ gas/dist/
 gas/.clasp.json.local
 
 # Pipeline generated artifacts (never committed)
-projects/*/output/
+# projects/**/output/ covers both projects/{slug}/output/ (legacy) and
+# projects/{slug}/versions/{version}/output/ (current nested structure)
+projects/**/output/
 artifacts/
+
+# Frontend generated assets — produced by 06_merge_songs.py (CI) or
+# scripts/dev-populate.py (local dev).  Never hand-edit or commit.
+frontend/public/audio/
+frontend/public/scores/
+
+# songs.json is generated at build time (CI: 06_merge_songs.py; local dev:
+# scripts/dev-populate.py).  The committed state is [] (empty array) which
+# serves as the fallback when neither script has run.  After running
+# dev-populate locally, reset it with: git restore frontend/src/data/songs.json
+# (NOT gitignored — Vite needs it to exist at dev-server startup.)
 
 # Python
 __pycache__/

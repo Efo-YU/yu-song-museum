@@ -1,0 +1,52 @@
+{
+  "slug": "yamagata-shihan-kouka",
+  "title": "山形県師範学校校歌",
+  "bpm": 104,
+  "key": "A major",
+  "credits": {
+    "vocalist": "MERROW (NEUTRINO)",
+    "lyricist": "土井晩翠",
+    "composer": "島崎赤太郎"
+  },
+  "page_config": {
+    "theme": {
+      "primary_color": "#8b5e3c"
+    },
+    "description_markdown": "1928年（昭和3年）に制定された山形県師範学校の校歌。作詞は「荒城の月」で知られる詩人・土井晩翠、作曲は「山形県民歌」を作曲したオルガン奏者・島崎赤太郎によるもの。",
+    "source": "山形大学教育学部創立百周年記念事業実行委員会編刊『目でみる百年誌 山形大学教育学部同窓会』（1978年）131頁",
+    "lyrics": [
+      {
+        "number": 1,
+        "lines": [
+          "明治の昔 基をおきて",
+          "日本にあまねく 知られしわが名",
+          "山形師範の 母校のほまれ",
+          "薫を続けん 未来に遠く"
+        ]
+      },
+      {
+        "number": 2,
+        "lines": [
+          "千歳と竜山 南に対し",
+          "朝日と白鷹 見渡す西や",
+          "転じて高くも 仰ぐは月の",
+          "山なり向上 無窮のしるし"
+        ]
+      },
+      {
+        "number": 3,
+        "lines": [
+          "誠の一念 心と身とを",
+          "進めて琢きて 世のためつくせ",
+          "大道はるかに 歩みを誘ふ",
+          "ああわが青春 よろこびつきず"
+        ]
+      }
+    ],
+    "downloads": {
+      "allow_xml": true,
+      "allow_mp3": true
+    }
+  },
+  "default_variant": "with-organ"
+}

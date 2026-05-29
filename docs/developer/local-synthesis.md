@@ -3,6 +3,11 @@
 This covers the full `synth → mix → video` pipeline on a developer machine,
 using the `./neutrino` and `./soundfonts` mirrors that are gitignored.
 
+> **SSoT workflow:** If a song has `projects/<song>/full.musicxml`, run
+> `make SONG=<slug> convert-ssot` first to regenerate `vocal.musicxml` and
+> `inst.musicxml` from it.  See
+> [ssot-musicxml.md](ssot-musicxml.md) for the full authoring guide.
+
 ## Prerequisites
 
 | Item | Location | Notes |
@@ -17,16 +22,16 @@ using the `./neutrino` and `./soundfonts` mirrors that are gitignored.
 > `./neutrino/` must match what `01_fetch_models.sh` creates:
 > `bin/`, `model/<SINGER>/`, `score/musicxml/`, `score/label/`, `output/`.
 
-## Run one song
+## Run one variant
 
 ```sh
-make SONG=song_003 \
+make SONG=yamagata-shihan-kouka VARIANT=default \
      NEUTRINO_DIR=/workspaces/yu-song-museum/neutrino \
      sf3_PATH=/workspaces/yu-song-museum/soundfonts/default.sf3 \
      synth mix video
 ```
 
-Outputs land in `projects/song_003/output/`:
+Outputs land in `projects/yamagata-shihan-kouka/variants/default/output/`:
 
 | File | Description |
 | ---- | ----------- |
@@ -36,18 +41,33 @@ Outputs land in `projects/song_003/output/`:
 | `audio.mp3` | Mixed-down MP3 (192 kbps) |
 | `temp.mp4` | Score video (without YouTube upload) |
 
-## Run all songs
+## Run all songs (default variant)
 
 ```sh
-for s in song_002 song_003 song_004 song_005; do
-  make SONG=$s \
+for s in yamagata-shihan-kouka yamagata-nourin-shoyoka yamagata-koto-kouka yonezawa-kogyo-kouka; do
+  make SONG=$s VARIANT=default \
        NEUTRINO_DIR=/workspaces/yu-song-museum/neutrino \
        sf3_PATH=/workspaces/yu-song-museum/soundfonts/default.sf3 \
        synth mix
 done
 ```
 
-`song_001` is a placeholder; skip it unless you are testing the pipeline itself.
+`sample-song` is a placeholder; skip it unless testing the pipeline itself.
+
+## Project directory layout
+
+```
+projects/<song-slug>/
+  song.json                    # title, bpm, key, credits, page_config
+  vocal.musicxml               # shared vocal score (all variants)
+  inst.musicxml                # optional shared accompaniment score
+  variants/
+    <variant-slug>/
+      variant.json             # label, build_config, score_viewer_settings
+      vocal.musicxml           # optional per-variant score override
+      inst.musicxml            # optional per-variant accompaniment override
+      output/                  # generated files (gitignored)
+```
 
 ## Environment variables
 
@@ -70,9 +90,12 @@ songs (≥ ~120 s):
    Each call is bounded to that phrase's audio; RAM usage stays low.
 3. **Concat** — voiced phrases and silence gaps are joined with `ffmpeg -f concat`.
 
-The accompaniment path:
-- `inst.musicxml` present → music21 converts to MIDI → FluidSynth renders
-- No accompaniment file → aecho reverb of the vocal track used as backing
+Score resolution order (variant-level overrides song-level):
+
+1. `variants/<variant>/vocal.musicxml` if present
+2. `vocal.musicxml` at the song root (fallback)
+
+Same resolution applies to `inst.mid` and `inst.musicxml`.
 
 ## Troubleshooting
 
@@ -85,9 +108,9 @@ rests (quarter rests at natural breath points).  Without pauses NEUTRINO
 groups the entire song into one phrase, accumulating all audio in RAM.
 
 **`inst_raw.wav` duration differs from `vocal_raw.wav`** — expected for
-`song_004`, whose piano has a 34-measure coda; both WAVs start at t=0 and
+`yamagata-koto-kouka`, whose piano has a coda; both WAVs start at t=0 and
 the mix uses the longer track.  For other songs a mismatch of more than ~1 s
 indicates a missing verse in `inst.musicxml`.
 
-**Cleaning up between runs** — `make SONG=song_003 clean` removes everything
-in `projects/song_003/output/`.
+**Cleaning up between runs** — `make SONG=yamagata-shihan-kouka VARIANT=default clean`
+removes everything in the variant's `output/` directory.

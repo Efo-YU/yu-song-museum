@@ -10,7 +10,7 @@ export default function SongCard({ song, index }: Props) {
   const num = index !== undefined ? String(index).padStart(2, '0') : '';
 
   return (
-    <Link to={`/songs/${song.id}`} className="song-card">
+    <Link to={`/songs/${song.slug}`} className="song-card">
       {num && <p className="song-card__number">No. {num}</p>}
       <h2 className="song-card__title">{song.title}</h2>
       {song.credits && (
@@ -24,6 +24,9 @@ export default function SongCard({ song, index }: Props) {
         <p className="song-card__meta">
           {[song.key, song.bpm ? `${song.bpm} bpm` : ''].filter(Boolean).join('  ·  ')}
         </p>
+      )}
+      {song.variants.length > 1 && (
+        <p className="song-card__variants">{song.variants.length} variants</p>
       )}
     </Link>
   );

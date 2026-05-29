@@ -1,15 +1,18 @@
 import { lazy, Suspense } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { marked } from 'marked';
 import songsData from '../data/songs.json';
-import type { Song } from '../types/song';
+import type { Song, SongVariant } from '../types/song';
 
 const ScoreViewer = lazy(() => import('../components/ScoreViewer'));
 
 const songs = songsData as Song[];
 
 export default function SongPage() {
-  const { id } = useParams<{ id: string }>();
-  const song = songs.find((s) => s.id === id);
+  const { slug, variant: variantParam } = useParams<{ slug: string; variant: string }>();
+  const navigate = useNavigate();
+
+  const song = songs.find((s) => s.slug === slug);
 
   if (!song) {
     return (
@@ -18,6 +21,21 @@ export default function SongPage() {
         <p className="song-page__not-found">This work could not be found.</p>
       </main>
     );
+  }
+
+  const defaultSlug = song.default_variant ?? song.variants[0]?.slug;
+  const activeSlug = variantParam ?? defaultSlug;
+  const activeVariant: SongVariant | undefined = song.variants.find((v) => v.slug === activeSlug)
+    ?? song.variants[0];
+
+  const multipleVariants = song.variants.length > 1;
+
+  function handleVariantSelect(v: SongVariant) {
+    if (v.slug === defaultSlug) {
+      navigate(`/songs/${song!.slug}`);
+    } else {
+      navigate(`/songs/${song!.slug}/${v.slug}`);
+    }
   }
 
   const pc = song.page_config;
@@ -54,13 +72,31 @@ export default function SongPage() {
         )}
       </header>
 
-      {song.youtube_id && (
+      {multipleVariants && (
+        <nav className="variant-tabs" aria-label="Variants">
+          {song.variants.map((v) => (
+            <button
+              key={v.slug}
+              type="button"
+              className={`variant-tab${v.slug === activeVariant?.slug ? ' variant-tab--active' : ''}`}
+              onClick={() => handleVariantSelect(v)}
+            >
+              {v.label}
+              {v.description && (
+                <span className="variant-tab__desc">{v.description}</span>
+              )}
+            </button>
+          ))}
+        </nav>
+      )}
+
+      {activeVariant?.youtube_id && (
         <section className="song-page__video">
           <iframe
             width="100%"
             style={{ aspectRatio: '16/9', border: 'none', display: 'block' }}
-            src={`https://www.youtube.com/embed/${song.youtube_id}`}
-            title={song.title}
+            src={`https://www.youtube.com/embed/${activeVariant.youtube_id}`}
+            title={`${song.title} — ${activeVariant.label}`}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
@@ -69,44 +105,77 @@ export default function SongPage() {
 
       {pc?.description_markdown && (
         <section className="song-page__description">
-          <h2 className="section-heading">About this work</h2>
-          <p>{pc.description_markdown}</p>
+          <h2 className="section-heading">この作品について</h2>
+          <div
+            className="prose"
+            dangerouslySetInnerHTML={{ __html: marked.parse(pc.description_markdown) as string }}
+          />
+          {pc.source && (
+            <p className="song-page__source">出典：{pc.source}</p>
+          )}
         </section>
       )}
 
-      {song.score_url && (
+      {pc?.lyrics && pc.lyrics.length > 0 && (
+        <section className="song-page__lyrics">
+          <h2 className="section-heading">歌詞</h2>
+          <ol className="lyrics-list">
+            {pc.lyrics.map((verse) => (
+              <li key={verse.number} className="lyrics-verse">
+                {verse.lines.map((line, i) => (
+                  <span key={i} className="lyrics-line">{line}</span>
+                ))}
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+
+      {activeVariant?.score_url && (
         <section className="song-page__score">
           <h2 className="section-heading">Score</h2>
           <Suspense fallback={<p className="score-status">Loading score…</p>}>
             <ScoreViewer
-              url={song.score_url}
-              settings={pc?.score_viewer_settings}
+              url={activeVariant.score_url}
+              settings={activeVariant.score_viewer_settings}
             />
           </Suspense>
+        </section>
+      )}
+
+      {allowMp3 && activeVariant?.audio_url && (
+        <section className="song-page__audio">
+          <h2 className="section-heading">Listen — {activeVariant.label}</h2>
+          <audio
+            key={activeVariant.audio_url}
+            controls
+            src={activeVariant.audio_url}
+            className="audio-player"
+          />
         </section>
       )}
 
       <section className="song-page__downloads">
         <h2 className="section-heading">Downloads &amp; Links</h2>
         <ul className="download-list">
-          {allowMp3 && song.audio_url && (
+          {allowMp3 && activeVariant?.audio_url && (
             <li>
-              <a href={song.audio_url} download className="download-link">
-                Audio (MP3)
+              <a href={activeVariant.audio_url} download className="download-link">
+                Audio — {activeVariant.label} (MP3)
               </a>
             </li>
           )}
-          {allowXml && song.score_url && (
+          {allowXml && activeVariant?.score_url && (
             <li>
-              <a href={song.score_url} download className="download-link">
+              <a href={activeVariant.score_url} download className="download-link">
                 Score (MusicXML)
               </a>
             </li>
           )}
-          {song.youtube_url && (
+          {activeVariant?.youtube_url && (
             <li>
               <a
-                href={song.youtube_url}
+                href={activeVariant.youtube_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="download-link"
