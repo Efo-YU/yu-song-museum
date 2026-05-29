@@ -122,6 +122,7 @@ jobs:
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
           SINGER: ${{ secrets.NEUTRINO_SINGER }}
+          VARIANT_DIR: projects/${{ matrix.song }}/variants/${{ matrix.variant }}
         run: bash scripts/01_fetch_models.sh
 
       # ── Step 1.5: SSoT conversion (runs only when full.musicxml is present) ──
