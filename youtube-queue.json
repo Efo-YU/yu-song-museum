@@ -36,12 +36,6 @@
     "queued_at": "2026-05-29T07:13:05.927837+00:00"
   },
   {
-    "song": "yamagata-shihan-kouka",
-    "variant": "organ-only",
-    "sha": "ecb9855780b387977ca632fb4cfcb1fa64e41fd1",
-    "queued_at": "2026-05-29T07:13:05.927837+00:00"
-  },
-  {
     "song": "yamagata-koto-kouka",
     "variant": "with-piano",
     "sha": "ecb9855780b387977ca632fb4cfcb1fa64e41fd1",
@@ -55,18 +49,6 @@
   },
   {
     "song": "yamagata-koto-kouka",
-    "variant": "piano-only",
-    "sha": "ecb9855780b387977ca632fb4cfcb1fa64e41fd1",
-    "queued_at": "2026-05-29T07:13:05.927837+00:00"
-  },
-  {
-    "song": "yonezawa-kogyo-kouka",
-    "variant": "piano-only",
-    "sha": "ecb9855780b387977ca632fb4cfcb1fa64e41fd1",
-    "queued_at": "2026-05-29T07:13:05.927837+00:00"
-  },
-  {
-    "song": "yamagata-nourin-shoyoka",
     "variant": "piano-only",
     "sha": "ecb9855780b387977ca632fb4cfcb1fa64e41fd1",
     "queued_at": "2026-05-29T07:13:05.927837+00:00"
@@ -88,5 +70,23 @@
     "variant": "multi-singer",
     "sha": "ecb9855780b387977ca632fb4cfcb1fa64e41fd1",
     "queued_at": "2026-05-29T07:13:05.927837+00:00"
+  },
+  {
+    "song": "yamagata-shihan-kouka",
+    "variant": "organ-only",
+    "sha": "1c0ec343bf2b906cf2d70f00268ae5da54b1fddc",
+    "queued_at": "2026-05-29T08:41:36.921561+00:00"
+  },
+  {
+    "song": "yonezawa-kogyo-kouka",
+    "variant": "piano-only",
+    "sha": "1c0ec343bf2b906cf2d70f00268ae5da54b1fddc",
+    "queued_at": "2026-05-29T08:41:36.921561+00:00"
+  },
+  {
+    "song": "yamagata-nourin-shoyoka",
+    "variant": "piano-only",
+    "sha": "1c0ec343bf2b906cf2d70f00268ae5da54b1fddc",
+    "queued_at": "2026-05-29T08:41:36.921561+00:00"
   }
 ]
