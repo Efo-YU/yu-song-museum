@@ -28,6 +28,7 @@ export interface SongVariant {
   slug: string;
   label: string;
   description?: string;
+  vocalist?: string;
   youtube_id?: string;
   youtube_url?: string;
   audio_url?: string;
