@@ -101,6 +101,9 @@
         "source=${localWorkspaceFolderBasename}-gh-config,target=/home/vscode/.config/gh,type=volume"
     ],
     "remoteUser": "vscode",
+    // Run once after the container is created and the workspace is mounted.
+    // Applies local-only git index settings that are not stored in the repo.
+    "postCreateCommand": "make setup",
     "containerEnv": {
         // Raise Node's heap limit. Claude Code itself is a Node process
         // and can be memory-hungry on large repositories; this setting

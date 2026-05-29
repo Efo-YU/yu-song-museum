@@ -28,7 +28,7 @@ VARIANT_DIR  = projects/$(SONG)/variants/$(VARIANT)
 .PHONY: all fetch-models convert-ssot synth mix video upload-gas merge-songs \
         build-frontend dev-frontend \
         dev-populate dev-synth-populate \
-        clean clean-dev help
+        setup clean clean-dev help
 
 ## Run the full pipeline for one variant (except YouTube upload)
 all: fetch-models convert-ssot synth mix video
@@ -89,6 +89,12 @@ dev-populate:
 ## Synthesize + mix one variant, then populate the frontend (local dev only).
 ##   make dev-synth-populate SONG=yamagata-shihan-kouka VARIANT=with-organ
 dev-synth-populate: convert-ssot synth mix dev-populate
+
+## Apply local git-index settings (skip-worktree on generated files).
+## Run once after a fresh clone or Dev Container rebuild.
+## The devcontainer postCreateCommand calls this automatically.
+setup:
+	git update-index --skip-worktree frontend/src/data/songs.json
 
 ## Remove generated output for one variant
 clean:

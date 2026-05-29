@@ -60,9 +60,9 @@ All commands in §3 assume you are inside the Dev Container at
 - Build frontend: `cd frontend && pnpm build`
 - Run pipeline locally (one song): `make SONG=song_001 all`
 - Run full local pipeline (all songs, no YouTube): see §3a below
-- songs.json is **skip-worktree** — local dev changes are invisible to git.
-  To restore the committed base state: `git restore frontend/src/data/songs.json`
-  To re-apply local dev state after restore: `python3 scripts/dev-populate.py`
+- songs.json is **skip-worktree** (applied by `make setup`, run automatically
+  by the Dev Container `postCreateCommand`). Local dev changes are invisible to
+  git. To restore the committed base state: `git restore frontend/src/data/songs.json`
 - Check documentation invariants: `bash scripts/check-docs.sh`
   (verifies `docs/*/index.md` ↔ filesystem consistency and
   `Last reviewed:` freshness for operator docs; see
