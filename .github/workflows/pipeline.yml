@@ -10,13 +10,13 @@ on:
   workflow_dispatch:
     inputs:
       song:
-        description: "Force-process a single song slug (leave blank to use git diff)"
+        description: "Song slug to force-process (blank = use git diff; 'all' = every song)"
         required: false
         default: ""
       variant:
-        description: "Variant slug for the forced song (default: default)"
+        description: "Variant slug (blank = all variants of the song)"
         required: false
-        default: "default"
+        default: ""
 
 # Prevent concurrent deploys from colliding on songs.json
 concurrency:
@@ -42,8 +42,34 @@ jobs:
           FORCE_SONG: ${{ github.event.inputs.song }}
           FORCE_VARIANT: ${{ github.event.inputs.variant }}
         run: |
-          if [[ -n "$FORCE_SONG" ]]; then
+          if [[ "$FORCE_SONG" == "all" ]]; then
+            # Expand to every variant of every song
+            pairs=$(python3 - <<'PY'
+import json, pathlib
+pairs = []
+for song_dir in sorted(pathlib.Path("projects").iterdir()):
+    vdir = song_dir / "variants"
+    if not vdir.is_dir():
+        continue
+    for v in sorted(vdir.iterdir()):
+        if v.is_dir():
+            pairs.append({"song": song_dir.name, "variant": v.name})
+print(json.dumps(pairs))
+PY
+            )
+          elif [[ -n "$FORCE_SONG" && -n "$FORCE_VARIANT" ]]; then
+            # Specific song + specific variant
             pairs="[{\"song\":\"$FORCE_SONG\",\"variant\":\"$FORCE_VARIANT\"}]"
+          elif [[ -n "$FORCE_SONG" ]]; then
+            # Specific song, all its variants
+            pairs=$(python3 - <<PY
+import json, pathlib
+vdir = pathlib.Path("projects/$FORCE_SONG/variants")
+pairs = [{"song": "$FORCE_SONG", "variant": v.name}
+         for v in sorted(vdir.iterdir()) if v.is_dir()]
+print(json.dumps(pairs))
+PY
+            )
           else
             pairs=$(bash scripts/00_detect_diff.sh)
           fi
