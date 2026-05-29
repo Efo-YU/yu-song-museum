@@ -2,79 +2,91 @@
   {
     "song": "yonezawa-kogyo-kouka",
     "variant": "vocal-only",
-    "sha": "e4a3179b2c42c97cdaeaa6cc11b5ca2f123f25cf",
-    "queued_at": "2026-05-29T05:46:00.272096+00:00"
+    "sha": "167a8fca1a977ad0c8eee7f981ea9e0fdcd21013",
+    "queued_at": "2026-05-29T06:33:01.781491+00:00"
   },
   {
     "song": "yonezawa-kogyo-kouka",
     "variant": "with-piano",
-    "sha": "e4a3179b2c42c97cdaeaa6cc11b5ca2f123f25cf",
-    "queued_at": "2026-05-29T05:46:00.272096+00:00"
+    "sha": "167a8fca1a977ad0c8eee7f981ea9e0fdcd21013",
+    "queued_at": "2026-05-29T06:33:01.781491+00:00"
   },
   {
     "song": "yamagata-shihan-kouka",
     "variant": "with-organ",
-    "sha": "e4a3179b2c42c97cdaeaa6cc11b5ca2f123f25cf",
-    "queued_at": "2026-05-29T05:46:00.272096+00:00"
+    "sha": "167a8fca1a977ad0c8eee7f981ea9e0fdcd21013",
+    "queued_at": "2026-05-29T06:33:01.781491+00:00"
   },
   {
     "song": "yamagata-nourin-shoyoka",
     "variant": "chorus-only",
-    "sha": "e4a3179b2c42c97cdaeaa6cc11b5ca2f123f25cf",
-    "queued_at": "2026-05-29T05:46:00.272096+00:00"
+    "sha": "167a8fca1a977ad0c8eee7f981ea9e0fdcd21013",
+    "queued_at": "2026-05-29T06:33:01.781491+00:00"
   },
   {
     "song": "sample-song",
     "variant": "default",
-    "sha": "e4a3179b2c42c97cdaeaa6cc11b5ca2f123f25cf",
-    "queued_at": "2026-05-29T05:46:00.272096+00:00"
+    "sha": "167a8fca1a977ad0c8eee7f981ea9e0fdcd21013",
+    "queued_at": "2026-05-29T06:33:01.781491+00:00"
   },
   {
     "song": "yamagata-shihan-kouka",
     "variant": "vocal-only",
-    "sha": "e4a3179b2c42c97cdaeaa6cc11b5ca2f123f25cf",
-    "queued_at": "2026-05-29T05:46:00.272096+00:00"
+    "sha": "167a8fca1a977ad0c8eee7f981ea9e0fdcd21013",
+    "queued_at": "2026-05-29T06:33:01.781491+00:00"
   },
   {
     "song": "yamagata-shihan-kouka",
     "variant": "organ-only",
-    "sha": "e4a3179b2c42c97cdaeaa6cc11b5ca2f123f25cf",
-    "queued_at": "2026-05-29T05:46:00.272096+00:00"
+    "sha": "167a8fca1a977ad0c8eee7f981ea9e0fdcd21013",
+    "queued_at": "2026-05-29T06:33:01.781491+00:00"
   },
   {
     "song": "yamagata-koto-kouka",
     "variant": "with-piano",
-    "sha": "e4a3179b2c42c97cdaeaa6cc11b5ca2f123f25cf",
-    "queued_at": "2026-05-29T05:46:00.272096+00:00"
+    "sha": "167a8fca1a977ad0c8eee7f981ea9e0fdcd21013",
+    "queued_at": "2026-05-29T06:33:01.781491+00:00"
   },
   {
     "song": "yamagata-nourin-shoyoka",
     "variant": "with-piano",
-    "sha": "e4a3179b2c42c97cdaeaa6cc11b5ca2f123f25cf",
-    "queued_at": "2026-05-29T05:46:00.272096+00:00"
+    "sha": "167a8fca1a977ad0c8eee7f981ea9e0fdcd21013",
+    "queued_at": "2026-05-29T06:33:01.781491+00:00"
   },
   {
     "song": "yamagata-koto-kouka",
     "variant": "piano-only",
-    "sha": "e4a3179b2c42c97cdaeaa6cc11b5ca2f123f25cf",
-    "queued_at": "2026-05-29T05:46:00.272096+00:00"
+    "sha": "167a8fca1a977ad0c8eee7f981ea9e0fdcd21013",
+    "queued_at": "2026-05-29T06:33:01.781491+00:00"
   },
   {
     "song": "yonezawa-kogyo-kouka",
     "variant": "piano-only",
-    "sha": "e4a3179b2c42c97cdaeaa6cc11b5ca2f123f25cf",
-    "queued_at": "2026-05-29T05:46:00.272096+00:00"
+    "sha": "167a8fca1a977ad0c8eee7f981ea9e0fdcd21013",
+    "queued_at": "2026-05-29T06:33:01.781491+00:00"
   },
   {
     "song": "yamagata-nourin-shoyoka",
     "variant": "piano-only",
-    "sha": "e4a3179b2c42c97cdaeaa6cc11b5ca2f123f25cf",
-    "queued_at": "2026-05-29T05:46:00.272096+00:00"
+    "sha": "167a8fca1a977ad0c8eee7f981ea9e0fdcd21013",
+    "queued_at": "2026-05-29T06:33:01.781491+00:00"
   },
   {
     "song": "yamagata-koto-kouka",
     "variant": "chorus-only",
-    "sha": "e4a3179b2c42c97cdaeaa6cc11b5ca2f123f25cf",
-    "queued_at": "2026-05-29T05:46:00.272096+00:00"
+    "sha": "167a8fca1a977ad0c8eee7f981ea9e0fdcd21013",
+    "queued_at": "2026-05-29T06:33:01.781491+00:00"
+  },
+  {
+    "song": "sample-song",
+    "variant": "all-singers",
+    "sha": "167a8fca1a977ad0c8eee7f981ea9e0fdcd21013",
+    "queued_at": "2026-05-29T06:33:01.781491+00:00"
+  },
+  {
+    "song": "sample-song",
+    "variant": "multi-singer",
+    "sha": "167a8fca1a977ad0c8eee7f981ea9e0fdcd21013",
+    "queued_at": "2026-05-29T06:33:01.781491+00:00"
   }
 ]
