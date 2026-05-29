@@ -25,11 +25,22 @@ from pathlib import Path
 _SVG_OPEN_RE = re.compile(r"<svg\b[^>]*>", re.DOTALL)
 # Extracts width and height from the opening <svg> tag
 _DIM_RE = re.compile(r'\b(width|height)="(\d+(?:\.\d+)?)px"')
+# Matches the definition-scale inner SVG opening tag
+_DEF_SCALE_RE = re.compile(r'(<svg\b[^>]*class="definition-scale"[^>]*>)', re.DOTALL)
 
 
 def _get_attr(tag: str, name: str) -> str | None:
     m = re.search(rf'\b{re.escape(name)}="([^"]*)"', tag)
     return m.group(1) if m else None
+
+
+def _set_def_scale_dims(inner: str, width: float, height: float) -> str:
+    """Add explicit width/height to the definition-scale SVG so it doesn't
+    default to 100% of the outer wrapper and overlap other pages."""
+    def _replace(m: re.Match) -> str:
+        tag = re.sub(r'\s+(?:width|height)="[^"]*"', '', m.group(1))
+        return tag[:-1] + f' width="{width:.0f}px" height="{height:.0f}px">'
+    return _DEF_SCALE_RE.sub(_replace, inner, count=1)
 
 
 def _parse_dim(tag: str, attr: str) -> float:
@@ -105,7 +116,8 @@ def _stack_pages(pages: list[str]) -> str:
     ]
 
     y_offset = 0.0
-    for i, (inner, h) in enumerate(zip(inner_svgs, heights)):
+    for inner, w, h in zip(inner_svgs, widths, heights):
+        inner = _set_def_scale_dims(inner, w, h)
         lines.append(f'  <g transform="translate(0,{y_offset:.0f})">')
         lines.append(inner)
         lines.append("  </g>")
