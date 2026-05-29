@@ -1,7 +1,6 @@
 {
   "slug": "piano-only",
   "label": "Piano Only",
-  "description": "Piano accompaniment only, no vocal synthesis.",
   "score_file": "inst.musicxml",
   "skip_vocal_synthesis": true,
   "build_config": {

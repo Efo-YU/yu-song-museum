@@ -198,7 +198,7 @@ export default function SongPage() {
   );
 }
 
-const CREDIT_ORDER = ['lyricist', 'composer', 'vocalist'] as const;
+const CREDIT_ORDER = ['lyricist', 'composer'] as const;
 
 const CREDIT_LABELS: Record<string, string> = {
   lyricist: 'Lyricist',
