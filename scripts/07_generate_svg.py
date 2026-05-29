@@ -27,6 +27,11 @@ _SVG_OPEN_RE = re.compile(r"<svg\b[^>]*>", re.DOTALL)
 _DIM_RE = re.compile(r'\b(width|height)="(\d+(?:\.\d+)?)px"')
 
 
+def _get_attr(tag: str, name: str) -> str | None:
+    m = re.search(rf'\b{re.escape(name)}="([^"]*)"', tag)
+    return m.group(1) if m else None
+
+
 def _parse_dim(tag: str, attr: str) -> float:
     for m in _DIM_RE.finditer(tag):
         if m.group(1) == attr:
@@ -83,12 +88,20 @@ def _stack_pages(pages: list[str]) -> str:
     gap = 8  # pixels between pages
     total_height += gap * (len(heights) - 1)
 
+    # Inherit id and color from the first page so CSS selectors like
+    # `#<id> path { stroke:currentColor }` that verovio emits continue to match.
+    first_match = _SVG_OPEN_RE.search(pages[0])
+    first_tag = first_match.group(0) if first_match else ""
+    root_id = _get_attr(first_tag, "id")
+    root_color = _get_attr(first_tag, "color")
+    id_attr = f' id="{root_id}"' if root_id else ""
+    color_attr = f' color="{root_color}"' if root_color else ""
     lines: list[str] = [
         f'<svg width="{total_width:.0f}px" height="{total_height:.0f}px"'
         ' version="1.1"'
         ' xmlns="http://www.w3.org/2000/svg"'
         ' xmlns:xlink="http://www.w3.org/1999/xlink"'
-        ' overflow="visible">',
+        f' overflow="visible"{id_attr}{color_attr}>',
     ]
 
     y_offset = 0.0

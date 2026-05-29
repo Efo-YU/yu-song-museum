@@ -147,6 +147,20 @@ def main() -> None:
         if "score_url" in variant_data and "svg_url" not in variant_data:
             variant_data["svg_url"] = variant_data["score_url"].replace(".musicxml", ".svg")
 
+        # Propagate vocalist from song-level credits to variants that include
+        # vocal synthesis (i.e. skip_vocal_synthesis is absent or false in
+        # the project variant.json).
+        if "vocalist" not in variant_data:
+            variant_json_path = PROJECTS_DIR / song_slug / "variants" / variant_slug / "variant.json"
+            is_instrumental = False
+            if variant_json_path.exists():
+                vj = json.loads(variant_json_path.read_text())
+                is_instrumental = bool(vj.get("skip_vocal_synthesis"))
+            if not is_instrumental:
+                vocalist = live_meta.get("credits", {}).get("vocalist")
+                if vocalist:
+                    variant_data["vocalist"] = vocalist
+
         # Update or insert the variant entry
         variants: list[dict] = existing[song_slug].setdefault("variants", [])
         existing_variant = next((v for v in variants if v["slug"] == variant_slug), None)

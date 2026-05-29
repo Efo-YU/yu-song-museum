@@ -147,6 +147,9 @@ export default function SongPage() {
       {allowMp3 && activeVariant?.audio_url && (
         <section className="song-page__audio">
           <h2 className="section-heading">Listen — {activeVariant.label}</h2>
+          {activeVariant.vocalist && (
+            <p className="song-page__vocalist">Covered by {activeVariant.vocalist}</p>
+          )}
           <audio
             key={activeVariant.audio_url}
             controls
