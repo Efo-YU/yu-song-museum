@@ -75,7 +75,7 @@ projects/<song-slug>/
 | -------- | ------- | -------- |
 | `NEUTRINO_DIR` | `/tmp/neutrino` | `./neutrino` for local mirrors |
 | `sf3_PATH` | `/tmp/default.sf3` | `./soundfonts/default.sf3` |
-| `SINGER` | `MERROW` | Any model under `neutrino/model/` |
+| `SINGER` | `MERROW` | Fallback when `variant.json` has no `singers` array |
 | `NUM_THREADS` | `4` | Raise on machines with many cores |
 | `TRANSPOSE` | `0` | Semitone shift applied to synthesis |
 
@@ -96,6 +96,33 @@ Score resolution order (variant-level overrides song-level):
 2. `vocal.musicxml` at the song root (fallback)
 
 Same resolution applies to `inst.mid` and `inst.musicxml`.
+
+## Multi-singer variants
+
+A variant can blend multiple NEUTRINO models by adding a `singers` array to
+`variant.json`.  Each entry specifies a model name and a relative volume:
+
+```json
+{
+  "singers": [
+    { "model": "MERROW", "volume": 1.0 },
+    { "model": "ITAKO",  "volume": 0.6 }
+  ]
+}
+```
+
+`02_synthesize.sh` synthesizes each model independently and mixes the results
+with the given volumes using `ffmpeg amix`.  The output is still a single
+`vocal_raw.wav`.  This does **not** create separate variants — one variant
+produces one mixed audio file.
+
+When `singers` is absent or empty, the script falls back to the `SINGER`
+environment variable (volume 1.0), preserving the existing single-singer
+behaviour.
+
+**OOM note:** each singer in the list triggers a full NEUTRINO synthesis run.
+Follow the sequential-loop guidance in CLAUDE.md §3a — never run two synthesis
+jobs in parallel.
 
 ## Troubleshooting
 

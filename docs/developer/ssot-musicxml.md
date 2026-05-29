@@ -50,7 +50,9 @@ conversion step is skipped automatically.
 2. Create a score with **all** parts:
    - Accompaniment (piano, organ, …) as **Part 1** (or any non-vocal part name)
    - Vocal as a separate part with `instrument-sound = voice.vocals`
-     or a part name containing "ボーカル", "Voice", "Vocal", etc.
+     or a part name containing `Vo.`, "Voice", "Vocal", etc.
+   - Use the canonical abbreviations: `Vo.` (vocal), `Pno.` (piano),
+     `Org.` (organ), `Cho.` (chorus) — see "Part name conventions" below.
 3. Write repeats naturally:
    - Use forward / backward repeat barlines (`|:` / `:||`)
    - Use 1st-/2nd-ending volta brackets for different final phrases
@@ -73,9 +75,25 @@ The script identifies the vocal part by checking (in order):
 | 3 | `<instrument-sound>` starting with `voice.` |
 | 4 | `<part-name>` / `<part-abbreviation>` matching a vocal keyword |
 
-Vocal keywords: `voice`, `vocal`, `soprano`, `mezzo`, `tenor`,
+Vocal keywords: `vo.`, `voc.`, `voice`, `vocal`, `soprano`, `mezzo`, `tenor`,
 `baritone`, `alto`, `bass`, `choir`, `chorus`, `ソプラノ`, `メゾ`,
 `アルト`, `テノール`, `バリトン`, `バス`, `ボーカル`, `合唱`, `歌`, `唱`.
+
+### Part name conventions
+
+All `<part-name>` and `<part-abbreviation>` elements in `full.musicxml` must use
+the canonical abbreviated form:
+
+| Part | `<part-name>` | `<part-abbreviation>` |
+|------|---------------|----------------------|
+| Vocal | `Vo.` | `Vo.` |
+| Chorus | `Cho.` | `Cho.` |
+| Piano | `Pno.` | `Pno.` |
+| Organ | `Org.` | `Org.` |
+
+Avoid Japanese names (`ボーカル`, `オルガン`) or unabbreviated English
+words (`Piano`, `Vocal`) — they create inconsistency in the score SVG
+display and in `default_visible_parts` references in `variant.json`.
 
 If auto-detection fails, add explicit configuration to `song.json`:
 

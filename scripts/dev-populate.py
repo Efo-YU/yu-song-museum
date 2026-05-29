@@ -34,6 +34,33 @@ import shutil
 import sys
 from pathlib import Path
 
+
+def _generate_svg(xml_path: Path, svg_path: Path) -> None:
+    """Convert a single MusicXML to SVG. No-op if verovio is unavailable."""
+    try:
+        from scripts_07_generate_svg import convert as _convert  # type: ignore[import]
+    except ImportError:
+        # Resolve relative to this file so it works regardless of CWD
+        import importlib.util as _ilu
+        spec = _ilu.spec_from_file_location(
+            "scripts_07_generate_svg",
+            Path(__file__).parent / "07_generate_svg.py",
+        )
+        if spec is None or spec.loader is None:
+            print("  [svg] Could not load 07_generate_svg.py — skipping")
+            return
+        mod = _ilu.module_from_spec(spec)
+        spec.loader.exec_module(mod)  # type: ignore[union-attr]
+        _convert = mod.convert  # type: ignore[attr-defined]
+
+    try:
+        _convert(xml_path, svg_path)
+    except ImportError:
+        print("  [svg] verovio not installed — skipping SVG generation"
+              " (run: pip install verovio)")
+    except Exception as exc:
+        print(f"  [svg] WARNING: {exc}")
+
 REPO = Path(__file__).parent.parent
 PROJECTS = REPO / "projects"
 SONGS_JSON = REPO / "frontend" / "src" / "data" / "songs.json"
@@ -52,11 +79,13 @@ def main() -> None:
         song = json.loads((song_dir / "song.json").read_text())
         slug: str = song["slug"]
 
-        # Copy all song-root MusicXML files to public/scores/{slug}/
+        # Copy all song-root MusicXML files to public/scores/{slug}/ and generate SVGs
         score_dest = PUBLIC_SCORES / slug
         score_dest.mkdir(parents=True, exist_ok=True)
         for xml in song_dir.glob("*.musicxml"):
-            shutil.copy2(xml, score_dest / xml.name)
+            dest_xml = score_dest / xml.name
+            shutil.copy2(xml, dest_xml)
+            _generate_svg(dest_xml, dest_xml.with_suffix(".svg"))
 
         variants = []
         variants_dir = song_dir / "variants"
@@ -68,12 +97,14 @@ def main() -> None:
                 vmeta = json.loads((vdir / "variant.json").read_text())
                 vslug: str = vmeta["slug"]
                 score_file: str = vmeta.get("score_file", "vocal.musicxml")
+                svg_file: str = score_file.replace(".musicxml", ".svg")
 
                 entry: dict = {
                     "slug": vslug,
                     "label": vmeta["label"],
                     "description": vmeta.get("description", ""),
                     "score_url": f"scores/{slug}/{score_file}",
+                    "svg_url": f"scores/{slug}/{svg_file}",
                     "score_viewer_settings": vmeta.get("score_viewer_settings"),
                 }
 

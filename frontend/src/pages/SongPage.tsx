@@ -135,14 +135,11 @@ export default function SongPage() {
         </section>
       )}
 
-      {activeVariant?.score_url && (
+      {activeVariant?.svg_url && (
         <section className="song-page__score">
           <h2 className="section-heading">Score</h2>
           <Suspense fallback={<p className="score-status">Loading score…</p>}>
-            <ScoreViewer
-              url={asset(activeVariant.score_url)}
-              settings={activeVariant.score_viewer_settings}
-            />
+            <ScoreViewer url={asset(activeVariant.svg_url)} />
           </Suspense>
         </section>
       )}
@@ -166,6 +163,13 @@ export default function SongPage() {
             <li>
               <a href={asset(activeVariant.audio_url)} download className="download-link">
                 Audio — {activeVariant.label} (MP3)
+              </a>
+            </li>
+          )}
+          {allowXml && activeVariant?.svg_url && (
+            <li>
+              <a href={asset(activeVariant.svg_url)} download className="download-link">
+                Score (SVG)
               </a>
             </li>
           )}
