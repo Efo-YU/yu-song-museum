@@ -137,6 +137,13 @@ def main() -> None:
         persist_variant_json(song_slug, variant_slug, artifact_dir)
         print(f"[merge] {song_slug}/{variant_slug}: merged and assets copied")
 
+    # Always copy MusicXML scores for every known song, regardless of whether
+    # a pipeline artifact was produced this run.  Score files live in the repo
+    # and are always available; audio depends on a successful synth pipeline run.
+    all_song_slugs = {s["slug"] for s in existing.values()}
+    for slug in all_song_slugs:
+        copy_scores(slug)
+
     # Sort songs by slug, variants within each song by slug
     for song in existing.values():
         song["variants"] = sorted(song.get("variants", []), key=lambda v: v["slug"])
