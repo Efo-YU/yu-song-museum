@@ -4,7 +4,7 @@
   "build_config": {
     "audio_settings": {
       "vocal_volume": 1.0,
-      "inst_volume": 0.5,
+      "inst_volume": 0.0,
       "effects": [
         {
           "type": "highpass",
@@ -21,8 +21,6 @@
   },
   "score_viewer_settings": {
     "default_zoom": 1.0,
-    "default_visible_parts": [
-      "Vo."
-    ]
+    "default_visible_parts": ["Vo."]
   }
 }

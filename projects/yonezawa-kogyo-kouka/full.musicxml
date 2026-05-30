@@ -1297,7 +1297,7 @@
         </lyric>
         <lyric number="3" default-y="-103.14" relative-y="-30">
           <syllabic>single</syllabic>
-          <text>は</text>
+          <text>わ</text>
         </lyric>
         <lyric number="4" default-y="-127.62" relative-y="-30">
           <syllabic>single</syllabic>
@@ -1736,7 +1736,7 @@
         </notations>
         <lyric number="1" default-y="-54.18" relative-y="-30">
           <syllabic>single</syllabic>
-          <text>は</text>
+          <text>わ</text>
         </lyric>
         <lyric number="2" default-y="-78.66" relative-y="-30">
           <syllabic>single</syllabic>
@@ -3086,7 +3086,7 @@
         </lyric>
         <lyric number="4" default-y="-121.4" relative-y="-30">
           <syllabic>single</syllabic>
-          <text>は</text>
+          <text>わ</text>
         </lyric>
       </note>
       <note default-x="111.1" default-y="-30">

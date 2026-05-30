@@ -2339,7 +2339,7 @@
         <beam number="1">begin</beam>
         <lyric number="1" default-y="-62.72" relative-y="-30">
           <syllabic>single</syllabic>
-          <text>は</text>
+          <text>わ</text>
           </lyric>
         <lyric number="2" default-y="-87.2" relative-y="-30">
           <syllabic>single</syllabic>
@@ -2994,7 +2994,7 @@
           </lyric>
         <lyric number="3" default-y="-97.54" relative-y="-30">
           <syllabic>single</syllabic>
-          <text>しや</text>
+          <text>しゃ</text>
           </lyric>
         </note>
       </measure>
