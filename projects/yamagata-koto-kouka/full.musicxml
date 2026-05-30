@@ -9242,6 +9242,9 @@
         </note>
       </measure>
     <measure number="24" width="201.24">
+      <barline location="left">
+        <ending number="1, 2, 3" type="start">1. 2. 3.</ending>
+        </barline>
       <note default-x="17.12" default-y="-369.71">
         <pitch>
           <step>E</step>
@@ -9275,7 +9278,7 @@
         </note>
       <barline location="right">
         <bar-style>light-heavy</bar-style>
-        <ending number="4" type="discontinue" relative-y="30"/>
+        <ending number="1, 2, 3" type="stop"/>
         <repeat direction="backward" times="4"/>
         </barline>
       </measure>
@@ -9311,6 +9314,9 @@
         <voice>1</voice>
         <type>quarter</type>
         </note>
+      <barline location="right">
+        <ending number="4" type="stop"/>
+        </barline>
       </measure>
     <measure number="26" width="242.26">
       <note default-x="113.73" default-y="-367.81">
