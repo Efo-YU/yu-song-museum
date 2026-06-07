@@ -1,6 +1,7 @@
 {
   "slug": "with-organ",
   "label": "With Organ",
+  "vocalist": "MERROW (NEUTRINO)",
   "score_file": "full.musicxml",
   "build_config": {
     "audio_settings": {
@@ -22,6 +23,9 @@
   },
   "score_viewer_settings": {
     "default_zoom": 1.0,
-    "default_visible_parts": ["Vo.", "Org."]
+    "default_visible_parts": [
+      "Vo.",
+      "Org."
+    ]
   }
 }

@@ -1,6 +1,7 @@
 {
   "slug": "chorus-only",
   "label": "Chorus Only",
+  "vocalist": "MERROW (NEUTRINO)",
   "score_file": "vocal.musicxml",
   "build_config": {
     "audio_settings": {
