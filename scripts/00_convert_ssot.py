@@ -909,6 +909,43 @@ def _prepend_leading_rest(root: ET.Element) -> None:
             m.set("number", str(idx))
 
 
+# ── Variant-level tempo sync ──────────────────────────────────────────────────
+
+
+def _sync_variant_tempo(root: ET.Element, bpm: float) -> bool:
+    """
+    Ensure the first <sound tempo> in the score equals `bpm`.
+    Returns True if anything was changed.
+
+    Unlike inject_tempo(), this OVERWRITES an existing tempo instead of
+    skipping.  This is intentional: variant-level MusicXML overrides may have
+    been exported from notation software with a stale or default BPM that
+    disagrees with song.json.  song.json is the single source of truth.
+
+    If no <sound tempo> exists, inject_tempo() is called to add one.
+    """
+    target = str(int(bpm))
+    for part in root.findall("part"):
+        for measure in part.findall("measure"):
+            for direction in measure.findall("direction"):
+                sound = direction.find("sound")
+                if sound is not None and sound.get("tempo"):
+                    if sound.get("tempo") == target:
+                        return False  # already correct
+                    sound.set("tempo", target)
+                    dt = direction.find("direction-type")
+                    if dt is not None:
+                        metro = dt.find("metronome")
+                        if metro is not None:
+                            pm = metro.find("per-minute")
+                            if pm is not None:
+                                pm.text = target
+                    return True
+    # No tempo found — add one via the normal injection path
+    inject_tempo(root, bpm)
+    return True
+
+
 # ── Output ────────────────────────────────────────────────────────────────────
 
 
@@ -1015,6 +1052,28 @@ def main() -> None:
         print(f"[convert-ssot] -> {inst_out}")
     else:
         print("[convert-ssot] No backing parts — inst.musicxml not written.")
+
+    # Sync tempo into any variant-level MusicXML overrides.
+    # Variant dirs may contain hand-crafted or notation-exported inst.musicxml
+    # files whose embedded BPM disagrees with song.json.  song.json is the
+    # sole BPM source of truth; ensure all override files agree.
+    if song_bpm is not None:
+        variants_dir = song_dir / "variants"
+        if variants_dir.is_dir():
+            for vdir in sorted(variants_dir.iterdir()):
+                if not vdir.is_dir():
+                    continue
+                for override_name in ("inst.musicxml", "vocal.musicxml"):
+                    override_path = vdir / override_name
+                    if not override_path.exists():
+                        continue
+                    v_root = ET.parse(str(override_path)).getroot()
+                    if _sync_variant_tempo(v_root, song_bpm):
+                        write_musicxml(v_root, override_path)
+                        print(
+                            f"[convert-ssot] tempo synced ({int(song_bpm)} BPM)"
+                            f" -> {override_path}"
+                        )
 
     print("[convert-ssot] Done.")
 
