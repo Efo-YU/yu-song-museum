@@ -734,7 +734,12 @@ def build_vocal_score(root: ET.Element, vocal_ids: list[str]) -> ET.Element:
 def build_backing_score(root: ET.Element, vocal_ids: list[str]) -> ET.Element:
     """
     Return a new score-partwise root with vocal part(s) removed.
-    Repeat structure is preserved — FluidSynth / music21 expands it at render time.
+
+    Repeats are expanded (same play sequence as the vocal) and short measures
+    are padded with the same _pad_short_measures pass, so the backing is a
+    linear score whose total duration matches the vocal output exactly.
+    music21/FluidSynth then processes the backing as a straightforward
+    linear score with no repeat barlines.
     """
     tree = copy.deepcopy(root)
 
@@ -747,6 +752,39 @@ def build_backing_score(root: ET.Element, vocal_ids: list[str]) -> ET.Element:
     for part in list(tree.findall("part")):
         if part.get("id") in vocal_ids:
             tree.remove(part)
+
+    # Expand repeats using the first backing part's structure.
+    # All parts in a standard ensemble share the same repeat structure.
+    backing_parts = tree.findall("part")
+    if not backing_parts:
+        return tree
+
+    ref_measures = backing_parts[0].findall("measure")
+    play_seq = compute_play_sequence(ref_measures) if ref_measures else []
+
+    for part in backing_parts:
+        measures = part.findall("measure")
+        if not measures or not play_seq:
+            continue
+
+        expanded: list[ET.Element] = []
+        for orig_idx, _verse_pass in play_seq:
+            if orig_idx >= len(measures):
+                continue
+            m = copy.deepcopy(measures[orig_idx])
+            _strip_repeat_barlines(m)
+            _strip_print_elements(m)
+            _strip_jump_sounds(m)
+            expanded.append(m)
+
+        _pad_short_measures(expanded)
+
+        for m in list(part.findall("measure")):
+            part.remove(m)
+        for i, m_elem in enumerate(expanded, start=1):
+            m_elem.set("number", str(i))
+            m_elem.attrib.pop("width", None)
+            part.append(m_elem)
 
     return tree
 
