@@ -1,0 +1,239 @@
+name: Export Site Archive
+
+# Produces a downloadable ZIP of the full static site — HTML, audio, and
+# scores — without GitHub Pages, YouTube, or any live-site dependencies.
+# Works in private repositories; all output is delivered as a GitHub
+# Actions artifact that any collaborator with repo access can download.
+#
+# YouTube: treated as absent.  meta.json is written without youtube_id so
+# the built site renders exactly like a song that has not been uploaded yet.
+#
+# Triggering: manual dispatch only.  No push/schedule hooks.
+
+on:
+  workflow_dispatch:
+    inputs:
+      retention_days:
+        description: "Artifact retention in days (1–90)"
+        required: false
+        default: "30"
+
+# Prevent two archive runs from colliding on artifact names.
+concurrency:
+  group: archive
+  cancel-in-progress: false
+
+jobs:
+  # ── Job 0: Enumerate all (song, variant) pairs ────────────────────────────
+  enumerate-variants:
+    name: Enumerate variants
+    runs-on: ubuntu-latest
+    outputs:
+      pairs: ${{ steps.enum.outputs.pairs }}
+      has_pairs: ${{ steps.enum.outputs.has_pairs }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build full variant list
+        id: enum
+        run: |
+          p="["; first=true
+          for sd in projects/*/; do
+            song=$(basename "$sd")
+            for vd in "projects/$song/variants"/*/; do
+              [ -d "$vd" ] || continue
+              v=$(basename "$vd")
+              [[ "$first" == "true" ]] || p+=","
+              p+="{\"song\":\"$song\",\"variant\":\"$v\"}"
+              first=false
+            done
+          done
+          p+="]"
+          echo "pairs=$p" >> "$GITHUB_OUTPUT"
+          if [[ "$p" == "[]" ]]; then
+            echo "has_pairs=false" >> "$GITHUB_OUTPUT"
+            echo "No variants found — archive will contain only the shell site."
+          else
+            echo "has_pairs=true" >> "$GITHUB_OUTPUT"
+            echo "Variants: $p"
+          fi
+
+  # ── Job 1: Per-variant synthesis (matrix) ─────────────────────────────────
+  # Runs the same steps as the production pipeline but skips video generation
+  # and the YouTube upload.  Writes meta.json without a youtube_id so the
+  # site renders songs in the same way as before any video has been uploaded.
+  synthesize:
+    name: "Synth: ${{ matrix.song }}/${{ matrix.variant }}"
+    needs: enumerate-variants
+    if: needs.enumerate-variants.outputs.has_pairs == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.enumerate-variants.outputs.pairs) }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            ffmpeg fluidsynth fonts-noto-cjk
+
+      - name: Install Python dependencies
+        run: pip install --quiet boto3 requests music21
+
+      - name: Fetch NEUTRINO models and SoundFont from R2
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          SINGER: ${{ secrets.NEUTRINO_SINGER }}
+          VARIANT_DIR: projects/${{ matrix.song }}/variants/${{ matrix.variant }}
+        run: bash scripts/01_fetch_models.sh
+
+      - name: Convert SSoT MusicXML (if full.musicxml exists)
+        run: |
+          if [ -f "projects/${{ matrix.song }}/full.musicxml" ]; then
+            python3 scripts/00_convert_ssot.py --song "${{ matrix.song }}"
+          fi
+
+      - name: Synthesize vocal and accompaniment
+        env:
+          SONG_DIR: projects/${{ matrix.song }}
+          VARIANT_DIR: projects/${{ matrix.song }}/variants/${{ matrix.variant }}
+          SINGER: ${{ secrets.NEUTRINO_SINGER }}
+          NEUTRINO_DIR: /tmp/neutrino
+          sf3_PATH: /tmp/default.sf3
+        run: bash scripts/02_synthesize.sh
+
+      - name: Mix vocal + accompaniment
+        run: >
+          python3 scripts/03_mixdown.py
+          projects/${{ matrix.song }}/variants/${{ matrix.variant }}
+
+      # Write meta.json in the same format as 05_trigger_gas.py/_write_meta,
+      # but without youtube_id / youtube_url.  06_merge_songs.py then reads
+      # this file exactly as it does for the production pipeline.
+      - name: Write meta.json (no YouTube)
+        env:
+          SONG_SLUG: ${{ matrix.song }}
+          VARIANT_SLUG: ${{ matrix.variant }}
+        run: |
+          python3 - <<'PYEOF'
+          import json, os
+          from pathlib import Path
+
+          song_slug    = os.environ["SONG_SLUG"]
+          variant_slug = os.environ["VARIANT_SLUG"]
+
+          song_dir    = Path("projects") / song_slug
+          variant_dir = song_dir / "variants" / variant_slug
+          out_dir     = variant_dir / "output"
+          out_dir.mkdir(parents=True, exist_ok=True)
+
+          song_meta    = json.loads((song_dir / "song.json").read_text())
+          variant_meta = json.loads((variant_dir / "variant.json").read_text())
+
+          variant_entry = {
+              **{k: v for k, v in variant_meta.items() if k != "build_config"},
+              "audio_url": f"audio/{song_slug}/{variant_slug}/audio.mp3",
+              "score_url": f"scores/{song_slug}/{variant_meta.get('score_file', 'vocal.musicxml')}",
+          }
+          output_meta = {**song_meta, "variant": variant_entry}
+          (out_dir / "meta.json").write_text(
+              json.dumps(output_meta, ensure_ascii=False, indent=2)
+          )
+          print(f"[archive] meta.json written for {song_slug}/{variant_slug}")
+          PYEOF
+
+      # Upload meta.json and audio.mp3 together.  upload-artifact v4 uses their
+      # common ancestor directory as the artifact root, so the artifact contains
+      # just { meta.json, audio.mp3 } — the layout 06_merge_songs.py expects.
+      - name: Upload variant artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: archive-meta-${{ matrix.song }}-${{ matrix.variant }}
+          path: |
+            projects/${{ matrix.song }}/variants/${{ matrix.variant }}/output/meta.json
+            projects/${{ matrix.song }}/variants/${{ matrix.variant }}/output/audio.mp3
+          retention-days: ${{ inputs.retention_days }}
+
+  # ── Job 2: Assemble and package the archive ───────────────────────────────
+  # Runs even when some (or all) synthesis jobs failed so a partial archive
+  # is still produced.  Failed variants simply have no audio in the ZIP.
+  build-archive:
+    name: Build and package site archive
+    needs: synthesize
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Enable pnpm via corepack
+        run: corepack enable && corepack prepare pnpm@9.15.9 --activate
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install verovio (SVG score generation)
+        run: pip install --quiet verovio
+
+      # Download every archive-meta-* artifact.  With merge-multiple: false each
+      # lands in its own subdirectory; 06_merge_songs.py uses rglob to find all
+      # meta.json files regardless of nesting depth.
+      - name: Download all variant artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: archive-meta-*
+          path: artifacts/meta
+          merge-multiple: false
+
+      # Start from a clean slate so the output only reflects the current run.
+      # (The committed songs.json may contain stale youtube_id entries from
+      # the live site; those must not appear in the offline archive.)
+      - name: Reset songs.json
+        run: echo "[]" > frontend/src/data/songs.json
+
+      # Merges variant meta into songs.json, copies MP3s to public/audio/,
+      # copies MusicXML to public/scores/, and generates SVG score previews.
+      - name: Merge songs.json and copy public assets
+        run: python3 scripts/06_merge_songs.py
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+
+      # VITE_BASE_URL is intentionally unset (falls back to '/') so the
+      # archive works when served by any local HTTP server (python3 -m http.server,
+      # npx serve, nginx, etc.).  Absolute paths under / are correct for that case.
+      - name: Build frontend
+        working-directory: frontend
+        run: pnpm build
+
+      - name: Create ZIP archive
+        run: |
+          cd frontend/dist
+          zip -r ../../site-archive.zip .
+          echo "Archive size: $(du -sh ../../site-archive.zip | cut -f1)"
+
+      - name: Upload site archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-archive
+          path: site-archive.zip
+          retention-days: ${{ inputs.retention_days }}
