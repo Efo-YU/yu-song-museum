@@ -218,14 +218,62 @@ jobs:
         working-directory: frontend
         run: pnpm install --frozen-lockfile
 
-      # Use relative base path ('./' instead of '/') so asset URLs in index.html
-      # are relative — the archive works when opened directly via file:// without
-      # a local HTTP server.
+      # Build with:
+      #   VITE_BASE_URL="./"      → relative asset URLs (works without a server)
+      #   VITE_SINGLE_FILE=1      → merge all dynamic imports into one chunk so
+      #                             the inline step below can embed everything
       - name: Build frontend
         working-directory: frontend
         env:
           VITE_BASE_URL: "./"
+          VITE_SINGLE_FILE: "1"
         run: pnpm build
+
+      # Inline the single JS chunk and CSS into index.html so the archive opens
+      # correctly when double-clicked (file:// protocol).  Chrome blocks CORS
+      # fetches of external <script type="module" src="..."> from file://, but
+      # inline <script type="module">…</script> is not subject to that check.
+      - name: Inline JS and CSS into index.html
+        run: |
+          python3 - << 'PYEOF'
+          import re
+          from pathlib import Path
+
+          dist = Path("frontend/dist")
+          html_path = dist / "index.html"
+          html = html_path.read_text()
+
+          # Inline CSS: <link rel="stylesheet" ... href="./assets/X.css">
+          for m in re.finditer(
+              r'<link\s[^>]*href=["\']\./([^"\']+\.css)["\'][^>]*/?>',
+              html,
+          ):
+              p = dist / m.group(1)
+              if p.exists():
+                  html = html.replace(m.group(0), f"<style>{p.read_text()}</style>")
+                  p.unlink()
+
+          # Inline JS: <script type="module" ... src="./assets/X.js"></script>
+          for m in re.finditer(
+              r'<script\s[^>]*src=["\']\./([^"\']+\.js)["\'][^>]*></script>',
+              html,
+          ):
+              p = dist / m.group(1)
+              if p.exists():
+                  html = html.replace(
+                      m.group(0),
+                      f'<script type="module">{p.read_text()}</script>',
+                  )
+                  p.unlink()
+
+          html_path.write_text(html)
+          # Remove assets/ if now empty
+          assets = dist / "assets"
+          if assets.is_dir() and not any(assets.iterdir()):
+              assets.rmdir()
+
+          print(f"index.html: {len(html):,} bytes (self-contained)")
+          PYEOF
 
       # Upload the dist directory directly.  upload-artifact v4 already produces
       # a ZIP on download; wrapping in a manual zip first would create zip-in-zip.
