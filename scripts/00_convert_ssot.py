@@ -459,6 +459,61 @@ def _add_slur(note: ET.Element, slur_num: int, stype: str) -> None:
     sl.set("number", str(slur_num))
 
 
+def _pad_short_measures(expanded_measures: list[ET.Element]) -> None:
+    """
+    Prepend a rest to any expanded measure whose total note duration is less
+    than what the current time signature requires.
+
+    After repeat expansion, pickup (anacrusis) measures and their complementary
+    last measures appear as incomplete measures in the middle of a linear score.
+    musicXMLtoLabel warns "Duration of notes in a measure is too short" for each
+    such occurrence, and NEUTRINO then fails with "The operation was canceled."
+    Filling the gap with a leading rest lets musicXMLtoLabel treat every measure
+    as full-length.
+    """
+    current_divisions = 4
+    current_beats = 4
+    current_beat_type = 4
+
+    for measure in expanded_measures:
+        attrs = measure.find("attributes")
+        if attrs is not None:
+            d = attrs.findtext("divisions")
+            if d:
+                current_divisions = int(d)
+            b = attrs.findtext("time/beats")
+            if b:
+                current_beats = int(b)
+            bt = attrs.findtext("time/beat-type")
+            if bt:
+                current_beat_type = int(bt)
+
+        expected = int(current_divisions * current_beats * 4 / current_beat_type)
+        total = sum(
+            int(n.findtext("duration", "0"))
+            for n in measure.findall("note")
+            if n.find("chord") is None
+        )
+
+        if total >= expected or expected <= 0:
+            continue
+
+        gap = expected - total
+        rest_note = ET.Element("note")
+        ET.SubElement(rest_note, "rest")
+        ET.SubElement(rest_note, "duration").text = str(gap)
+        ET.SubElement(rest_note, "voice").text = "1"
+
+        # Insert after any leading attributes/print/direction, before the first note
+        insert_pos = 0
+        for idx, child in enumerate(measure):
+            if child.tag in ("attributes", "print", "direction"):
+                insert_pos = idx + 1
+            else:
+                break
+        measure.insert(insert_pos, rest_note)
+
+
 def fix_slurs_across_rests(expanded_measures: list[ET.Element]) -> None:
     """
     Split slurs that cross rest notes.
@@ -658,6 +713,10 @@ def build_vocal_score(root: ET.Element, vocal_ids: list[str]) -> ET.Element:
             for note in m_elem.findall("note"):
                 normalize_note_lyrics(note, verse_pass)
 
+        # Pad pickup/complementary-last measures so every expanded measure fills
+        # the full time-signature duration (prevents musicXMLtoLabel warnings).
+        _pad_short_measures([m for m, _ in expanded])
+
         # Fix slurs that cross rests (operates on the expanded list in order)
         fix_slurs_across_rests([m for m, _ in expanded])
 
@@ -675,7 +734,12 @@ def build_vocal_score(root: ET.Element, vocal_ids: list[str]) -> ET.Element:
 def build_backing_score(root: ET.Element, vocal_ids: list[str]) -> ET.Element:
     """
     Return a new score-partwise root with vocal part(s) removed.
-    Repeat structure is preserved — FluidSynth / music21 expands it at render time.
+
+    Repeats are expanded (same play sequence as the vocal) and short measures
+    are padded with the same _pad_short_measures pass, so the backing is a
+    linear score whose total duration matches the vocal output exactly.
+    music21/FluidSynth then processes the backing as a straightforward
+    linear score with no repeat barlines.
     """
     tree = copy.deepcopy(root)
 
@@ -688,6 +752,39 @@ def build_backing_score(root: ET.Element, vocal_ids: list[str]) -> ET.Element:
     for part in list(tree.findall("part")):
         if part.get("id") in vocal_ids:
             tree.remove(part)
+
+    # Expand repeats using the first backing part's structure.
+    # All parts in a standard ensemble share the same repeat structure.
+    backing_parts = tree.findall("part")
+    if not backing_parts:
+        return tree
+
+    ref_measures = backing_parts[0].findall("measure")
+    play_seq = compute_play_sequence(ref_measures) if ref_measures else []
+
+    for part in backing_parts:
+        measures = part.findall("measure")
+        if not measures or not play_seq:
+            continue
+
+        expanded: list[ET.Element] = []
+        for orig_idx, _verse_pass in play_seq:
+            if orig_idx >= len(measures):
+                continue
+            m = copy.deepcopy(measures[orig_idx])
+            _strip_repeat_barlines(m)
+            _strip_print_elements(m)
+            _strip_jump_sounds(m)
+            expanded.append(m)
+
+        _pad_short_measures(expanded)
+
+        for m in list(part.findall("measure")):
+            part.remove(m)
+        for i, m_elem in enumerate(expanded, start=1):
+            m_elem.set("number", str(i))
+            m_elem.attrib.pop("width", None)
+            part.append(m_elem)
 
     return tree
 
