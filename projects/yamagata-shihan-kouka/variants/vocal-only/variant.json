@@ -1,6 +1,7 @@
 {
   "slug": "vocal-only",
   "label": "Vocal Only",
+  "vocalist": "MERROW (NEUTRINO)",
   "build_config": {
     "audio_settings": {
       "vocal_volume": 1.0,
@@ -21,6 +22,8 @@
   },
   "score_viewer_settings": {
     "default_zoom": 1.0,
-    "default_visible_parts": ["Vo."]
+    "default_visible_parts": [
+      "Vo."
+    ]
   }
 }

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
 <score-partwise version="4.0">
   <work>
     <work-title>無題のスコア</work-title>
@@ -143,10 +142,10 @@
         <direction-type>
           <metronome>
             <beat-unit>quarter</beat-unit>
-            <per-minute>88</per-minute>
+            <per-minute>120</per-minute>
           </metronome>
         </direction-type>
-        <sound tempo="88" />
+        <sound tempo="120" />
       </direction>
       <note default-x="84.52" default-y="-25">
         <grace slash="yes" />

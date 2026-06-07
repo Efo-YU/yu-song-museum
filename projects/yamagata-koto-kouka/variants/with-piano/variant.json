@@ -1,6 +1,7 @@
 {
   "slug": "with-piano",
   "label": "With Piano",
+  "vocalist": "MERROW (NEUTRINO)",
   "score_file": "full.musicxml",
   "build_config": {
     "audio_settings": {

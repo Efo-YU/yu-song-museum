@@ -148,21 +148,30 @@ def main() -> None:
             variant_data["svg_url"] = variant_data["score_url"].replace(".musicxml", ".svg")
 
         # Propagate vocalist to variants that include vocal synthesis.
-        # For multi-singer variants (singers array), build the name from
-        # the singer models; for single-singer variants, use song-level credits.
+        # Priority (first wins):
+        #   1. "vocalist" already in the meta.json artifact (set by the synth job)
+        #   2. "vocalist" string in variant.json (explicit per-variant label)
+        #   3. "singers" array in variant.json → build "M1 + M2 (ENGINE)"
+        #      ENGINE comes from song.json credits.vocalist suffix if available
+        #   4. "credits.vocalist" string in song.json (legacy single-singer label)
         if "vocalist" not in variant_data:
             variant_json_path = PROJECTS_DIR / song_slug / "variants" / variant_slug / "variant.json"
             vj: dict = {}
             if variant_json_path.exists():
                 vj = json.loads(variant_json_path.read_text())
             if not vj.get("skip_vocal_synthesis"):
+                import re as _re
+                vj_vocalist: str = vj.get("vocalist", "")
                 song_vocalist: str = live_meta.get("credits", {}).get("vocalist", "")
                 singers: list[dict] = vj.get("singers", [])
-                if singers and song_vocalist:
-                    # Extract engine suffix "(NEUTRINO)" from the song-level vocalist
-                    import re as _re
-                    suffix_m = _re.search(r"\s*\([^)]+\)\s*$", song_vocalist)
-                    suffix = suffix_m.group(0).strip() if suffix_m else ""
+                if vj_vocalist:
+                    variant_data["vocalist"] = vj_vocalist
+                elif singers:
+                    # Extract engine suffix from song-level credits if present
+                    suffix = ""
+                    if song_vocalist:
+                        suffix_m = _re.search(r"\s*\([^)]+\)\s*$", song_vocalist)
+                        suffix = suffix_m.group(0).strip() if suffix_m else ""
                     names = " + ".join(s["model"] for s in singers if s.get("model"))
                     variant_data["vocalist"] = f"{names} ({suffix.strip('()')})" if suffix else names
                 elif song_vocalist:
