@@ -82,8 +82,7 @@ to `main` before the push trigger fires:
 ## Phase 3 — Prepare a real song
 
 Each song lives under `projects/<song-slug>/` with a `variants/` subdirectory
-for each rendition. The sample song `projects/sample-song/` has a placeholder
-MusicXML; replace it with real content before production use.
+for each rendition.
 
 ### Project layout
 
@@ -105,9 +104,7 @@ projects/<song-slug>/
   singer model (NEUTRINO requires kana/romaji lyrics).
 - Test locally:
   ```sh
-  make SONG=sample-song VERSION=default synth
-  # requires NEUTRINO at /tmp/neutrino; fetch first with:
-  make SONG=sample-song fetch-models
+  make SONG=yamagata-koto-kouka VARIANT=with-piano fetch-models synth
   ```
 
 ### 3.2 Accompaniment (`inst.mid` or `inst.musicxml`)
@@ -135,14 +132,14 @@ Review and edit:
 
 1. Go to **Actions → Music Production Pipeline**.
 2. Click **Run workflow**.
-3. In the **song** field, enter the song slug (e.g. `sample-song`).
-4. In the **variant** field, enter the variant slug (e.g. `default`).
+3. In the **song** field, enter the song slug (e.g. `yamagata-koto-kouka`).
+4. In the **variant** field, enter the variant slug (e.g. `with-piano`).
 5. Click **Run workflow**.
 
 Watch each job:
 
 - **Job 0 (detect-diff):** should output `has_changes=true`
-- **Job 1 (pipeline: sample-song/default):** watch for errors in each step
+- **Job 1 (pipeline: yamagata-koto-kouka/with-piano):** watch for errors in each step
 - **Job 2 (deploy-web):** deploys to GitHub Pages
 
 ### 4.2 Confirm outputs

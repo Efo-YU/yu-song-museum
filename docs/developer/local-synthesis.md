@@ -52,8 +52,6 @@ for s in yamagata-shihan-kouka yamagata-nourin-shoyoka yamagata-koto-kouka yonez
 done
 ```
 
-`sample-song` is a placeholder; skip it unless testing the pipeline itself.
-
 ## Project directory layout
 
 ```

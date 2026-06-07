@@ -17,8 +17,8 @@
 ##   `make SONG=<slug> convert-ssot` to regenerate vocal.musicxml and
 ##   inst.musicxml before running synth.
 
-SONG        ?= sample-song
-VARIANT     ?= default
+SONG        ?= yamagata-koto-kouka
+VARIANT     ?= with-piano
 SINGER      ?= MERROW
 NEUTRINO_DIR ?= /tmp/neutrino
 sf3_PATH    ?= /tmp/default.sf3

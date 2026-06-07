@@ -65,11 +65,11 @@ After adding all secrets, trigger the pipeline manually:
 
 1. Go to **Actions → Music Production Pipeline**.
 2. Click **Run workflow** (top right).
-3. In the **song** field, enter a song slug (e.g. `sample-song`).
-4. In the **version** field, enter a version slug (e.g. `default`).
+3. In the **song** field, enter a song slug (e.g. `yamagata-koto-kouka`).
+4. In the **variant** field, enter a variant slug (e.g. `with-piano`).
 5. Click **Run workflow**.
 
-Watch the run. Job 1 ("Pipeline: sample-song/default") will fail at the
+Watch the run. Job 1 ("Pipeline: yamagata-koto-kouka/with-piano") will fail at the
 "Fetch NEUTRINO models" step if the R2 secrets are wrong, and at
 "Upload to YouTube" if the GAS secret is wrong. The step names make
 it easy to identify which secret is misconfigured.

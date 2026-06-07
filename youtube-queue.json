@@ -1,41 +1,5 @@
 [
   {
-    "song": "sample-song",
-    "variant": "all-singers",
-    "sha": "b788704aca6ff97ef86a806fe18b34f36461fa93",
-    "queued_at": "2026-05-29T12:29:46.837492+00:00"
-  },
-  {
-    "song": "sample-song",
-    "variant": "multi-singer",
-    "sha": "b788704aca6ff97ef86a806fe18b34f36461fa93",
-    "queued_at": "2026-05-29T12:29:46.837492+00:00"
-  },
-  {
-    "song": "yamagata-shihan-kouka",
-    "variant": "organ-only",
-    "sha": "f4a13831a7ac8803c932f1df83ac7f1305fa3f5b",
-    "queued_at": "2026-06-07T05:39:40.565818+00:00"
-  },
-  {
-    "song": "yamagata-nourin-shoyoka",
-    "variant": "with-piano",
-    "sha": "f4a13831a7ac8803c932f1df83ac7f1305fa3f5b",
-    "queued_at": "2026-06-07T05:39:40.565818+00:00"
-  },
-  {
-    "song": "yamagata-shihan-kouka",
-    "variant": "with-organ",
-    "sha": "f4a13831a7ac8803c932f1df83ac7f1305fa3f5b",
-    "queued_at": "2026-06-07T05:39:40.565818+00:00"
-  },
-  {
-    "song": "yamagata-nourin-shoyoka",
-    "variant": "piano-only",
-    "sha": "f4a13831a7ac8803c932f1df83ac7f1305fa3f5b",
-    "queued_at": "2026-06-07T05:39:40.565818+00:00"
-  },
-  {
     "song": "yonezawa-kogyo-kouka",
     "variant": "with-piano",
     "sha": "f4a13831a7ac8803c932f1df83ac7f1305fa3f5b",
