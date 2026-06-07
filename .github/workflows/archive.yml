@@ -218,22 +218,20 @@ jobs:
         working-directory: frontend
         run: pnpm install --frozen-lockfile
 
-      # VITE_BASE_URL is intentionally unset (falls back to '/') so the
-      # archive works when served by any local HTTP server (python3 -m http.server,
-      # npx serve, nginx, etc.).  Absolute paths under / are correct for that case.
+      # Use relative base path ('./' instead of '/') so asset URLs in index.html
+      # are relative — the archive works when opened directly via file:// without
+      # a local HTTP server.
       - name: Build frontend
         working-directory: frontend
+        env:
+          VITE_BASE_URL: "./"
         run: pnpm build
 
-      - name: Create ZIP archive
-        run: |
-          cd frontend/dist
-          zip -r ../../site-archive.zip .
-          echo "Archive size: $(du -sh ../../site-archive.zip | cut -f1)"
-
+      # Upload the dist directory directly.  upload-artifact v4 already produces
+      # a ZIP on download; wrapping in a manual zip first would create zip-in-zip.
       - name: Upload site archive
         uses: actions/upload-artifact@v4
         with:
           name: site-archive
-          path: site-archive.zip
+          path: frontend/dist/
           retention-days: ${{ inputs.retention_days }}
