@@ -152,7 +152,7 @@ Job 2 — Web deploy  [concurrency group: deploy-web]
 │       └── pipeline.yml           # GHA workflow (Job 0–2, serial/matrix)
 │
 ├── projects/                      # Per-song source files
-│   └── song_001/
+│   └── yamagata-koto-kouka/
 │       ├── project_metadata.json  # Title, BPM, key, credits
 │       ├── build_config.json      # Gain, effects, video resolution
 │       ├── page_config.json       # Theme colour, OSMD zoom, download flags
@@ -181,7 +181,7 @@ Job 2 — Web deploy  [concurrency group: deploy-web]
 │   ├── package.json
 │   └── vite.config.js
 │
-└── Makefile                       # Local task runner (make synth SONG=song_001)
+└── Makefile                       # Local task runner (make SONG=yamagata-koto-kouka VARIANT=with-piano all)
 ```
 
 ---
@@ -196,7 +196,7 @@ Used by: video title/credits overlay, YouTube description, web page header.
 
 ```jsonc
 {
-  "id": "song_001",
+  "id": "yamagata-koto-kouka",
   "title": "Song Title",
   "bpm": 120,
   "key": "C major",
