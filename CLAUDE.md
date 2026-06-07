@@ -58,7 +58,7 @@ All commands in §3 assume you are inside the Dev Container at
 - Type-check frontend: `cd frontend && pnpm type-check`
 - Type-check GAS: `cd gas && npx tsc --noEmit`
 - Build frontend: `cd frontend && pnpm build`
-- Run pipeline locally (one song): `make SONG=song_001 all`
+- Run pipeline locally (one song): `make SONG=yamagata-koto-kouka VARIANT=with-piano all`
 - Run full local pipeline (all songs, no YouTube): see §3a below
 - songs.json is **skip-worktree** (applied by `make setup`, run automatically
   by the Dev Container `postCreateCommand`). Local dev changes are invisible to
@@ -145,9 +145,9 @@ The agent does not merge PRs — merging is a human decision.
 │   ├── src/          # youtube_relay.ts — clasp pushes this directory
 │   └── appsscript.json
 ├── projects/         # Per-song source files
-│   └── song_001/     # Example: vocal.musicxml, inst.musicxml, *.json configs
+│   └── yamagata-koto-kouka/  # one directory per song slug
 ├── scripts/          # Pipeline scripts (Bash + Python); shebang required
-└── Makefile          # Local task runner (`make SONG=song_001 all`)
+└── Makefile          # Local task runner (`make SONG=<slug> VARIANT=<slug> all`)
 ```
 
 ## 5. Language policy
