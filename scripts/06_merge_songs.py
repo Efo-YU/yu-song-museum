@@ -197,10 +197,20 @@ def main() -> None:
     for slug in all_song_slugs:
         copy_scores(slug)
 
-    # Sort songs by slug, variants within each song by slug
+    # Sort songs: display_order (from song.json) as primary key, slug as tiebreaker.
+    # Songs without display_order sort after those that have it.
     for song in existing.values():
         song["variants"] = sorted(song.get("variants", []), key=lambda v: v["slug"])
-    songs_list = sorted(existing.values(), key=lambda s: s["slug"])
+        song_json_path = PROJECTS_DIR / song["slug"] / "song.json"
+        if song_json_path.exists():
+            raw = json.loads(song_json_path.read_text())
+            order = raw.get("display_order")
+            if order is not None:
+                song["display_order"] = int(order)
+    songs_list = sorted(
+        existing.values(),
+        key=lambda s: (s.get("display_order") is None, s.get("display_order", 0), s["slug"]),
+    )
 
     SONGS_JSON.parent.mkdir(parents=True, exist_ok=True)
     SONGS_JSON.write_text(

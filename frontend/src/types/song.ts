@@ -46,4 +46,5 @@ export interface Song {
   page_config?: PageConfig;
   variants: SongVariant[];
   default_variant?: string;
+  display_order?: number;
 }
